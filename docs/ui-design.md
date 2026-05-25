@@ -93,6 +93,17 @@ Data source: `GET /api/dashboard` (SQLite seed or mock fallback). Client: `Dashb
 
 ---
 
+## Day 7 polish
+
+| Feature | Implementation |
+|---------|----------------|
+| AI loading overlay | `AILoadingOverlay` on dashboard fetch |
+| Floating AI assistant | `FloatingAIAssistant` via `AppShell` (all routes) |
+| Daily AI tip | `DailyAITip` + `GET /api/daily-tip` |
+| Hero copy | Personal AI mentor headline + subtext |
+
+---
+
 ## Next (Phase 2+)
 
 - [ ] Figma export / design tokens file

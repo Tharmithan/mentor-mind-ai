@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { DailyAITip } from "@/components/ai/DailyAITip";
 import {
   BarChart3,
   BookOpen,
@@ -104,17 +105,18 @@ export default function Home() {
               </p>
             </AnimatedSection>
             <AnimatedSection delay={100}>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
-                Learn smarter.
-                <br />
-                <span className="gradient-text">Interview stronger.</span>
+              <h1 className="text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+                Your Personal AI Mentor for Learning, Interviews, and Career Growth.
               </h1>
             </AnimatedSection>
             <AnimatedSection delay={200}>
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-400 sm:text-xl">
-                The all-in-one AI coach for students — performance prediction,
-                personalized study plans, mock interviews, and confidence analytics.
+                Analyze performance, improve skills, and prepare for your future using
+                AI-powered insights.
               </p>
+            </AnimatedSection>
+            <AnimatedSection delay={250} className="mx-auto mt-8 max-w-2xl">
+              <DailyAITip compact />
             </AnimatedSection>
             <AnimatedSection delay={300}>
               <div className="mt-10 flex flex-wrap items-center justify-center gap-4">

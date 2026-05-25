@@ -9,6 +9,8 @@ import {
   BarChartCard,
   PieChartCard,
 } from "@/components/dashboard/DashboardCharts";
+import { AILoadingOverlay } from "@/components/ui/AILoadingOverlay";
+import { DailyAITip } from "@/components/ai/DailyAITip";
 import { getDashboard, type DashboardData } from "@/lib/api";
 import {
   TrendingUp,
@@ -90,9 +92,13 @@ export function DashboardMVP() {
 
   return (
     <>
-      <div
-        className={`stagger-children grid gap-4 sm:grid-cols-2 xl:grid-cols-4 ${loading ? "opacity-70" : ""}`}
-      >
+      <AILoadingOverlay loading={loading} />
+
+      <div className="mb-6">
+        <DailyAITip />
+      </div>
+
+      <div className="stagger-children grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Performance Score"
           value={`${Math.round(data.performance_score)}%`}

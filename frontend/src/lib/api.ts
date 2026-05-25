@@ -1,10 +1,13 @@
 import axios from "axios";
 import type {
+  DailyTip,
   DashboardResponse,
   PredictRequest,
   PredictResponse,
   UserResponse,
 } from "@/lib/types/api";
+
+export type { DailyTip };
 
 export type DashboardData = DashboardResponse;
 
@@ -51,5 +54,10 @@ export async function getRecommendations() {
   const { data } = await api.get<{ recommendations: DashboardResponse["recommendations"] }>(
     "/api/recommendations"
   );
+  return data;
+}
+
+export async function getDailyTip() {
+  const { data } = await api.get<DailyTip>("/api/daily-tip");
   return data;
 }

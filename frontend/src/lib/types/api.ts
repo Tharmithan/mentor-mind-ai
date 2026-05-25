@@ -53,6 +53,12 @@ export type RecommendationItem = {
   is_completed: boolean;
 };
 
+export type DailyTip = {
+  tip: string;
+  category: string;
+  focus_topic: string | null;
+};
+
 export type DashboardResponse = {
   performance_score: number;
   study_hours_week: number;

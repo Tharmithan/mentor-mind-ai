@@ -6,7 +6,7 @@ export default function DashboardPage() {
     <>
       <PageHeader
         title="Welcome back, Student"
-        subtitle="MVP dashboard — performance, study habits, weak topics, and AI coaching"
+        subtitle="Your AI learning command center — insights, charts, and coaching"
       />
       <DashboardMVP />
     </>

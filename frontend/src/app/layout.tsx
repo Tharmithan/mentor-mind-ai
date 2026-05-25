@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AppShell } from "@/components/providers/AppShell";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,9 +9,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MentorMind AI — Learn Smarter. Interview Stronger.",
+  title: "MentorMind AI — Your Personal AI Mentor",
   description:
-    "AI-powered personalized learning, mock interviews, confidence analysis, and study recommendations for students.",
+    "Analyze performance, improve skills, and prepare for your future using AI-powered insights for learning, interviews, and career growth.",
 };
 
 export default function RootLayout({
@@ -20,7 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full`}>
-      <body className="min-h-full antialiased">{children}</body>
+      <body className="min-h-full antialiased">
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

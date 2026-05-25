@@ -106,7 +106,7 @@ uvicorn app.main:app --reload --port 8000
 
 API docs: http://localhost:8000/docs
 
-**Key routes:** `GET /api/health` · `GET /api/user` · `POST /api/predict` · `GET /api/recommendations`
+**Key routes:** `GET /api/health` · `GET /api/user` · `POST /api/predict` · `GET /api/recommendations` · `GET /api/dashboard` · `GET /api/daily-tip`
 
 **Database (Day 5):** See [docs/database-setup.md](docs/database-setup.md) — run `python -m scripts.init_db` and `python -m scripts.seed_db` after Postgres is up.
 
@@ -129,13 +129,16 @@ App: http://localhost:3000
 
 ---
 
-## Screenshots
+## Week 1 complete
 
-> Add screenshots after Week 1 UI is complete.
+Professional foundation shipped. See [docs/week1-summary.md](docs/week1-summary.md).
 
-| Home | Dashboard |
+| Area | Delivered |
 |------|-----------|
-| _Coming soon_ | _Coming soon_ |
+| **Frontend** | Landing page, dashboard (Recharts), responsive UI, AI loading overlay, floating assistant, daily tip |
+| **Backend** | FastAPI structure, health/user/predict/recommendations/dashboard/daily-tip |
+| **Database** | PostgreSQL schema + SQLite local dev + seed scripts |
+| **GitHub** | Documented monorepo, setup guides, clean commits |
 
 ---
 
@@ -143,7 +146,7 @@ App: http://localhost:3000
 
 | Week | Focus |
 |------|--------|
-| 1 | Setup, architecture, UI shell, auth foundation |
+| 1 | Setup, architecture, UI, dashboard MVP, database, GitHub polish — **done** |
 | 2 | Dataset processing |
 | 3 | Model training |
 | 4 | Recommendation system |
