@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import health, predict, user
+from app.routes import health, predict, recommendations, user
 
 app = FastAPI(
     title=settings.app_name,
@@ -25,6 +25,7 @@ API_PREFIX = "/api"
 app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
 app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
 app.include_router(predict.router, prefix=API_PREFIX, tags=["predict"])
+app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendations"])
 
 
 @app.get("/")
@@ -37,5 +38,6 @@ async def root():
             "health": f"{API_PREFIX}/health",
             "user": f"{API_PREFIX}/user",
             "predict": f"{API_PREFIX}/predict",
+            "recommendations": f"{API_PREFIX}/recommendations",
         },
     }

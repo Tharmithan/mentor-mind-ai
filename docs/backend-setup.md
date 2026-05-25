@@ -68,4 +68,6 @@ uvicorn app.main:app --reload --port 8000
 - [x] GET `/api/user`
 - [x] POST `/api/predict`
 - [x] CORS for frontend (`localhost:3000`)
-- [ ] Live Supabase connection (optional — works without DB for demo)
+- [x] Database ORM models (Day 5 — see `docs/database-setup.md`)
+- [x] GET `/api/recommendations`
+- [ ] Live Supabase connection (run schema + set `DATABASE_URL`)

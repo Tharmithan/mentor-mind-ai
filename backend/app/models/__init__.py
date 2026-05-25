@@ -1,5 +1,6 @@
 from app.models.common import HealthResponse
 from app.models.prediction import PredictRequest, PredictResponse
+from app.models.recommendation import RecommendationItem, RecommendationsResponse
 from app.models.user import UserProfile, UserResponse
 
 __all__ = [
@@ -8,4 +9,6 @@ __all__ = [
     "UserResponse",
     "PredictRequest",
     "PredictResponse",
+    "RecommendationItem",
+    "RecommendationsResponse",
 ]
