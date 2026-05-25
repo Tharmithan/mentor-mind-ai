@@ -37,6 +37,10 @@ datasets/final/**
 !datasets/processed/eda/*.md
 datasets/processed/eda/*.png
 datasets/processed/eda/*.html
+datasets/final/**
+!datasets/final/.gitkeep
+!datasets/final/*.json
+!datasets/final/*.md
 !datasets/README.md
 !datasets/scripts/**
 datasets/**/*.csv

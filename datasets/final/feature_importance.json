@@ -1,0 +1,464 @@
+{
+  "generated_at": "2026-05-25T10:09:46.895240+00:00",
+  "selection": {
+    "model": "RandomForestRegressor",
+    "test_r2": 0.9879,
+    "threshold": 0.0121,
+    "features_evaluated": 28,
+    "features_kept": 5,
+    "features_dropped": 23,
+    "dropped_features": [
+      "productivity_index",
+      "exam_readiness_score",
+      "going_out",
+      "absences",
+      "attendance_pct",
+      "family_relationship",
+      "weekend_alcohol",
+      "father_education",
+      "free_time",
+      "wellness_score",
+      "weekday_alcohol",
+      "travel_time",
+      "mother_education",
+      "assignment_completion_score",
+      "family_support",
+      "study_efficiency",
+      "study_hours",
+      "school_support",
+      "extracurricular",
+      "internet_access",
+      "gender",
+      "past_failures",
+      "wants_higher_ed"
+    ]
+  },
+  "behavioral_selection": {
+    "model": "RandomForestRegressor",
+    "test_r2": 0.6526,
+    "threshold": 0.0098,
+    "features_evaluated": 25,
+    "features_kept": 20,
+    "features_dropped": 5,
+    "dropped_features": [
+      "gender",
+      "extracurricular",
+      "internet_access",
+      "study_hours",
+      "study_efficiency"
+    ]
+  },
+  "ranked_features": [
+    {
+      "feature": "grade_period_2",
+      "importance": 0.6057,
+      "importance_pct": 60.57,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "grade_momentum",
+      "importance": 0.1735,
+      "importance_pct": 17.35,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "grade_momentum_score",
+      "importance": 0.1611,
+      "importance_pct": 16.11,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "consistency_score",
+      "importance": 0.0318,
+      "importance_pct": 3.18,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "grade_period_1",
+      "importance": 0.0149,
+      "importance_pct": 1.49,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "productivity_index",
+      "importance": 0.0013,
+      "importance_pct": 0.13,
+      "kept": false,
+      "engineered": true
+    },
+    {
+      "feature": "exam_readiness_score",
+      "importance": 0.0011,
+      "importance_pct": 0.11,
+      "kept": false,
+      "engineered": true
+    },
+    {
+      "feature": "going_out",
+      "importance": 0.0011,
+      "importance_pct": 0.11,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "absences",
+      "importance": 0.0009,
+      "importance_pct": 0.09,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "attendance_pct",
+      "importance": 0.0008,
+      "importance_pct": 0.08,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "family_relationship",
+      "importance": 0.0007,
+      "importance_pct": 0.07,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "weekend_alcohol",
+      "importance": 0.0007,
+      "importance_pct": 0.07,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "father_education",
+      "importance": 0.0007,
+      "importance_pct": 0.07,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "free_time",
+      "importance": 0.0007,
+      "importance_pct": 0.07,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "wellness_score",
+      "importance": 0.0007,
+      "importance_pct": 0.07,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "weekday_alcohol",
+      "importance": 0.0006,
+      "importance_pct": 0.06,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "travel_time",
+      "importance": 0.0006,
+      "importance_pct": 0.06,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "mother_education",
+      "importance": 0.0005,
+      "importance_pct": 0.05,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "assignment_completion_score",
+      "importance": 0.0003,
+      "importance_pct": 0.03,
+      "kept": false,
+      "engineered": true
+    },
+    {
+      "feature": "family_support",
+      "importance": 0.0003,
+      "importance_pct": 0.03,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "study_efficiency",
+      "importance": 0.0003,
+      "importance_pct": 0.03,
+      "kept": false,
+      "engineered": true
+    },
+    {
+      "feature": "study_hours",
+      "importance": 0.0003,
+      "importance_pct": 0.03,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "school_support",
+      "importance": 0.0003,
+      "importance_pct": 0.03,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "extracurricular",
+      "importance": 0.0002,
+      "importance_pct": 0.02,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "internet_access",
+      "importance": 0.0002,
+      "importance_pct": 0.02,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0002,
+      "importance_pct": 0.02,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "past_failures",
+      "importance": 0.0002,
+      "importance_pct": 0.02,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "wants_higher_ed",
+      "importance": 0.0002,
+      "importance_pct": 0.02,
+      "kept": false,
+      "engineered": false
+    }
+  ],
+  "ranked_features_behavioral": [
+    {
+      "feature": "grade_momentum_score",
+      "importance": 0.4899,
+      "importance_pct": 48.99,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "productivity_index",
+      "importance": 0.0665,
+      "importance_pct": 6.65,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "consistency_score",
+      "importance": 0.0613,
+      "importance_pct": 6.13,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "mother_education",
+      "importance": 0.0327,
+      "importance_pct": 3.27,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "exam_readiness_score",
+      "importance": 0.0282,
+      "importance_pct": 2.82,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "wellness_score",
+      "importance": 0.0272,
+      "importance_pct": 2.72,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "free_time",
+      "importance": 0.0261,
+      "importance_pct": 2.61,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "father_education",
+      "importance": 0.0258,
+      "importance_pct": 2.58,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "going_out",
+      "importance": 0.0246,
+      "importance_pct": 2.46,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "past_failures",
+      "importance": 0.0243,
+      "importance_pct": 2.43,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "assignment_completion_score",
+      "importance": 0.0226,
+      "importance_pct": 2.26,
+      "kept": true,
+      "engineered": true
+    },
+    {
+      "feature": "weekend_alcohol",
+      "importance": 0.0213,
+      "importance_pct": 2.13,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "school_support",
+      "importance": 0.0195,
+      "importance_pct": 1.95,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "family_relationship",
+      "importance": 0.0189,
+      "importance_pct": 1.89,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "absences",
+      "importance": 0.0166,
+      "importance_pct": 1.66,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "attendance_pct",
+      "importance": 0.0164,
+      "importance_pct": 1.64,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "weekday_alcohol",
+      "importance": 0.0144,
+      "importance_pct": 1.44,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "travel_time",
+      "importance": 0.014,
+      "importance_pct": 1.4,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "wants_higher_ed",
+      "importance": 0.0119,
+      "importance_pct": 1.19,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "family_support",
+      "importance": 0.0101,
+      "importance_pct": 1.01,
+      "kept": true,
+      "engineered": false
+    },
+    {
+      "feature": "gender",
+      "importance": 0.0078,
+      "importance_pct": 0.78,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "extracurricular",
+      "importance": 0.0072,
+      "importance_pct": 0.72,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "internet_access",
+      "importance": 0.0071,
+      "importance_pct": 0.71,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "study_hours",
+      "importance": 0.0031,
+      "importance_pct": 0.31,
+      "kept": false,
+      "engineered": false
+    },
+    {
+      "feature": "study_efficiency",
+      "importance": 0.0023,
+      "importance_pct": 0.23,
+      "kept": false,
+      "engineered": true
+    }
+  ],
+  "selected_features": [
+    "grade_period_2",
+    "grade_momentum",
+    "grade_momentum_score",
+    "consistency_score",
+    "grade_period_1"
+  ],
+  "selected_features_behavioral": [
+    "grade_momentum_score",
+    "productivity_index",
+    "consistency_score",
+    "mother_education",
+    "exam_readiness_score",
+    "wellness_score",
+    "free_time",
+    "father_education",
+    "going_out",
+    "past_failures",
+    "assignment_completion_score",
+    "weekend_alcohol",
+    "school_support",
+    "family_relationship",
+    "absences",
+    "attendance_pct",
+    "weekday_alcohol",
+    "travel_time",
+    "wants_higher_ed",
+    "family_support"
+  ],
+  "engineered_features": [
+    "consistency_score",
+    "productivity_index",
+    "exam_readiness_score",
+    "assignment_completion_score",
+    "grade_momentum",
+    "study_efficiency",
+    "grade_momentum_score"
+  ]
+}
