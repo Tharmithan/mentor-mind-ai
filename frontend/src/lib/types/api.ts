@@ -55,6 +55,57 @@ export type RecommendationItem = {
   topic: string;
   priority: string;
   is_completed: boolean;
+  action_type?: string;
+};
+
+export type SubjectScoreInput = {
+  subject: string;
+  score: number;
+};
+
+export type PersonalizedRecommendationsRequest = {
+  study_hours?: number;
+  attendance_pct?: number;
+  sleep_hours?: number;
+  past_failures?: number;
+  subject_scores?: SubjectScoreInput[];
+  predicted_score?: number;
+  risk_level?: string;
+};
+
+export type PersonalizedRecommendationsResponse = {
+  recommendations: RecommendationItem[];
+  weak_subjects: SubjectScoreInput[];
+  revision_order: string[];
+  collaborative_insights: string[];
+  focus_message: string;
+};
+
+export type TimetableSlot = {
+  day: string;
+  time_slot: string;
+  subject: string;
+  topic: string;
+  duration_hours: number;
+  priority: string;
+  task: string;
+};
+
+export type FocusArea = {
+  subject: string;
+  topic: string;
+  score: number;
+  priority_rank: number;
+};
+
+export type DailyStudyPlannerResponse = {
+  revision_priority: string[];
+  focus_areas: FocusArea[];
+  weekly_study_hours: number;
+  timetable: TimetableSlot[];
+  collaborative_insights: string[];
+  summary: string;
+  recommendations: RecommendationItem[];
 };
 
 export type DailyTip = {

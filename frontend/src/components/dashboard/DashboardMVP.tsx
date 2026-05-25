@@ -12,6 +12,7 @@ import {
 import { AILoadingOverlay } from "@/components/ui/AILoadingOverlay";
 import { DailyAITip } from "@/components/ai/DailyAITip";
 import { MLPredictPanel } from "@/components/dashboard/MLPredictPanel";
+import { StudyPlannerPanel } from "@/components/dashboard/StudyPlannerPanel";
 import { getDashboard, type DashboardData } from "@/lib/api";
 import {
   TrendingUp,
@@ -173,6 +174,10 @@ export function DashboardMVP() {
 
       <AnimatedSection delay={350} className="mt-8">
         <MLPredictPanel />
+      </AnimatedSection>
+
+      <AnimatedSection delay={375} className="mt-8">
+        <StudyPlannerPanel />
       </AnimatedSection>
 
       <AnimatedSection delay={400} className="mt-8">

@@ -1,7 +1,10 @@
 import axios from "axios";
 import type {
+  DailyStudyPlannerResponse,
   DailyTip,
   DashboardResponse,
+  PersonalizedRecommendationsRequest,
+  PersonalizedRecommendationsResponse,
   PredictRequest,
   PredictResponse,
   UserResponse,
@@ -54,6 +57,40 @@ export async function getRecommendations() {
   const { data } = await api.get<{ recommendations: DashboardResponse["recommendations"] }>(
     "/api/recommendations"
   );
+  return data;
+}
+
+export async function getPersonalizedRecommendations(
+  params?: PersonalizedRecommendationsRequest
+) {
+  const { data } = await api.get<PersonalizedRecommendationsResponse>(
+    "/api/recommendations/personalized",
+    { params }
+  );
+  return data;
+}
+
+export async function postPersonalizedRecommendations(
+  body: PersonalizedRecommendationsRequest
+) {
+  const { data } = await api.post<PersonalizedRecommendationsResponse>(
+    "/api/recommendations/personalized",
+    body
+  );
+  return data;
+}
+
+export async function getDailyStudyPlanner(
+  params?: { study_hours?: number; attendance_pct?: number; math_score?: number }
+) {
+  const { data } = await api.get<DailyStudyPlannerResponse>("/api/study-planner", {
+    params,
+  });
+  return data;
+}
+
+export async function postDailyStudyPlanner(body: PersonalizedRecommendationsRequest) {
+  const { data } = await api.post<DailyStudyPlannerResponse>("/api/study-planner", body);
   return data;
 }
 

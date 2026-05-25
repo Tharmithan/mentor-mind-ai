@@ -1,6 +1,7 @@
 {
   "score_model": "random_forest",
-  "score_file": "performance_random_forest.joblib",
+  "score_file": "saved_models/performance_model_v2.joblib",
   "pass_model": "random_forest",
-  "pass_file": "pass_fail_random_forest.joblib"
+  "pass_file": "saved_models/pass_fail_model_v2.joblib",
+  "version": "v2"
 }

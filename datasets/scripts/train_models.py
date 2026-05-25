@@ -11,6 +11,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -34,6 +35,9 @@ ROOT = REPO_ROOT / "datasets"
 PROCESSED = ROOT / "processed"
 FINAL = ROOT / "final"
 ML_MODELS = REPO_ROOT / "ml-models"
+SAVED_MODELS = ML_MODELS / "saved_models"
+TRAINING_LOGS = ML_MODELS / "training" / "logs"
+MODEL_VERSION = "v1"
 
 CLEANED_CSV = PROCESSED / "student_performance_cleaned.csv"
 METRICS_JSON = ML_MODELS / "training_metrics.json"
@@ -204,10 +208,55 @@ def train_models(test_size: float = 0.2, random_state: int = 42) -> dict:
 
     METRICS_JSON.write_text(json.dumps(report, indent=2))
     BEST_MODEL_JSON.write_text(json.dumps(report["best"], indent=2))
+    _save_versioned_models(report)
     print(f"\n[OK] Metrics: {METRICS_JSON}")
     print(f"[OK] Best models: score={best_score[0]} (R²={best_score[1]['r2']}), pass={best_pass[0]} (F1={best_pass[1]['f1']})")
 
     return report
+
+
+def _save_versioned_models(report: dict) -> None:
+    """Copy best models to saved_models/ with versioned names + training log."""
+    SAVED_MODELS.mkdir(parents=True, exist_ok=True)
+    TRAINING_LOGS.mkdir(parents=True, exist_ok=True)
+
+    best = report["best"]
+    src_score = ML_MODELS / best["score_file"]
+    src_pass = ML_MODELS / best["pass_file"]
+    dst_score = SAVED_MODELS / f"performance_model_{MODEL_VERSION}.joblib"
+    dst_pass = SAVED_MODELS / f"pass_fail_model_{MODEL_VERSION}.joblib"
+
+    if src_score.exists():
+        shutil.copy2(src_score, dst_score)
+        print(f"[OK] Versioned: {dst_score}")
+    if src_pass.exists():
+        shutil.copy2(src_pass, dst_pass)
+        print(f"[OK] Versioned: {dst_pass}")
+
+    manifest = {
+        "version": MODEL_VERSION,
+        "performance_model": dst_score.name,
+        "pass_fail_model": dst_pass.name,
+        "score_algorithm": best["score_model"],
+        "pass_algorithm": best["pass_model"],
+        "trained_at": report["trained_at"],
+    }
+    (SAVED_MODELS / "model_manifest.json").write_text(json.dumps(manifest, indent=2))
+
+    training_log = {
+        "version": MODEL_VERSION,
+        "experiment": "student_performance_prediction",
+        "trained_at": report["trained_at"],
+        "train_rows": report["train_rows"],
+        "test_rows": report["test_rows"],
+        "features": report["features"],
+        "metrics": report,
+        "artifacts": [dst_score.name, dst_pass.name],
+        "tracking_note": "Extend with MLflow or Weights & Biases in Week 3+",
+    }
+    log_path = TRAINING_LOGS / f"training_log_{MODEL_VERSION}.json"
+    log_path.write_text(json.dumps(training_log, indent=2))
+    print(f"[OK] Training log: {log_path}")
 
 
 def main() -> int:

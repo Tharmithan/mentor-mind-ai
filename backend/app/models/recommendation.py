@@ -8,6 +8,7 @@ class RecommendationItem(BaseModel):
     topic: str | None
     priority: str
     is_completed: bool
+    action_type: str | None = None
 
 
 class RecommendationsResponse(BaseModel):

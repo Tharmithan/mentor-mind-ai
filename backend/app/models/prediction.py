@@ -28,6 +28,18 @@ class PredictRequest(BaseModel):
         return self.attendance_pct if self.attendance_pct is not None else self.attendance
 
 
+class StudentRiskDetection(BaseModel):
+    """Week 2 — Student Risk Detection (recruiter-facing)."""
+
+    high_risk: bool = Field(description="True if student is at-risk of failing")
+    low_performance_chance: float = Field(
+        ge=0, le=100, description="% chance of performance below 60%"
+    )
+    burnout_probability: float = Field(
+        ge=0, le=100, description="% estimated burnout from sleep/study load"
+    )
+
+
 class PredictResponse(BaseModel):
     """Day 7 ML API output."""
 
@@ -39,6 +51,7 @@ class PredictResponse(BaseModel):
     risk_level: str = Field(description="low | medium | high")
     recommendation: str
     model_version: str = "heuristic-v0.1"
+    student_risk: StudentRiskDetection
 
 
 def sleep_hours_to_wellness(sleep_hours: float) -> float:

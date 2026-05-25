@@ -57,6 +57,19 @@ ml-models/*.onnx
 !ml-models/evaluation/*.md
 ml-models/evaluation/*.png
 
+# ML experiment results (keep structure + reports; models stay gitignored)
+results/graphs/*.png
+!results/graphs/.gitkeep
+!results/metrics/
+!results/metrics/*.json
+!results/metrics/.gitkeep
+!results/reports/
+!results/reports/*.md
+!results/reports/.gitkeep
+!results/README.md
+
+catboost_info/
+
 # IDE & OS
 .idea/
 .vscode/

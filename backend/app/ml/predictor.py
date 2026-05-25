@@ -47,7 +47,8 @@ class MLPredictor:
             if pass_path.exists():
                 self._pass_bundle = joblib.load(pass_path)
             if self._score_bundle:
-                self._version = f"{best.get('score_model', 'ml')}-v1.0"
+                ver = best.get("version", "v1")
+                self._version = f"{best.get('score_model', 'ml')}-{ver}"
         except Exception:
             self._score_bundle = None
             self._pass_bundle = None

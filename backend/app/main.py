@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import dashboard, health, predict, recommendations, tip, user
+from app.routes import dashboard, health, predict, recommendations, study_planner, tip, user
 
 app = FastAPI(
     title=settings.app_name,
@@ -27,6 +27,7 @@ app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
 app.include_router(predict.router, prefix=API_PREFIX, tags=["predict"])
 app.include_router(predict.router, tags=["predict"])  # POST /predict (Day 7)
 app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendations"])
+app.include_router(study_planner.router, prefix=API_PREFIX, tags=["study-planner"])
 app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 
@@ -43,6 +44,8 @@ async def root():
             "user": f"{API_PREFIX}/user",
             "predict": f"{API_PREFIX}/predict",
             "recommendations": f"{API_PREFIX}/recommendations",
+            "recommendations_personalized": f"{API_PREFIX}/recommendations/personalized",
+            "study_planner": f"{API_PREFIX}/study-planner",
             "dashboard": f"{API_PREFIX}/dashboard",
             "daily_tip": f"{API_PREFIX}/daily-tip",
         },

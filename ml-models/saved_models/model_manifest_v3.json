@@ -1,0 +1,14 @@
+{
+  "version": "v3",
+  "performance_model": "performance_model_v3.joblib",
+  "pass_fail_model": "pass_fail_model_v3.joblib",
+  "algorithm": "xgboost_tuned",
+  "params": {
+    "colsample_bytree": 0.8018,
+    "learning_rate": 0.1095,
+    "max_depth": 4,
+    "n_estimators": 133,
+    "subsample": 0.8593
+  },
+  "trained_at": "2026-05-25T10:45:58.535059+00:00"
+}

@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models import Recommendation
 from app.models.recommendation import RecommendationItem, RecommendationsResponse
+from app.services.study_planner_service import StudyPlannerService
 
 _MOCK_RECOMMENDATIONS = [
     RecommendationItem(
@@ -38,14 +39,14 @@ class RecommendationService:
         session: AsyncSession | None,
     ) -> RecommendationsResponse:
         if session is None:
-            return RecommendationsResponse(recommendations=_MOCK_RECOMMENDATIONS)
+            return RecommendationService._engine_recommendations()
 
         result = await session.execute(
             select(Recommendation).order_by(Recommendation.created_at.desc())
         )
         rows = result.scalars().all()
         if not rows:
-            return RecommendationsResponse(recommendations=_MOCK_RECOMMENDATIONS)
+            return RecommendationService._engine_recommendations()
 
         return RecommendationsResponse(
             recommendations=[
@@ -60,3 +61,9 @@ class RecommendationService:
                 for r in rows
             ]
         )
+
+    @staticmethod
+    def _engine_recommendations() -> RecommendationsResponse:
+        """Week 3 Day 3 — personalized engine instead of static mocks."""
+        result = StudyPlannerService.generate_recommendations()
+        return RecommendationsResponse(recommendations=result.recommendations)

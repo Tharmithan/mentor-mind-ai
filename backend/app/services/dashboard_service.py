@@ -94,9 +94,9 @@ class DashboardService:
 
     @staticmethod
     def _mock_dashboard() -> DashboardResponse:
-        from app.services.recommendation_service import _MOCK_RECOMMENDATIONS
+        from app.services.recommendation_service import RecommendationService
 
-        mock_recs = _MOCK_RECOMMENDATIONS
+        mock_recs = RecommendationService._engine_recommendations().recommendations
         pending = len([r for r in mock_recs if not r.is_completed])
 
         return DashboardResponse(

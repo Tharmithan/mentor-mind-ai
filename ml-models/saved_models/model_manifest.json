@@ -1,0 +1,9 @@
+{
+  "version": "v2",
+  "performance_model": "performance_model_v2.joblib",
+  "pass_fail_model": "pass_fail_model_v2.joblib",
+  "score_algorithm": "random_forest",
+  "pass_algorithm": "random_forest",
+  "selected_by": "classification_f1",
+  "trained_at": "2026-05-25T10:40:51.155803+00:00"
+}
