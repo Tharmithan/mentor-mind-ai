@@ -1,0 +1,17 @@
+OULAD (Open University Learning Analytics Dataset)
+==================================================
+Too large for automatic download (~100MB+). Manual steps:
+
+1. Visit: https://analyse.kmi.open.ac.uk/open_dataset
+2. Accept license and download the dataset ZIP
+3. Extract CSV files into:
+   datasets/raw/oulad/
+
+Expected files include:
+  - studentInfo.csv
+  - studentAssessment.csv
+  - assessments.csv
+  - courses.csv
+  - studentRegistration.csv
+  - studentVle.csv
+  - vle.csv

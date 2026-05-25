@@ -21,11 +21,21 @@ build/
 # Local SQLite dev database
 backend/mentormind.db
 
-# ML & data (large files)
-datasets/*.csv
-datasets/*.zip
-datasets/*.parquet
-!datasets/.gitkeep
+# ML & data (large files — keep structure + reports)
+datasets/raw/**
+datasets/processed/**
+datasets/final/**
+!datasets/raw/.gitkeep
+!datasets/raw/oulad/DOWNLOAD_INSTRUCTIONS.txt
+!datasets/processed/.gitkeep
+!datasets/final/.gitkeep
+!datasets/processed/*.json
+!datasets/processed/*.md
+!datasets/README.md
+!datasets/scripts/**
+datasets/**/*.csv
+datasets/**/*.zip
+datasets/**/*.parquet
 ml-models/*.pkl
 ml-models/*.joblib
 ml-models/*.pt
