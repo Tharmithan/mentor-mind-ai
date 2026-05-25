@@ -7,7 +7,7 @@ import type {
   UserResponse,
 } from "@/lib/types/api";
 
-export type { DailyTip };
+export type { DailyTip, PredictRequest, PredictResponse };
 
 export type DashboardData = DashboardResponse;
 

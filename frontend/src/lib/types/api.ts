@@ -21,15 +21,19 @@ export type UserResponse = {
 
 export type PredictRequest = {
   study_hours: number;
-  attendance_pct: number;
-  prior_score: number;
+  attendance: number;
+  sleep_hours?: number;
+  /** @deprecated use attendance */
+  attendance_pct?: number;
+  prior_score?: number;
   quizzes_completed?: number;
 };
 
 export type PredictResponse = {
+  prediction: string;
+  confidence: number;
   predicted_score: number;
   risk_level: string;
-  confidence: number;
   recommendation: string;
   model_version: string;
 };

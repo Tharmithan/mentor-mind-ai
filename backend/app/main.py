@@ -25,6 +25,7 @@ API_PREFIX = "/api"
 app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
 app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
 app.include_router(predict.router, prefix=API_PREFIX, tags=["predict"])
+app.include_router(predict.router, tags=["predict"])  # POST /predict (Day 7)
 app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendations"])
 app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
@@ -34,8 +35,9 @@ app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.2.0",
+        "version": "0.3.0",
         "docs": "/docs",
+        "ml_api": f"{API_PREFIX}/predict",
         "endpoints": {
             "health": f"{API_PREFIX}/health",
             "user": f"{API_PREFIX}/user",

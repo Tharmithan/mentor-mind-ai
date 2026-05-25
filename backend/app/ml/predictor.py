@@ -10,14 +10,17 @@ import joblib
 import numpy as np
 import pandas as pd
 
-from app.models.prediction import PredictRequest, PredictResponse
+from app.models.prediction import (
+    PredictRequest,
+    PredictResponse,
+    score_to_prediction,
+    sleep_hours_to_wellness,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 ML_MODELS = REPO_ROOT / "ml-models"
 BEST_MODEL_JSON = ML_MODELS / "best_model.json"
-METRICS_JSON = ML_MODELS / "training_metrics.json"
 
-# Import feature builder from datasets/scripts
 _SCRIPTS = REPO_ROOT / "datasets" / "scripts"
 if str(_SCRIPTS) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS))
@@ -37,14 +40,14 @@ class MLPredictor:
             return
         try:
             best = json.loads(BEST_MODEL_JSON.read_text())
-            score_path = ML_MODELS / best.get("score_file", "performance_xgboost.joblib")
-            pass_path = ML_MODELS / best.get("pass_file", "pass_fail_xgboost.joblib")
+            score_path = ML_MODELS / best.get("score_file", "performance_random_forest.joblib")
+            pass_path = ML_MODELS / best.get("pass_file", "pass_fail_random_forest.joblib")
             if score_path.exists():
                 self._score_bundle = joblib.load(score_path)
             if pass_path.exists():
                 self._pass_bundle = joblib.load(pass_path)
             if self._score_bundle:
-                self._version = f"{best.get('score_model', 'ml')}-reg-v0.1"
+                self._version = f"{best.get('score_model', 'ml')}-v1.0"
         except Exception:
             self._score_bundle = None
             self._pass_bundle = None
@@ -55,14 +58,34 @@ class MLPredictor:
 
     def _feature_vector(self, payload: PredictRequest) -> pd.DataFrame:
         past_failures = max(0, min(3, (20 - payload.quizzes_completed) // 5))
+        wellness = sleep_hours_to_wellness(payload.sleep_hours)
         feats = build_features_from_row(
             study_hours=payload.study_hours,
-            attendance_pct=payload.attendance_pct,
+            attendance_pct=payload.attendance_value,
             past_failures=past_failures,
             prior_score=payload.prior_score,
             consistency_score=min(100, payload.prior_score),
+            wellness_score=wellness,
         )
         return pd.DataFrame([feats])[API_FEATURE_COLUMNS]
+
+    def _build_response(
+        self,
+        predicted: float,
+        risk: str,
+        recommendation: str,
+        confidence_pct: float,
+        at_risk: bool,
+        version: str,
+    ) -> PredictResponse:
+        return PredictResponse(
+            prediction=score_to_prediction(predicted, at_risk),
+            confidence=round(confidence_pct, 1),
+            predicted_score=round(predicted, 1),
+            risk_level=risk,
+            recommendation=recommendation,
+            model_version=version,
+        )
 
     def predict(self, payload: PredictRequest) -> PredictResponse:
         if not self.is_loaded:
@@ -72,11 +95,13 @@ class MLPredictor:
         score_model = self._score_bundle["model"]
         predicted = float(np.clip(score_model.predict(X)[0], 0, 100))
 
-        pass_prob = 0.5
+        at_risk = predicted < 60
+        at_risk_prob = 0.5
         if self._pass_bundle:
             clf = self._pass_bundle["model"]
             proba = clf.predict_proba(X)[0]
-            pass_prob = float(proba[1]) if len(proba) > 1 else float(clf.predict(X)[0])
+            at_risk_prob = float(proba[1]) if len(proba) > 1 else float(clf.predict(X)[0])
+            at_risk = at_risk_prob >= 0.5
 
         if predicted >= 75:
             risk = "low"
@@ -88,38 +113,32 @@ class MLPredictor:
             risk = "high"
             recommendation = "At-risk — schedule extra study sessions and a mock interview."
 
-        confidence = round(0.65 + min(abs(predicted - 50) / 100, 0.3) - pass_prob * 0.1, 2)
-        confidence = float(np.clip(confidence, 0.5, 0.95))
+        # Confidence 0–100: higher when model agrees and score is decisive
+        confidence_pct = (1 - abs(at_risk_prob - 0.5) * 2) * 40 + min(abs(predicted - 50), 50) * 0.6 + 50
+        confidence_pct = float(np.clip(confidence_pct, 55, 98))
 
-        return PredictResponse(
-            predicted_score=round(predicted, 1),
-            risk_level=risk,
-            confidence=confidence,
-            recommendation=recommendation,
-            model_version=self._version,
+        return self._build_response(
+            predicted, risk, recommendation, confidence_pct, at_risk, self._version
         )
 
-    @staticmethod
-    def _heuristic(payload: PredictRequest) -> PredictResponse:
+    def _heuristic(self, payload: PredictRequest) -> PredictResponse:
         weighted = (
             payload.prior_score * 0.5
-            + payload.attendance_pct * 0.3
+            + payload.attendance_value * 0.3
             + min(payload.study_hours / 6 * 100, 100) * 0.2
         )
         quiz_bonus = min(payload.quizzes_completed * 2, 10)
         predicted = round(min(100, weighted + quiz_bonus), 1)
+        at_risk = predicted < 60
         if predicted >= 75:
             risk, rec = "low", "On track — maintain current study pace."
         elif predicted >= 60:
             risk, rec = "medium", "Review weak topics and increase practice quizzes."
         else:
             risk, rec = "high", "At-risk — schedule extra study sessions."
-        return PredictResponse(
-            predicted_score=predicted,
-            risk_level=risk,
-            confidence=round(0.72 + predicted / 500, 2),
-            recommendation=rec,
-            model_version="heuristic-v0.1",
+        confidence_pct = min(92, 60 + predicted * 0.35)
+        return self._build_response(
+            predicted, risk, rec, confidence_pct, at_risk, "heuristic-v0.1"
         )
 
 

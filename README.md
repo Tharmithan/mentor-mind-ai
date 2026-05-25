@@ -106,7 +106,7 @@ uvicorn app.main:app --reload --port 8000
 
 API docs: http://localhost:8000/docs
 
-**Key routes:** `GET /api/health` · `GET /api/user` · `POST /api/predict` · `GET /api/recommendations` · `GET /api/dashboard` · `GET /api/daily-tip`
+**Key routes:** `GET /api/health` · `POST /api/predict` (ML) · `GET /api/dashboard` · [Day 7 ML API](docs/day7-ml-api.md)
 
 **Database (Day 5):** See [docs/database-setup.md](docs/database-setup.md) — run `python -m scripts.init_db` and `python -m scripts.seed_db` after Postgres is up.
 
