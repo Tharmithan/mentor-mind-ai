@@ -1,3 +1,3 @@
-from app.routes import health, predict, recommendations, user
+from app.routes import dashboard, health, predict, recommendations, user
 
-__all__ = ["health", "user", "predict", "recommendations"]
+__all__ = ["dashboard", "health", "user", "predict", "recommendations"]

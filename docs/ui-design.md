@@ -35,14 +35,22 @@ Search terms used:
 | Testimonials | 3 student reviews with ratings |
 | CTA | Full-width gradient banner |
 
-### 2. Dashboard (`/dashboard`)
+### 2. Dashboard (`/dashboard`) — Day 6 MVP
 
-| Widget | Content |
-|--------|---------|
-| Performance score | 82% ring + subject breakdown |
-| Study analytics | Weekly bar chart + focus/quiz stats |
-| AI recommendations | Priority-tagged action items |
-| Interview score | Readiness bar + quick start |
+| Card | Content |
+|------|---------|
+| Performance Score | Average subject score (%) |
+| Study Hours | Weekly total hours |
+| Weak Subjects | Count + top weak topic |
+| AI Suggestions | Pending recommendation count |
+
+| Chart (Recharts) | Data |
+|------------------|------|
+| Line | Weekly performance trend |
+| Bar | Daily study hours |
+| Pie | Subject score distribution |
+
+Data source: `GET /api/dashboard` (SQLite seed or mock fallback). Client: `DashboardMVP.tsx`.
 
 ### 3. AI Interview (`/interview`)
 
@@ -90,4 +98,4 @@ Search terms used:
 - [ ] Figma export / design tokens file
 - [ ] Auth pages (login/signup) matching theme
 - [ ] Study planner & PDF assistant pages
-- [ ] Real chart library (Recharts) when API connected
+- [x] Recharts line, bar, pie on dashboard (`/api/dashboard`)

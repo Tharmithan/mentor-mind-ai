@@ -1,5 +1,12 @@
 import axios from "axios";
-import type { PredictRequest, PredictResponse, UserResponse } from "@/lib/types/api";
+import type {
+  DashboardResponse,
+  PredictRequest,
+  PredictResponse,
+  UserResponse,
+} from "@/lib/types/api";
+
+export type DashboardData = DashboardResponse;
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -32,5 +39,17 @@ export async function getUser() {
 
 export async function predictPerformance(payload: PredictRequest) {
   const { data } = await api.post<PredictResponse>("/api/predict", payload);
+  return data;
+}
+
+export async function getDashboard() {
+  const { data } = await api.get<DashboardResponse>("/api/dashboard");
+  return data;
+}
+
+export async function getRecommendations() {
+  const { data } = await api.get<{ recommendations: DashboardResponse["recommendations"] }>(
+    "/api/recommendations"
+  );
   return data;
 }
