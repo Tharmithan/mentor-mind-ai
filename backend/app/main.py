@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import health
+from app.routes import health, predict, user
 
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.1.0",
+    version="0.2.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -20,14 +20,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix="/api/v1")
+API_PREFIX = "/api"
+
+app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
+app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
+app.include_router(predict.router, prefix=API_PREFIX, tags=["predict"])
 
 
 @app.get("/")
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.1.0",
+        "version": "0.2.0",
         "docs": "/docs",
-        "health": "/api/v1/health",
+        "endpoints": {
+            "health": f"{API_PREFIX}/health",
+            "user": f"{API_PREFIX}/user",
+            "predict": f"{API_PREFIX}/predict",
+        },
     }

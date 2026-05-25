@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { PredictRequest, PredictResponse, UserResponse } from "@/lib/types/api";
 
 const baseURL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -20,6 +21,16 @@ api.interceptors.response.use(
 );
 
 export async function checkApiHealth() {
-  const { data } = await api.get("/api/v1/health");
+  const { data } = await api.get("/api/health");
+  return data;
+}
+
+export async function getUser() {
+  const { data } = await api.get<UserResponse>("/api/user");
+  return data;
+}
+
+export async function predictPerformance(payload: PredictRequest) {
+  const { data } = await api.post<PredictResponse>("/api/predict", payload);
   return data;
 }

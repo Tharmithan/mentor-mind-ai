@@ -39,36 +39,44 @@ flowchart LR
 
 ## 2. Core Services
 
-### 2.1 Authentication (`/api/v1/auth`)
+### 2.1 Core API (Day 4 — live)
+
+| Method | Path | Status |
+|--------|------|--------|
+| GET | `/api/health` | Live |
+| GET | `/api/user` | Demo data |
+| POST | `/api/predict` | Mock heuristic |
+
+### 2.2 Authentication (`/api/v1/auth`) — Phase 2
 
 - JWT access + refresh tokens
 - Signup, login, logout, password reset (future)
 - User roles: `student`, `admin` (future)
 
-### 2.2 Learning & Performance (`/api/v1/learning`)
+### 2.3 Learning & Performance (`/api/v1/learning`)
 
 - Submit quiz/assignment results
 - Fetch performance predictions
 - Study plan CRUD and weak-topic recommendations
 
-### 2.3 Interview (`/api/v1/interview`)
+### 2.4 Interview (`/api/v1/interview`)
 
 - Session create/end
 - Question generation (LLM)
 - Answer submission (text + optional audio URL)
 - Scoring: communication, technical, confidence aggregate
 
-### 2.4 Emotion (`/api/v1/emotion`)
+### 2.5 Emotion (`/api/v1/emotion`)
 
 - WebSocket or chunked HTTP for frame analysis
 - Returns: dominant emotion, confidence score, stress indicator
 
-### 2.5 RAG (`/api/v1/rag`)
+### 2.6 RAG (`/api/v1/rag`)
 
 - PDF upload → chunk → embed → store in `document_chunks`
 - Semantic search + LLM answer with citations
 
-### 2.6 ML Inference (`/api/v1/ml`)
+### 2.7 ML Inference (`/api/v1/ml`)
 
 - `POST /predict/performance` — student outcome prediction
 - `POST /predict/emotion` — batch image emotion (offline)
