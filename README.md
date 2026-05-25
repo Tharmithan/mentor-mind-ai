@@ -147,7 +147,7 @@ Professional foundation shipped. See [docs/week1-summary.md](docs/week1-summary.
 | Week | Focus |
 |------|--------|
 | 1 | Setup, architecture, UI, dashboard MVP, database, GitHub polish — **done** |
-| 2 | Dataset research & collection — **Day 1 in progress** ([guide](docs/dataset-research-day1.md)) |
+| 2 | Data & ML foundation — Day 1 [collection](docs/dataset-research-day1.md) · Day 2 [cleaning](docs/dataset-cleaning-day2.md) |
 | 3 | Model training |
 | 4 | Recommendation system |
 | 5 | Mock interview module |

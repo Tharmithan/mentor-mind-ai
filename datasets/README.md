@@ -24,10 +24,15 @@ datasets/
 
 ```bash
 # From repo root (Python 3.12+)
-pip install pandas requests   # or use backend venv
+pip install pandas requests numpy   # or use backend venv
 
+# Day 1
 python datasets/scripts/download_datasets.py
 python datasets/scripts/inspect_datasets.py
+
+# Day 2
+python datasets/scripts/clean_data.py
+jupyter notebook notebooks/02_data_cleaning.ipynb
 ```
 
 ## Feature mapping (product goal)

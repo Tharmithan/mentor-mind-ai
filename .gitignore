@@ -31,6 +31,7 @@ datasets/final/**
 !datasets/final/.gitkeep
 !datasets/processed/*.json
 !datasets/processed/*.md
+!datasets/processed/cleaning_report.json
 !datasets/README.md
 !datasets/scripts/**
 datasets/**/*.csv
