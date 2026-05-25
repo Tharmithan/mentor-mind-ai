@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
     cors_origins: str = "http://localhost:3000"
+    openai_api_key: str | None = None
 
     @property
     def cors_origins_list(self) -> list[str]:

@@ -71,4 +71,18 @@ class TipService:
             )
             return DailyTipResponse(tip=tip, category="personalized", focus_topic=weak_topic)
 
+        try:
+            from app.services.insights_service import InsightsService
+
+            result = InsightsService.generate()
+            if result.insights:
+                first = result.insights[0]
+                return DailyTipResponse(
+                    tip=first.message,
+                    category=first.category,
+                    focus_topic=weak_topic,
+                )
+        except Exception:
+            pass
+
         return DailyTipResponse(tip=base_tip, category=category, focus_topic=weak_topic)

@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-05-25T10:57:13.988432+00:00",
+  "insights": [
+    {
+      "id": "f400ac5c",
+      "category": "weak_subject",
+      "message": "Your lowest subject is Mathematics (58%) \u2014 prioritize revision this week.",
+      "severity": "warning",
+      "metric": "subject_scores",
+      "trend_direction": null,
+      "impact_pct": null
+    },
+    {
+      "id": "23ad9f14",
+      "category": "study_habits",
+      "message": "Students in the bottom 25% for study hours score 9.3% lower than top-quartile studiers.",
+      "severity": "info",
+      "metric": "study_hours vs performance_pct",
+      "trend_direction": null,
+      "impact_pct": 9.3
+    },
+    {
+      "id": "c72468e2",
+      "category": "attendance",
+      "message": "Students with attendance below 90% perform 5.9% worse than those above 95% attendance.",
+      "severity": "info",
+      "metric": "attendance_pct vs performance_pct",
+      "trend_direction": null,
+      "impact_pct": 5.9
+    },
+    {
+      "id": "0fb68ada",
+      "category": "wellness_sleep_proxy",
+      "message": "Students with low wellness scores (\u22642, sleep proxy) perform 6.0% worse than high-wellness peers (\u22654).",
+      "severity": "info",
+      "metric": "wellness_score vs performance_pct",
+      "trend_direction": null,
+      "impact_pct": 6.0
+    },
+    {
+      "id": "b36b9cb8",
+      "category": "subject_weakness",
+      "message": "Mathematics is the weakest subject (avg 52.0%), 7.5 points below Portuguese.",
+      "severity": "info",
+      "metric": "performance_pct by course",
+      "trend_direction": null,
+      "impact_pct": null
+    }
+  ],
+  "trends": [],
+  "performance_summary": {
+    "headline": "Steady progress with room to grow",
+    "overall_score": 67.5,
+    "trend_label": "moderate",
+    "highlights": [
+      "Your lowest subject is Mathematics (58%) \u2014 prioritize revision this week.",
+      "Students in the bottom 25% for study hours score 9.3% lower than top-quartile studiers.",
+      "Students with attendance below 90% perform 5.9% worse than those above 95% attendance.",
+      "Students with low wellness scores (\u22642, sleep proxy) perform 6.0% worse than high-wellness peers (\u22654)."
+    ],
+    "summary_text": "Steady progress with room to grow (68% average). Focus area: Mathematics (58%). Attendance 80%, study 3.0h/day."
+  },
+  "cohort_stats": {
+    "students": 1044,
+    "avg_performance": 56.7,
+    "avg_attendance": 94.9,
+    "avg_study_hours": 2.96,
+    "at_risk_rate": 51.1,
+    "sleep_performance_gap": -3.4,
+    "attendance_impact_pct": 3.4
+  }
+}

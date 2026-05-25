@@ -3,6 +3,8 @@ import type {
   DailyStudyPlannerResponse,
   DailyTip,
   DashboardResponse,
+  InsightsReportResponse,
+  InsightsResponse,
   PersonalizedRecommendationsRequest,
   PersonalizedRecommendationsResponse,
   PredictRequest,
@@ -96,5 +98,15 @@ export async function postDailyStudyPlanner(body: PersonalizedRecommendationsReq
 
 export async function getDailyTip() {
   const { data } = await api.get<DailyTip>("/api/daily-tip");
+  return data;
+}
+
+export async function getAIInsights() {
+  const { data } = await api.get<InsightsResponse>("/api/insights");
+  return data;
+}
+
+export async function getAIInsightsReport() {
+  const { data } = await api.get<InsightsReportResponse>("/api/insights/report");
   return data;
 }

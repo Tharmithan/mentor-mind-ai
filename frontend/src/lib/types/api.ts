@@ -114,6 +114,49 @@ export type DailyTip = {
   focus_topic: string | null;
 };
 
+export type AIInsight = {
+  id: string;
+  category: string;
+  message: string;
+  severity: string;
+  metric?: string | null;
+  trend_direction?: string | null;
+  impact_pct?: number | null;
+};
+
+export type PerformanceSummary = {
+  headline: string;
+  overall_score: number;
+  trend_label: string;
+  highlights: string[];
+  summary_text: string;
+};
+
+export type InsightsRequest = {
+  study_hours?: number;
+  attendance_pct?: number;
+  sleep_hours?: number;
+  subject_scores?: SubjectScoreInput[];
+  previous_attendance_pct?: number;
+  previous_subject_scores?: SubjectScoreInput[];
+};
+
+export type InsightsResponse = {
+  generated_at: string;
+  insights: AIInsight[];
+  trends: AIInsight[];
+  performance_summary: PerformanceSummary;
+  cohort_stats: Record<string, number>;
+};
+
+export type InsightsReportResponse = {
+  generated_at: string;
+  natural_language_report: string;
+  llm_enhanced: boolean;
+  performance_summary: PerformanceSummary;
+  insights: AIInsight[];
+};
+
 export type DashboardResponse = {
   performance_score: number;
   study_hours_week: number;

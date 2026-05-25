@@ -19,4 +19,6 @@ python datasets/scripts/tune_hyperparameters.py   # Day 2
 
 Recommendation engine (Day 3): `POST /api/study-planner` — see `docs/week3-day3-recommendation-engine.md`
 
+AI insights (Day 4): `GET /api/insights` — see `docs/week3-day4-ai-insights.md`
+
 Requires cleaned data: `python datasets/scripts/clean_data.py` first.

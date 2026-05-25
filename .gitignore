@@ -62,6 +62,7 @@ results/graphs/*.png
 !results/graphs/.gitkeep
 !results/metrics/
 !results/metrics/*.json
+!results/metrics/ai_insights.json
 !results/metrics/.gitkeep
 !results/reports/
 !results/reports/*.md
