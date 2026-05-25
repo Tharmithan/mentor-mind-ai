@@ -14,10 +14,6 @@ class PredictionService:
         session: AsyncSession | None = None,
     ) -> PredictResponse:
         result = get_predictor().predict(payload)
-        predicted = result.predicted_score
-        risk = result.risk_level
-        recommendation = result.recommendation
-        confidence = result.confidence
 
         if session is not None:
             from sqlalchemy import select
@@ -32,17 +28,11 @@ class PredictionService:
                         subject="General",
                         score=Decimal(str(payload.prior_score)),
                         study_hours=Decimal(str(payload.study_hours)),
-                        attendance_pct=Decimal(str(payload.attendance_pct)),
-                        predicted_score=Decimal(str(predicted)),
-                        risk_level=risk,
+                        attendance_pct=Decimal(str(payload.attendance_value)),
+                        predicted_score=Decimal(str(result.predicted_score)),
+                        risk_level=result.risk_level,
                     )
                 )
                 await session.commit()
 
-        return PredictResponse(
-            predicted_score=predicted,
-            risk_level=risk,
-            confidence=confidence,
-            recommendation=recommendation,
-            model_version=result.model_version,
-        )
+        return result
