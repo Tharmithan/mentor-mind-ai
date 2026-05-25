@@ -19,11 +19,25 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Require a working database connection (raises if unavailable)."""
     async with AsyncSessionLocal() as session:
         try:
             yield session
         finally:
             await session.close()
+
+
+async def get_optional_db() -> AsyncGenerator[AsyncSession | None, None]:
+    """Yield a DB session when connected; otherwise None (mock fallback in services)."""
+    try:
+        async with AsyncSessionLocal() as session:
+            await session.execute(text("SELECT 1"))
+            try:
+                yield session
+            finally:
+                await session.close()
+    except Exception:
+        yield None
 
 
 async def check_database_connection() -> bool:

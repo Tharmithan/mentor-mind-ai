@@ -126,10 +126,43 @@ select(User).options(selectinload(User.performance_data))
 
 ---
 
+## Troubleshooting
+
+### `password authentication failed for user "postgres"`
+
+Your `.env` password does not match the running Postgres server.
+
+- **Docker Compose** (password must be `postgres`):
+  ```bash
+  # Start Docker Desktop first, then:
+  docker compose up -d db
+  ```
+  Use in `backend/.env`:
+  ```
+  DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/mentormind
+  ```
+
+- **Another Postgres on port 5432?** Either stop it, or set `DATABASE_URL` to that server's user/password.
+
+Check connection:
+```bash
+cd backend && python -m scripts.check_db
+```
+
+### `Cannot connect to the Docker daemon`
+
+Open **Docker Desktop** and wait until it says "Running", then run `docker compose up -d db` again.
+
+### API returns 500 on `/api/recommendations`
+
+Fixed: API now falls back to **mock data** when the database is unavailable. Connect the DB to persist real data.
+
+---
+
 ## Day 5 checklist
 
 - [x] SQL schema (`docs/database/schema.sql`)
 - [x] ORM models with relationships
 - [x] `users`, `performance_data`, `interview_results`, `recommendations`
 - [x] Init + seed scripts
-- [x] API wired to database
+- [x] API wired to database (with mock fallback when offline)
