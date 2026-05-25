@@ -51,7 +51,7 @@ git add .
 git commit -m "feat: Week 1 foundation — MentorMind AI monorepo"
 
 # Create repo on GitHub (CLI or web UI), then:
-git remote add origin https://github.com/YOUR_USERNAME/mentor-mind-ai.git
+git remote add origin https://github.com/Tharmithan/mentor-mind-ai.git
 git branch -M main
 git push -u origin main
 ```

@@ -16,7 +16,7 @@ export function Footer() {
               Dashboard
             </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/Tharmithan/mentor-mind-ai"
               className="hover:text-slate-300"
               target="_blank"
               rel="noopener noreferrer"

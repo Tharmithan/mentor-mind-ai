@@ -11,7 +11,7 @@
 
 MentorMind AI combines machine learning, computer vision, and large language models into a single learning companion. Students get performance predictions, tailored study plans, mock interviews with feedback, real-time confidence analysis, career guidance, and a RAG-based PDF learning assistant.
 
-**Repository:** [mentor-mind-ai](https://github.com/YOUR_USERNAME/mentor-mind-ai)
+**Repository:** [mentor-mind-ai](https://github.com/Tharmithan/mentor-mind-ai)
 
 ---
 
@@ -89,7 +89,7 @@ mentor-mind-ai/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mentor-mind-ai.git
+git clone https://github.com/Tharmithan/mentor-mind-ai.git
 cd mentor-mind-ai
 ```
 
