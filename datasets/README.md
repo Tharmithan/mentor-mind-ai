@@ -43,6 +43,9 @@ python datasets/scripts/feature_engineering.py
 
 # Day 5
 python datasets/scripts/train_models.py
+
+# Day 6
+python datasets/scripts/evaluate_models.py
 ```
 
 ## Feature mapping (product goal)

@@ -22,3 +22,11 @@ python datasets/scripts/train_models.py
 `POST /api/predict` loads the best regression model from `best_model.json`.
 
 If no `.joblib` files exist, the API falls back to a heuristic formula.
+
+## Evaluation (Day 6)
+
+```bash
+python datasets/scripts/evaluate_models.py
+```
+
+Outputs in `ml-models/evaluation/` — metrics, confusion matrix, feature importance, **AI Performance Analyzer** report.

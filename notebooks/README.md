@@ -14,6 +14,7 @@ Suggested notebooks:
 - `03_eda_ai_insights.ipynb` — **Day 3** (EDA + AI Insights Report)
 - `04_feature_engineering.ipynb` — **Day 4** (custom features + importance)
 - `05_train_ml_models.ipynb` — **Day 5** (Random Forest + XGBoost)
+- `06_model_evaluation.ipynb` — **Day 6** (metrics + AI Performance Analyzer)
 - `01_student_performance_eda.ipynb` (optional extra)
 - `02_train_performance_models.ipynb` (Day 4+)
 - `03_emotion_fer2013.ipynb` (Week 6+)

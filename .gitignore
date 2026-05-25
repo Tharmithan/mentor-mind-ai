@@ -52,6 +52,10 @@ ml-models/*.pt
 ml-models/*.onnx
 !ml-models/.gitkeep
 !ml-models/*.json
+!ml-models/evaluation/
+!ml-models/evaluation/*.json
+!ml-models/evaluation/*.md
+ml-models/evaluation/*.png
 
 # IDE & OS
 .idea/

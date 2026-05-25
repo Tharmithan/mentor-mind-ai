@@ -1,0 +1,101 @@
+{
+  "insights": [
+    {
+      "type": "strongest_factor",
+      "insight": "**Wellness (sleep proxy)** is the strongest factor affecting student success (23.8% of model importance for pass/fail prediction).",
+      "feature": "wellness_score",
+      "importance_pct": 23.8
+    },
+    {
+      "type": "score_driver",
+      "insight": "**Attendance** most strongly drives performance score predictions.",
+      "feature": "attendance_pct"
+    },
+    {
+      "type": "classification_performance",
+      "insight": "At-risk detection: **62.2% accuracy**, **66.7% precision**, **58.9% recall**, F1 **0.63**.",
+      "metrics": {
+        "accuracy": 0.622,
+        "precision": 0.6667,
+        "recall": 0.5893,
+        "f1_score": 0.6256
+      }
+    },
+    {
+      "type": "recommendation",
+      "insight": "Recall is below 70% \u2014 the model misses some at-risk students. Collect more failure cases or tune threshold to improve early intervention."
+    }
+  ],
+  "models": {
+    "random_forest": {
+      "classification": {
+        "accuracy": 0.622,
+        "precision": 0.6667,
+        "recall": 0.5893,
+        "f1_score": 0.6256
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5818181818181818,
+          "recall": 0.6597938144329897,
+          "f1-score": 0.6183574879227053,
+          "support": 97.0
+        },
+        "1": {
+          "precision": 0.6666666666666666,
+          "recall": 0.5892857142857143,
+          "f1-score": 0.6255924170616114,
+          "support": 112.0
+        },
+        "accuracy": 0.6220095693779905,
+        "macro avg": {
+          "precision": 0.6242424242424243,
+          "recall": 0.624539764359352,
+          "f1-score": 0.6219749524921583,
+          "support": 209.0
+        },
+        "weighted avg": {
+          "precision": 0.6272872263302884,
+          "recall": 0.6220095693779905,
+          "f1-score": 0.6222345791358991,
+          "support": 209.0
+        }
+      }
+    },
+    "xgboost": {
+      "classification": {
+        "accuracy": 0.5837,
+        "precision": 0.6263,
+        "recall": 0.5536,
+        "f1_score": 0.5877
+      },
+      "classification_report": {
+        "0": {
+          "precision": 0.5454545454545454,
+          "recall": 0.6185567010309279,
+          "f1-score": 0.5797101449275363,
+          "support": 97.0
+        },
+        "1": {
+          "precision": 0.6262626262626263,
+          "recall": 0.5535714285714286,
+          "f1-score": 0.5876777251184834,
+          "support": 112.0
+        },
+        "accuracy": 0.583732057416268,
+        "macro avg": {
+          "precision": 0.5858585858585859,
+          "recall": 0.5860640648011782,
+          "f1-score": 0.5836939350230098,
+          "support": 209.0
+        },
+        "weighted avg": {
+          "precision": 0.5887583973708376,
+          "recall": 0.583732057416268,
+          "f1-score": 0.5839798529724457,
+          "support": 209.0
+        }
+      }
+    }
+  }
+}
