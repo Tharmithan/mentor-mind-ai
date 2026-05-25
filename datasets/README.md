@@ -32,7 +32,11 @@ python datasets/scripts/inspect_datasets.py
 
 # Day 2
 python datasets/scripts/clean_data.py
-jupyter notebook notebooks/02_data_cleaning.ipynb
+
+# Day 3
+pip install -r datasets/requirements-eda.txt
+python datasets/scripts/eda_analysis.py
+jupyter notebook notebooks/03_eda_ai_insights.ipynb
 ```
 
 ## Feature mapping (product goal)

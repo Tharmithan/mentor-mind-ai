@@ -11,6 +11,7 @@ python datasets/scripts/inspect_datasets.py
 
 Suggested notebooks:
 - `02_data_cleaning.ipynb` — **Day 2** (nulls, encoding, normalize)
-- `01_student_performance_eda.ipynb` (Day 3+)
+- `03_eda_ai_insights.ipynb` — **Day 3** (EDA + AI Insights Report)
+- `01_student_performance_eda.ipynb` (optional extra)
 - `02_train_performance_models.ipynb` (Day 4+)
 - `03_emotion_fer2013.ipynb` (Week 6+)

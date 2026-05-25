@@ -1,0 +1,45 @@
+{
+  "title": "MentorMind AI \u2014 Insights Report",
+  "generated_at": "2026-05-25T10:01:09.609134+00:00",
+  "dataset_rows": 1044,
+  "insights": [
+    {
+      "category": "study_habits",
+      "insight": "Students in the bottom 25% for study hours score 9.3% lower than top-quartile studiers.",
+      "metric": "study_hours vs performance_pct",
+      "impact_pct": 9.3
+    },
+    {
+      "category": "attendance",
+      "insight": "Students with attendance below 90% perform 5.9% worse than those above 95% attendance.",
+      "metric": "attendance_pct vs performance_pct",
+      "impact_pct": 5.9
+    },
+    {
+      "category": "wellness_sleep_proxy",
+      "insight": "Students with low wellness scores (\u22642, sleep proxy) perform 6.0% worse than high-wellness peers (\u22654).",
+      "metric": "wellness_score vs performance_pct",
+      "impact_pct": 6.0,
+      "note": "UCI dataset uses health score 1\u20135 as wellness/sleep proxy."
+    },
+    {
+      "category": "subject_weakness",
+      "insight": "Mathematics is the weakest subject (avg 52.0%), 7.5 points below Portuguese.",
+      "metric": "performance_pct by course",
+      "weakest_subject": "Mathematics",
+      "strongest_subject": "Portuguese"
+    },
+    {
+      "category": "risk",
+      "insight": "51% of students are at-risk (performance below 60%). Prioritize revision on weak subjects and attendance coaching.",
+      "metric": "at_risk rate",
+      "impact_pct": 51.1
+    },
+    {
+      "category": "correlation",
+      "insight": "Strongest predictor of performance is `past_failures` (|r| = 0.38).",
+      "metric": "correlation matrix",
+      "top_feature": "past_failures"
+    }
+  ]
+}

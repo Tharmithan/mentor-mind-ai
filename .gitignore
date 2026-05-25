@@ -32,6 +32,11 @@ datasets/final/**
 !datasets/processed/*.json
 !datasets/processed/*.md
 !datasets/processed/cleaning_report.json
+!datasets/processed/eda/
+!datasets/processed/eda/*.json
+!datasets/processed/eda/*.md
+datasets/processed/eda/*.png
+datasets/processed/eda/*.html
 !datasets/README.md
 !datasets/scripts/**
 datasets/**/*.csv
