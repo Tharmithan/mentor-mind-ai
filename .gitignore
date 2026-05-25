@@ -51,6 +51,7 @@ ml-models/*.joblib
 ml-models/*.pt
 ml-models/*.onnx
 !ml-models/.gitkeep
+!ml-models/*.json
 
 # IDE & OS
 .idea/

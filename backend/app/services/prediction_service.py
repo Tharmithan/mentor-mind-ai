@@ -3,6 +3,7 @@ from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models import PerformanceData
+from app.ml.predictor import get_predictor
 from app.models.prediction import PredictRequest, PredictResponse
 
 
@@ -12,25 +13,11 @@ class PredictionService:
         payload: PredictRequest,
         session: AsyncSession | None = None,
     ) -> PredictResponse:
-        weighted = (
-            payload.prior_score * 0.5
-            + payload.attendance_pct * 0.3
-            + min(payload.study_hours / 6 * 100, 100) * 0.2
-        )
-        quiz_bonus = min(payload.quizzes_completed * 2, 10)
-        predicted = round(min(100, weighted + quiz_bonus), 1)
-
-        if predicted >= 75:
-            risk = "low"
-            recommendation = "On track — maintain current study pace."
-        elif predicted >= 60:
-            risk = "medium"
-            recommendation = "Review weak topics and increase practice quizzes."
-        else:
-            risk = "high"
-            recommendation = "At-risk — schedule extra study sessions and a mock interview."
-
-        confidence = round(0.72 + (predicted / 100) * 0.2, 2)
+        result = get_predictor().predict(payload)
+        predicted = result.predicted_score
+        risk = result.risk_level
+        recommendation = result.recommendation
+        confidence = result.confidence
 
         if session is not None:
             from sqlalchemy import select
@@ -57,4 +44,5 @@ class PredictionService:
             risk_level=risk,
             confidence=confidence,
             recommendation=recommendation,
+            model_version=result.model_version,
         )

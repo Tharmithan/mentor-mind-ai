@@ -1,10 +1,24 @@
-# ML Models
+# ML Model Artifacts (Day 5+)
 
-Trained model artifacts are stored here after Phase 4 training.
+Train models:
 
-Expected files:
-- `performance_xgboost.joblib`
-- `performance_metrics.json`
-- `emotion_model.pt` (Phase 7)
+```bash
+python datasets/scripts/train_models.py
+```
 
-Do not commit large binary files; use `.gitkeep` for structure only.
+## Files (generated locally, gitignored)
+
+| File | Model |
+|------|--------|
+| `performance_random_forest.joblib` | RF → performance % |
+| `performance_xgboost.joblib` | XGBoost → performance % |
+| `pass_fail_random_forest.joblib` | RF → at-risk (0/1) |
+| `pass_fail_xgboost.joblib` | XGBoost → at-risk |
+| `training_metrics.json` | Evaluation metrics |
+| `best_model.json` | Which model FastAPI uses |
+
+## API
+
+`POST /api/predict` loads the best regression model from `best_model.json`.
+
+If no `.joblib` files exist, the API falls back to a heuristic formula.

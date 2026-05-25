@@ -1,0 +1,6 @@
+{
+  "score_model": "random_forest",
+  "score_file": "performance_random_forest.joblib",
+  "pass_model": "random_forest",
+  "pass_file": "pass_fail_random_forest.joblib"
+}

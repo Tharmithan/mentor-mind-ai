@@ -40,6 +40,9 @@ jupyter notebook notebooks/03_eda_ai_insights.ipynb
 
 # Day 4
 python datasets/scripts/feature_engineering.py
+
+# Day 5
+python datasets/scripts/train_models.py
 ```
 
 ## Feature mapping (product goal)
