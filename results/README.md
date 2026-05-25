@@ -21,4 +21,6 @@ Recommendation engine (Day 3): `POST /api/study-planner` — see `docs/week3-day
 
 AI insights (Day 4): `GET /api/insights` — see `docs/week3-day4-ai-insights.md`
 
+Model explainability (Day 6): `POST /api/predict/explain` — `python datasets/scripts/explain_model.py`
+
 Requires cleaned data: `python datasets/scripts/clean_data.py` first.

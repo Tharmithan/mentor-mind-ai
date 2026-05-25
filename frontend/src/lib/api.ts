@@ -7,12 +7,13 @@ import type {
   InsightsResponse,
   PersonalizedRecommendationsRequest,
   PersonalizedRecommendationsResponse,
+  ExplainResponse,
   PredictRequest,
   PredictResponse,
   UserResponse,
 } from "@/lib/types/api";
 
-export type { DailyTip, PredictRequest, PredictResponse };
+export type { DailyTip, ExplainResponse, PredictRequest, PredictResponse };
 
 export type DashboardData = DashboardResponse;
 
@@ -47,6 +48,11 @@ export async function getUser() {
 
 export async function predictPerformance(payload: PredictRequest) {
   const { data } = await api.post<PredictResponse>("/api/predict", payload);
+  return data;
+}
+
+export async function explainPrediction(payload: PredictRequest) {
+  const { data } = await api.post<ExplainResponse>("/api/predict/explain", payload);
   return data;
 }
 
@@ -103,6 +109,21 @@ export async function getDailyTip() {
 
 export async function getAIInsights() {
   const { data } = await api.get<InsightsResponse>("/api/insights");
+  return data;
+}
+
+export async function getAIStatus() {
+  const { data } = await api.get("/api/ai/status");
+  return data;
+}
+
+export async function postRecommend(body: PersonalizedRecommendationsRequest & { include_study_plan?: boolean }) {
+  const { data } = await api.post("/api/recommend", body);
+  return data;
+}
+
+export async function getAnalytics(params?: { performance_score?: number; study_streak_days?: number }) {
+  const { data } = await api.get("/api/analytics", { params });
   return data;
 }
 

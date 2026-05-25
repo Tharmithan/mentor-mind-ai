@@ -3,7 +3,7 @@ from decimal import Decimal
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models import PerformanceData
-from app.ml.predictor import get_predictor
+from app.ai.predictor import get_predictor
 from app.models.prediction import PredictRequest, PredictResponse
 
 

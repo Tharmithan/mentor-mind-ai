@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { predictPerformance, type PredictRequest, type PredictResponse } from "@/lib/api";
+import { explainPrediction, type ExplainResponse, type PredictRequest, type PredictResponse } from "@/lib/api";
+import { AIExplanationPanel } from "@/components/dashboard/AIExplanationPanel";
 import { Brain, Loader2, Sparkles } from "lucide-react";
 
 export function MLPredictPanel() {
@@ -10,20 +11,23 @@ export function MLPredictPanel() {
   const [attendance, setAttendance] = useState(82);
   const [sleepHours, setSleepHours] = useState(7);
   const [result, setResult] = useState<PredictResponse | null>(null);
+  const [explanation, setExplanation] = useState<ExplainResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handlePredict = async () => {
     setLoading(true);
     setError(null);
+    setExplanation(null);
     try {
       const payload: PredictRequest = {
         study_hours: studyHours,
         attendance,
         sleep_hours: sleepHours,
       };
-      const data = await predictPerformance(payload);
-      setResult(data);
+      const data = await explainPrediction(payload);
+      setResult(data.prediction);
+      setExplanation(data);
     } catch {
       setError("Could not reach ML API. Start backend on port 8000.");
     } finally {
@@ -107,6 +111,12 @@ export function MLPredictPanel() {
           </p>
           <p className="mt-2 text-sm text-slate-500">{result.recommendation}</p>
           <p className="mt-2 text-xs text-violet-400/80">Model: {result.model_version}</p>
+        </div>
+      )}
+
+      {explanation && (
+        <div className="mt-6">
+          <AIExplanationPanel data={explanation} />
         </div>
       )}
     </GlassCard>

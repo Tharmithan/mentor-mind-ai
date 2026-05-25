@@ -63,6 +63,9 @@ results/graphs/*.png
 !results/metrics/
 !results/metrics/*.json
 !results/metrics/ai_insights.json
+!results/metrics/shap_global.json
+results/graphs/shap_*.png
+!results/reports/model_explainability_report.md
 !results/metrics/.gitkeep
 !results/reports/
 !results/reports/*.md

@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-05-25T11:10:06.706152+00:00",
+  "method": "shap",
+  "algorithm": "random_forest",
+  "samples": 300,
+  "mean_abs_shap": [
+    {
+      "feature": "past_failures",
+      "label": "Past failures",
+      "mean_abs_shap": 0.0644,
+      "contribution_pct": 21.2,
+      "direction": "risk"
+    },
+    {
+      "feature": "assignment_completion_score",
+      "label": "Assignments",
+      "mean_abs_shap": 0.0516,
+      "contribution_pct": 17.0,
+      "direction": "risk"
+    },
+    {
+      "feature": "productivity_index",
+      "label": "Productivity",
+      "mean_abs_shap": 0.0507,
+      "contribution_pct": 16.7,
+      "direction": "risk"
+    },
+    {
+      "feature": "wellness_score",
+      "label": "Wellness",
+      "mean_abs_shap": 0.0504,
+      "contribution_pct": 16.6,
+      "direction": "risk"
+    },
+    {
+      "feature": "exam_readiness_score",
+      "label": "Exam readiness",
+      "mean_abs_shap": 0.0419,
+      "contribution_pct": 13.8,
+      "direction": "risk"
+    },
+    {
+      "feature": "attendance_pct",
+      "label": "Attendance",
+      "mean_abs_shap": 0.0302,
+      "contribution_pct": 10.0,
+      "direction": "risk"
+    },
+    {
+      "feature": "study_hours",
+      "label": "Study hours",
+      "mean_abs_shap": 0.0141,
+      "contribution_pct": 4.7,
+      "direction": "risk"
+    },
+    {
+      "feature": "consistency_score",
+      "label": "Consistency",
+      "mean_abs_shap": 0.0,
+      "contribution_pct": 0.0,
+      "direction": "risk"
+    }
+  ]
+}

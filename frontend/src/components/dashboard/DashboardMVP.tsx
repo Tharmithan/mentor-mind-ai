@@ -14,6 +14,7 @@ import { DailyAITip } from "@/components/ai/DailyAITip";
 import { MLPredictPanel } from "@/components/dashboard/MLPredictPanel";
 import { StudyPlannerPanel } from "@/components/dashboard/StudyPlannerPanel";
 import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
+import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 import { getDashboard, type DashboardData } from "@/lib/api";
 import {
   TrendingUp,
@@ -56,6 +57,38 @@ const FALLBACK: DashboardData = {
     { label: "Programming", value: 78 },
     { label: "Data Structures", value: 62 },
   ],
+  analytics: {
+    cards: {
+      ai_score: 82,
+      risk_level: "low",
+      performance_trend_delta: 4,
+      study_streak_days: 14,
+    },
+    risk_meter: {
+      burnout_risk: 38,
+      exam_failure_risk: 22,
+      low_engagement_score: 31,
+    },
+    weekly_progress: [
+      { label: "W1", value: 68 },
+      { label: "W2", value: 72 },
+      { label: "W3", value: 75 },
+      { label: "W4", value: 78 },
+      { label: "W5", value: 82 },
+    ],
+    subject_comparison: [
+      { label: "Mathematics", value: 91 },
+      { label: "Programming", value: 78 },
+      { label: "Data Structures", value: 62 },
+    ],
+    confidence_trends: [
+      { label: "W1", value: 62 },
+      { label: "W2", value: 68 },
+      { label: "W3", value: 72 },
+      { label: "W4", value: 78 },
+      { label: "W5", value: 85 },
+    ],
+  },
   recommendations: [
     {
       id: "1",
@@ -100,6 +133,10 @@ export function DashboardMVP() {
       <div className="mb-6">
         <DailyAITip />
       </div>
+
+      <AnimatedSection delay={0} className="mb-8">
+        <AnalyticsDashboard analytics={data.analytics} />
+      </AnimatedSection>
 
       <div className="stagger-children grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard

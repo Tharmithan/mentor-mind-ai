@@ -72,7 +72,7 @@ class TipService:
             return DailyTipResponse(tip=tip, category="personalized", focus_topic=weak_topic)
 
         try:
-            from app.services.insights_service import InsightsService
+            from app.ai import InsightsService
 
             result = InsightsService.generate()
             if result.insights:

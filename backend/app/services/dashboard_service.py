@@ -3,8 +3,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.database.models import User
-from app.models.dashboard import ChartPoint, DashboardResponse, WeakSubject
+from app.models.common import ChartPoint
+from app.models.dashboard import DashboardResponse, WeakSubject
 from app.models.recommendation import RecommendationItem
+from app.analytics.service import build_analytics
 
 _WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 _DEFAULT_HOURS = [2.5, 4.0, 3.0, 5.0, 3.5, 6.0, 4.5]
@@ -81,6 +83,13 @@ class DashboardService:
             for r in recs
         ]
 
+        analytics = build_analytics(
+            performance_score,
+            performance_trend,
+            subject_distribution,
+            study_hours_week=round(total_hours, 1),
+            study_streak_days=int(getattr(user, "streak_days", 12) or 12),
+        )
         return DashboardResponse(
             performance_score=performance_score,
             study_hours_week=round(total_hours, 1),
@@ -90,15 +99,33 @@ class DashboardService:
             performance_trend=performance_trend,
             subject_distribution=subject_distribution,
             recommendations=recommendations,
+            analytics=analytics,
         )
 
     @staticmethod
     def _mock_dashboard() -> DashboardResponse:
-        from app.services.recommendation_service import RecommendationService
+        from app.recommendation import RecommendationService
 
         mock_recs = RecommendationService._engine_recommendations().recommendations
         pending = len([r for r in mock_recs if not r.is_completed])
 
+        performance_trend = [
+            ChartPoint(label=f"W{i + 1}", value=float(v)) for i, v in enumerate(_DEFAULT_TREND)
+        ]
+        subject_distribution = [
+            ChartPoint(label="Mathematics", value=91),
+            ChartPoint(label="Programming", value=78),
+            ChartPoint(label="Data Structures", value=62),
+        ]
+        analytics = build_analytics(
+            82.0,
+            performance_trend,
+            subject_distribution,
+            study_hours_week=28.5,
+            study_streak_days=14,
+            attendance_pct=76.0,
+            sleep_hours=6.5,
+        )
         return DashboardResponse(
             performance_score=82.0,
             study_hours_week=28.5,
@@ -110,14 +137,8 @@ class DashboardService:
                 ChartPoint(label=d, value=h)
                 for d, h in zip(_WEEK_DAYS, _DEFAULT_HOURS)
             ],
-            performance_trend=[
-                ChartPoint(label=f"W{i + 1}", value=float(v))
-                for i, v in enumerate(_DEFAULT_TREND)
-            ],
-            subject_distribution=[
-                ChartPoint(label="Mathematics", value=91),
-                ChartPoint(label="Programming", value=78),
-                ChartPoint(label="Data Structures", value=62),
-            ],
+            performance_trend=performance_trend,
+            subject_distribution=subject_distribution,
             recommendations=mock_recs,
+            analytics=analytics,
         )

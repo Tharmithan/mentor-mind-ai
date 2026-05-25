@@ -29,6 +29,12 @@ export type PredictRequest = {
   quizzes_completed?: number;
 };
 
+export type StudentRiskDetection = {
+  high_risk: boolean;
+  low_performance_chance: number;
+  burnout_probability: number;
+};
+
 export type PredictResponse = {
   prediction: string;
   confidence: number;
@@ -36,6 +42,25 @@ export type PredictResponse = {
   risk_level: string;
   recommendation: string;
   model_version: string;
+  student_risk: StudentRiskDetection;
+};
+
+export type FeatureContribution = {
+  feature: string;
+  label: string;
+  contribution_pct: number;
+  direction: string;
+  raw_value?: number | null;
+};
+
+export type ExplainResponse = {
+  prediction: PredictResponse;
+  method: string;
+  algorithm: string;
+  explanations: string[];
+  contributions: FeatureContribution[];
+  top_feature: string | null;
+  summary: string;
 };
 
 export type ChartPoint = {
@@ -157,6 +182,27 @@ export type InsightsReportResponse = {
   insights: AIInsight[];
 };
 
+export type RiskMeter = {
+  burnout_risk: number;
+  exam_failure_risk: number;
+  low_engagement_score: number;
+};
+
+export type AnalyticsCards = {
+  ai_score: number;
+  risk_level: string;
+  performance_trend_delta: number;
+  study_streak_days: number;
+};
+
+export type AnalyticsDashboard = {
+  cards: AnalyticsCards;
+  risk_meter: RiskMeter;
+  weekly_progress: ChartPoint[];
+  subject_comparison: ChartPoint[];
+  confidence_trends: ChartPoint[];
+};
+
 export type DashboardResponse = {
   performance_score: number;
   study_hours_week: number;
@@ -166,4 +212,5 @@ export type DashboardResponse = {
   performance_trend: ChartPoint[];
   subject_distribution: ChartPoint[];
   recommendations: RecommendationItem[];
+  analytics?: AnalyticsDashboard | null;
 };

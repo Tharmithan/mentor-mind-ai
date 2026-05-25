@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import dashboard, health, insights, predict, recommendations, study_planner, tip, user
+from app.routes import ai_platform, dashboard, health, recommendations, study_planner, tip, user
 
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.2.0",
+    version="0.4.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -24,11 +24,11 @@ API_PREFIX = "/api"
 
 app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
 app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
-app.include_router(predict.router, prefix=API_PREFIX, tags=["predict"])
-app.include_router(predict.router, tags=["predict"])  # POST /predict (Day 7)
+# Week 3 Day 7 — unified AI platform (canonical routes)
+app.include_router(ai_platform.router, prefix=API_PREFIX)
+app.include_router(ai_platform.router)  # POST /predict, GET /insights at root too
 app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendations"])
 app.include_router(study_planner.router, prefix=API_PREFIX, tags=["study-planner"])
-app.include_router(insights.router, prefix=API_PREFIX, tags=["insights"])
 app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 
@@ -37,19 +37,24 @@ app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.3.0",
+        "version": "0.4.0",
         "docs": "/docs",
-        "ml_api": f"{API_PREFIX}/predict",
+        "week3_ai_platform": {
+            "predict": "POST /predict",
+            "recommend": "POST /recommend",
+            "analytics": "GET /analytics",
+            "insights": "GET /insights",
+            "status": "GET /api/ai/status",
+        },
         "endpoints": {
             "health": f"{API_PREFIX}/health",
-            "user": f"{API_PREFIX}/user",
             "predict": f"{API_PREFIX}/predict",
-            "recommendations": f"{API_PREFIX}/recommendations",
-            "recommendations_personalized": f"{API_PREFIX}/recommendations/personalized",
-            "study_planner": f"{API_PREFIX}/study-planner",
+            "recommend": f"{API_PREFIX}/recommend",
+            "analytics": f"{API_PREFIX}/analytics",
             "insights": f"{API_PREFIX}/insights",
-            "insights_report": f"{API_PREFIX}/insights/report",
+            "predict_explain": f"{API_PREFIX}/predict/explain",
             "dashboard": f"{API_PREFIX}/dashboard",
+            "study_planner": f"{API_PREFIX}/study-planner",
             "daily_tip": f"{API_PREFIX}/daily-tip",
         },
     }
