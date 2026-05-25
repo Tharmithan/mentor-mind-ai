@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Environment
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Build / cache
+frontend/.next/
+frontend/out/
+dist/
+build/
+*.egg-info/
+
+# ML & data (large files)
+datasets/*.csv
+datasets/*.zip
+datasets/*.parquet
+!datasets/.gitkeep
+ml-models/*.pkl
+ml-models/*.joblib
+ml-models/*.pt
+ml-models/*.onnx
+!ml-models/.gitkeep
+
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Logs
+*.log
+npm-debug.log*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+*.pid
