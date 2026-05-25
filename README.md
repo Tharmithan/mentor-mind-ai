@@ -106,7 +106,9 @@ uvicorn app.main:app --reload --port 8000
 
 API docs: http://localhost:8000/docs
 
-**Key routes:** `GET /api/health` · `GET /api/user` · `POST /api/predict`
+**Key routes:** `GET /api/health` · `GET /api/user` · `POST /api/predict` · `GET /api/recommendations`
+
+**Database (Day 5):** See [docs/database-setup.md](docs/database-setup.md) — run `python -m scripts.init_db` and `python -m scripts.seed_db` after Postgres is up.
 
 ### 3. Frontend
 
