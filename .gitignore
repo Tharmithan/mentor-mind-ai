@@ -18,6 +18,9 @@ dist/
 build/
 *.egg-info/
 
+# Local SQLite dev database
+backend/mentormind.db
+
 # ML & data (large files)
 datasets/*.csv
 datasets/*.zip

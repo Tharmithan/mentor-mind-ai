@@ -46,7 +46,28 @@ DATABASE_URL=postgresql+asyncpg://...
 
 ---
 
-## Option B — Local Docker
+## Option B — Local SQLite (fastest, no Docker)
+
+Already configured in `backend/.env` for quick dev:
+
+```env
+DATABASE_URL=sqlite+aiosqlite:///./mentormind.db
+```
+
+```bash
+cd backend
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m scripts.init_db
+python -m scripts.seed_db
+uvicorn app.main:app --reload --port 8000
+```
+
+Use **PostgreSQL/Supabase** for production (see options A and C below).
+
+---
+
+## Option C — Local Docker
 
 ```bash
 # From project root
