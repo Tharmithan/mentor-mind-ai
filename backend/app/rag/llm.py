@@ -9,11 +9,75 @@ assistant still works offline (just less conversational).
 
 from __future__ import annotations
 
+import json
 import os
 
 import httpx
 
 from app.config import settings
+
+
+def llm_enabled() -> bool:
+    return bool(os.getenv("OPENAI_API_KEY") or getattr(settings, "openai_api_key", None))
+
+
+async def call_llm(
+    messages: list[dict],
+    max_tokens: int = 700,
+    temperature: float = 0.4,
+    force_json: bool = False,
+) -> str | None:
+    """Low-level OpenAI-compatible chat call. Returns content, or None if unavailable."""
+    api_key = os.getenv("OPENAI_API_KEY") or getattr(settings, "openai_api_key", None)
+    if not api_key:
+        return None
+
+    base_url = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
+    model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    payload: dict = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+    }
+    if force_json:
+        payload["response_format"] = {"type": "json_object"}
+
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            resp = await client.post(
+                f"{base_url.rstrip('/')}/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            return data["choices"][0]["message"]["content"].strip()
+    except Exception:  # pragma: no cover - network/LLM failures
+        return None
+
+
+def parse_json(text: str | None) -> dict | None:
+    """Parse JSON from an LLM response, tolerating markdown code fences."""
+    if not text:
+        return None
+    cleaned = text.strip()
+    if cleaned.startswith("```"):
+        cleaned = cleaned.split("```", 2)[1] if "```" in cleaned else cleaned
+        if cleaned.lower().startswith("json"):
+            cleaned = cleaned[4:]
+        cleaned = cleaned.strip("`").strip()
+    try:
+        return json.loads(cleaned)
+    except (json.JSONDecodeError, TypeError):
+        # last resort: grab the outermost {...}
+        start, end = cleaned.find("{"), cleaned.rfind("}")
+        if start != -1 and end > start:
+            try:
+                return json.loads(cleaned[start : end + 1])
+            except json.JSONDecodeError:
+                return None
+        return None
 
 MODE_INSTRUCTIONS = {
     "explain": "Explain the concept clearly and simply, as a tutor would to a student.",

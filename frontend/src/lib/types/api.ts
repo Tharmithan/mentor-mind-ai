@@ -61,6 +61,60 @@ export type ChatResponse = {
   sources: SearchResult[];
 };
 
+export type StudyToolRequest = {
+  document_id?: string | null;
+  topic?: string | null;
+  count?: number;
+};
+
+export type SummaryResponse = {
+  title: string;
+  summary: string;
+  key_points: string[];
+  used_llm: boolean;
+  source?: string | null;
+};
+
+export type QuizQuestion = {
+  question: string;
+  options: string[];
+  answer_index: number;
+  explanation?: string | null;
+};
+
+export type QuizResponse = {
+  questions: QuizQuestion[];
+  used_llm: boolean;
+  source?: string | null;
+};
+
+export type Flashcard = {
+  front: string;
+  back: string;
+};
+
+export type FlashcardResponse = {
+  flashcards: Flashcard[];
+  used_llm: boolean;
+  source?: string | null;
+};
+
+export type ExplainSimpleResponse = {
+  concept: string;
+  explanation: string;
+  analogy?: string | null;
+  used_llm: boolean;
+};
+
+export type RevisionResponse = {
+  title: string;
+  quick_notes: string[];
+  key_formulas: string[];
+  must_know: string[];
+  used_llm: boolean;
+  source?: string | null;
+};
+
 export type HealthResponse = {
   status: string;
   service: string;

@@ -9,6 +9,7 @@ from app.routes import (
     health,
     recommendations,
     study_planner,
+    study_tools,
     tip,
     user,
 )
@@ -42,6 +43,8 @@ app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 # Week 4 Day 2 — PDF processing / document upload
 app.include_router(documents.router, prefix=API_PREFIX)
+# Week 4 Day 5 — smart learning features (summarize, quiz, flashcards, etc.)
+app.include_router(study_tools.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -71,5 +74,6 @@ async def root():
             "documents": f"{API_PREFIX}/documents",
             "documents_search": f"{API_PREFIX}/documents/search",
             "documents_chat": f"{API_PREFIX}/documents/chat",
+            "study_tools": f"{API_PREFIX}/study/(summarize|quiz|flashcards|explain|revision)",
         },
     }

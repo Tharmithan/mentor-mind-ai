@@ -6,6 +6,8 @@ import type {
   DailyTip,
   DashboardResponse,
   DocumentListResponse,
+  ExplainSimpleResponse,
+  FlashcardResponse,
   InsightsReportResponse,
   InsightsResponse,
   PersonalizedRecommendationsRequest,
@@ -13,6 +15,10 @@ import type {
   ExplainResponse,
   PredictRequest,
   PredictResponse,
+  QuizResponse,
+  RevisionResponse,
+  StudyToolRequest,
+  SummaryResponse,
   UploadResponse,
   UserResponse,
 } from "@/lib/types/api";
@@ -170,6 +176,47 @@ export async function deleteDocument(documentId: string) {
 export async function chatWithDocuments(body: ChatRequest) {
   const { data } = await api.post<ChatResponse>("/api/documents/chat", body, {
     timeout: 60000,
+  });
+  return data;
+}
+
+// --- Week 4 Day 5: smart learning features ---
+
+const STUDY_TIMEOUT = 60000;
+
+export async function summarizeDocument(body: StudyToolRequest) {
+  const { data } = await api.post<SummaryResponse>("/api/study/summarize", body, {
+    timeout: STUDY_TIMEOUT,
+  });
+  return data;
+}
+
+export async function generateQuiz(body: StudyToolRequest) {
+  const { data } = await api.post<QuizResponse>("/api/study/quiz", body, {
+    timeout: STUDY_TIMEOUT,
+  });
+  return data;
+}
+
+export async function generateFlashcards(body: StudyToolRequest) {
+  const { data } = await api.post<FlashcardResponse>("/api/study/flashcards", body, {
+    timeout: STUDY_TIMEOUT,
+  });
+  return data;
+}
+
+export async function explainSimply(concept: string, documentId?: string | null) {
+  const { data } = await api.post<ExplainSimpleResponse>(
+    "/api/study/explain",
+    { concept, document_id: documentId ?? null },
+    { timeout: STUDY_TIMEOUT }
+  );
+  return data;
+}
+
+export async function generateRevision(body: StudyToolRequest) {
+  const { data } = await api.post<RevisionResponse>("/api/study/revision", body, {
+    timeout: STUDY_TIMEOUT,
   });
   return data;
 }

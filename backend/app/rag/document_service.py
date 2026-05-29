@@ -147,6 +147,23 @@ class DocumentService:
         return DocumentListResponse(count=len(docs), documents=docs)
 
     @staticmethod
+    def get_text(document_id: str, max_chars: int = 8000) -> tuple[str, str] | None:
+        """Return (concatenated_text, filename) for a document, capped at max_chars."""
+        data = DocumentService._load(document_id)
+        if data is None:
+            return None
+        parts: list[str] = []
+        total = 0
+        for c in data["chunks"]:
+            t = c["text"].strip()
+            if total + len(t) > max_chars:
+                parts.append(t[: max(0, max_chars - total)])
+                break
+            parts.append(t)
+            total += len(t)
+        return "\n\n".join(parts), data["meta"]["filename"]
+
+    @staticmethod
     def get_chunks(document_id: str) -> ChunksResponse | None:
         data = DocumentService._load(document_id)
         if data is None:
