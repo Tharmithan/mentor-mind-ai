@@ -21,6 +21,12 @@ build/
 # Local SQLite dev database
 backend/mentormind.db
 
+# Week 4 — uploaded documents & processed chunks (keep dir structure only)
+backend/uploads/**
+!backend/uploads/.gitkeep
+!backend/uploads/processed/
+!backend/uploads/processed/.gitkeep
+
 # ML & data (large files — keep structure + reports)
 datasets/raw/**
 datasets/processed/**

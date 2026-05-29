@@ -2,7 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import ai_platform, dashboard, health, recommendations, study_planner, tip, user
+from app.routes import (
+    ai_platform,
+    dashboard,
+    documents,
+    health,
+    recommendations,
+    study_planner,
+    tip,
+    user,
+)
 
 app = FastAPI(
     title=settings.app_name,
@@ -31,6 +40,8 @@ app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendat
 app.include_router(study_planner.router, prefix=API_PREFIX, tags=["study-planner"])
 app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
+# Week 4 Day 2 — PDF processing / document upload
+app.include_router(documents.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -56,5 +67,7 @@ async def root():
             "dashboard": f"{API_PREFIX}/dashboard",
             "study_planner": f"{API_PREFIX}/study-planner",
             "daily_tip": f"{API_PREFIX}/daily-tip",
+            "documents_upload": f"{API_PREFIX}/documents/upload",
+            "documents": f"{API_PREFIX}/documents",
         },
     }
