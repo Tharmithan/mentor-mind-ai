@@ -5,21 +5,24 @@ import {
   Bot,
   User,
   Send,
-  Loader2,
   BookOpen,
   ListChecks,
   Lightbulb,
   ChevronDown,
   BrainCircuit,
   RotateCcw,
+  Sparkles,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { chatWithDocuments, createChatSession, deleteChatSession } from "@/lib/api";
 import type { ChatMessage, SearchResult } from "@/lib/types/api";
+import { Markdown } from "@/components/assistant/Markdown";
+import { ThinkingIndicator } from "@/components/assistant/ThinkingIndicator";
 
 type ChatTurn = ChatMessage & {
   sources?: SearchResult[];
   usedLlm?: boolean;
+  animate?: boolean;
 };
 
 type Mode = "explain" | "summarize" | "example";
@@ -30,10 +33,17 @@ const MODES: { id: Mode; label: string; icon: typeof BookOpen }[] = [
   { id: "example", label: "Examples", icon: Lightbulb },
 ];
 
+const SUGGESTIONS = [
+  "Summarize this PDF",
+  "Generate a quiz on the key topics",
+  "Explain the difficult topics simply",
+  "What are the most important points?",
+];
+
 const WELCOME: ChatTurn = {
   role: "assistant",
   content:
-    "Hi! I'm your AI study tutor. Pick a document (or All documents) and ask me anything — I'll answer from your material, explain concepts, summarize topics, and give examples.",
+    "Hi! I'm your AI study tutor. Pick a document (or **All documents**) and ask me anything — I'll answer from your material, explain concepts, summarize topics, and give examples.",
 };
 
 export function ChatPanel({
@@ -48,10 +58,10 @@ export function ChatPanel({
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [streamChars, setStreamChars] = useState(0);
   const threadRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Start a memory-backed conversation (best-effort; chat still works if offline).
     createChatSession()
       .then((s) => setSessionId(s.session_id))
       .catch(() => {});
@@ -59,7 +69,22 @@ export function ChatPanel({
 
   useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, thinking]);
+  }, [messages, thinking, streamChars]);
+
+  // Typewriter reveal for the latest assistant message.
+  useEffect(() => {
+    const lastIdx = messages.length - 1;
+    const last = messages[lastIdx];
+    if (!last || last.role !== "assistant" || !last.animate) return;
+    if (streamChars < last.content.length) {
+      const id = setTimeout(
+        () => setStreamChars((c) => Math.min(last.content.length, c + 4)),
+        12
+      );
+      return () => clearTimeout(id);
+    }
+    setMessages((m) => m.map((x, i) => (i === lastIdx ? { ...x, animate: false } : x)));
+  }, [streamChars, messages]);
 
   async function newChat() {
     if (sessionId) deleteChatSession(sessionId).catch(() => {});
@@ -97,9 +122,16 @@ export function ChatPanel({
         history,
       });
       if (res.session_id && res.session_id !== sessionId) setSessionId(res.session_id);
+      setStreamChars(0);
       setMessages((m) => [
         ...m,
-        { role: "assistant", content: res.answer, sources: res.sources, usedLlm: res.used_llm },
+        {
+          role: "assistant",
+          content: res.answer,
+          sources: res.sources,
+          usedLlm: res.used_llm,
+          animate: true,
+        },
       ]);
     } catch (e) {
       setMessages((m) => [
@@ -116,11 +148,15 @@ export function ChatPanel({
     }
   }
 
+  const fresh = messages.length === 1;
+
   return (
     <GlassCard className="flex h-[calc(100vh-16rem)] min-h-[480px] flex-col" hover={false}>
       <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
-          <BrainCircuit className={`h-3.5 w-3.5 ${sessionId ? "text-emerald-400" : "text-slate-600"}`} />
+          <BrainCircuit
+            className={`h-3.5 w-3.5 ${sessionId ? "text-emerald-400" : "text-slate-600"}`}
+          />
           {sessionId ? "Memory on — I remember this chat" : "Memory off"}
         </span>
         <button
@@ -131,16 +167,37 @@ export function ChatPanel({
           New chat
         </button>
       </div>
+
       <div ref={threadRef} className="flex-1 space-y-4 overflow-y-auto p-5">
-        {messages.map((m, i) => (
-          <MessageBubble key={i} turn={m} />
-        ))}
+        {messages.map((m, i) => {
+          const isLast = i === messages.length - 1;
+          const animating = isLast && m.role === "assistant" && !!m.animate;
+          return (
+            <MessageBubble key={i} turn={m} visibleChars={animating ? streamChars : undefined} />
+          );
+        })}
+
         {thinking && (
           <div className="flex items-start gap-3">
             <Avatar role="assistant" />
-            <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm bg-white/5 px-4 py-3 text-sm text-slate-400">
-              <Loader2 className="h-4 w-4 animate-spin text-violet-400" />
-              Searching your notes…
+            <ThinkingIndicator />
+          </div>
+        )}
+
+        {fresh && (
+          <div className="pl-11">
+            <p className="mb-2 text-xs font-medium text-slate-500">Try asking…</p>
+            <div className="flex flex-wrap gap-2">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  onClick={() => send(s)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-violet-500/20 bg-violet-950/30 px-3 py-1.5 text-xs text-slate-300 transition hover:border-violet-500/40 hover:bg-violet-900/30"
+                >
+                  <Sparkles className="h-3 w-3 text-violet-400" />
+                  {s}
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -206,23 +263,31 @@ function Avatar({ role }: { role: ChatMessage["role"] }) {
   );
 }
 
-function MessageBubble({ turn }: { turn: ChatTurn }) {
+function MessageBubble({ turn, visibleChars }: { turn: ChatTurn; visibleChars?: number }) {
   const isUser = turn.role === "user";
+  const animating = visibleChars !== undefined;
+  const content = animating ? turn.content.slice(0, visibleChars) : turn.content;
+
   return (
     <div className={`flex items-start gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
       <Avatar role={turn.role} />
       <div className={`max-w-[80%] ${isUser ? "items-end text-right" : ""}`}>
         <div
-          className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-            isUser ? "rounded-tr-sm bg-violet-600 text-white" : "rounded-tl-sm bg-white/5 text-slate-200"
+          className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+            isUser
+              ? "whitespace-pre-wrap rounded-tr-sm bg-violet-600 text-white"
+              : "rounded-tl-sm bg-white/5 text-slate-200"
           }`}
         >
-          {turn.content}
+          {isUser ? content : <Markdown text={content} />}
+          {animating && (
+            <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse rounded-sm bg-violet-400 align-middle" />
+          )}
         </div>
-        {turn.role === "assistant" && turn.usedLlm === false && (
+        {!animating && turn.role === "assistant" && turn.usedLlm === false && (
           <p className="mt-1 text-[10px] text-slate-500">Extractive answer (no LLM key configured)</p>
         )}
-        {turn.sources && turn.sources.length > 0 && <Sources sources={turn.sources} />}
+        {!animating && turn.sources && turn.sources.length > 0 && <Sources sources={turn.sources} />}
       </div>
     </div>
   );
