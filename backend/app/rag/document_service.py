@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.models.document import (
+    ChatRequest,
+    ChatResponse,
     ChunksResponse,
     DocumentChunk,
     DocumentListResponse,
@@ -165,6 +167,25 @@ class DocumentService:
         hits = get_vector_store().search(query, top_k=top_k, document_id=document_id)
         results = [SearchResult(**h) for h in hits]
         return SearchResponse(query=query, count=len(results), results=results)
+
+    @staticmethod
+    async def chat(req: ChatRequest) -> ChatResponse:
+        """Full RAG loop: semantic search -> retrieve chunks -> LLM -> grounded answer."""
+        from app.rag.llm import generate_answer
+        from app.rag.vector_store import get_vector_store
+
+        hits = get_vector_store().search(
+            req.question, top_k=req.top_k, document_id=req.document_id
+        )
+        history = [m.model_dump() for m in req.history] if req.history else None
+        result = await generate_answer(req.question, hits, history=history, mode=req.mode)
+
+        return ChatResponse(
+            answer=result["answer"],
+            used_llm=result["used_llm"],
+            model=result.get("model"),
+            sources=[SearchResult(**h) for h in hits],
+        )
 
     @staticmethod
     def delete(document_id: str) -> bool:

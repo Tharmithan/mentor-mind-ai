@@ -63,3 +63,23 @@ class SearchResponse(BaseModel):
     query: str
     count: int
     results: list[SearchResult]
+
+
+class ChatMessage(BaseModel):
+    role: str  # "user" | "assistant"
+    content: str
+
+
+class ChatRequest(BaseModel):
+    question: str = Field(min_length=1)
+    top_k: int = Field(default=4, ge=1, le=10)
+    document_id: str | None = None
+    mode: str | None = None  # "explain" | "summarize" | "example"
+    history: list[ChatMessage] | None = None
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    used_llm: bool
+    model: str | None = None
+    sources: list[SearchResult] = Field(default_factory=list)

@@ -21,8 +21,8 @@ const navItems: {
 }[] = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/interview", label: "Mock Interview", icon: Mic },
+  { href: "/assistant", label: "AI Study Assistant", icon: FileText },
   { href: "/dashboard#planner", label: "Study Planner", icon: BookOpen, soon: true },
-  { href: "/dashboard#assistant", label: "PDF Assistant", icon: FileText, soon: true },
   { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3, soon: true },
 ];
 

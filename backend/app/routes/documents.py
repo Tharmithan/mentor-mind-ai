@@ -9,6 +9,8 @@
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
 from app.models.document import (
+    ChatRequest,
+    ChatResponse,
     ChunksResponse,
     DocumentListResponse,
     SearchRequest,
@@ -62,6 +64,15 @@ async def search_documents_get(
         return DocumentService.search(q, top_k=top_k, document_id=document_id)
     except Exception as exc:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Search failed: {exc}") from exc
+
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat_with_documents(body: ChatRequest) -> ChatResponse:
+    """AI tutor chat — answers grounded in the student's uploaded notes (full RAG loop)."""
+    try:
+        return await DocumentService.chat(body)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(status_code=500, detail=f"Chat failed: {exc}") from exc
 
 
 @router.get("/{document_id}/chunks", response_model=ChunksResponse)

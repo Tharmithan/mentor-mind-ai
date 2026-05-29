@@ -6,13 +6,14 @@ import {
   Home,
   LayoutDashboard,
   Mic,
-  Sparkles,
+  FileText,
 } from "lucide-react";
 
 const items = [
   { href: "/", label: "Home", icon: Home },
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/interview", label: "Interview", icon: Mic },
+  { href: "/assistant", label: "Tutor", icon: FileText },
 ];
 
 export function MobileNav() {
@@ -40,14 +41,6 @@ export function MobileNav() {
             </Link>
           );
         })}
-        <Link
-          href="/dashboard"
-          className="flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 text-slate-500"
-          aria-label="AI features"
-        >
-          <Sparkles className="h-5 w-5" />
-          <span className="text-[10px] font-medium">AI</span>
-        </Link>
       </div>
     </nav>
   );

@@ -1,8 +1,11 @@
 import axios from "axios";
 import type {
+  ChatRequest,
+  ChatResponse,
   DailyStudyPlannerResponse,
   DailyTip,
   DashboardResponse,
+  DocumentListResponse,
   InsightsReportResponse,
   InsightsResponse,
   PersonalizedRecommendationsRequest,
@@ -10,10 +13,20 @@ import type {
   ExplainResponse,
   PredictRequest,
   PredictResponse,
+  UploadResponse,
   UserResponse,
 } from "@/lib/types/api";
 
-export type { DailyTip, ExplainResponse, PredictRequest, PredictResponse };
+export type {
+  ChatRequest,
+  ChatResponse,
+  DailyTip,
+  DocumentListResponse,
+  ExplainResponse,
+  PredictRequest,
+  PredictResponse,
+  UploadResponse,
+};
 
 export type DashboardData = DashboardResponse;
 
@@ -129,5 +142,34 @@ export async function getAnalytics(params?: { performance_score?: number; study_
 
 export async function getAIInsightsReport() {
   const { data } = await api.get<InsightsReportResponse>("/api/insights/report");
+  return data;
+}
+
+// --- Week 4: RAG document assistant ---
+
+export async function uploadDocument(file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await api.post<UploadResponse>("/api/documents/upload", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 120000,
+  });
+  return data;
+}
+
+export async function listDocuments() {
+  const { data } = await api.get<DocumentListResponse>("/api/documents");
+  return data;
+}
+
+export async function deleteDocument(documentId: string) {
+  const { data } = await api.delete(`/api/documents/${documentId}`);
+  return data;
+}
+
+export async function chatWithDocuments(body: ChatRequest) {
+  const { data } = await api.post<ChatResponse>("/api/documents/chat", body, {
+    timeout: 60000,
+  });
   return data;
 }

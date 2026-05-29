@@ -70,5 +70,6 @@ async def root():
             "documents_upload": f"{API_PREFIX}/documents/upload",
             "documents": f"{API_PREFIX}/documents",
             "documents_search": f"{API_PREFIX}/documents/search",
+            "documents_chat": f"{API_PREFIX}/documents/chat",
         },
     }

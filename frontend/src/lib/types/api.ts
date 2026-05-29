@@ -1,3 +1,66 @@
+export type DocumentMeta = {
+  document_id: string;
+  filename: string;
+  uploaded_at: string;
+  num_pages: number;
+  num_chunks: number;
+  total_chars: number;
+  chunk_size: number;
+  chunk_overlap: number;
+  indexed: boolean;
+  embedding_model?: string | null;
+};
+
+export type DocumentChunk = {
+  chunk_id: string;
+  document_id: string;
+  chunk_index: number;
+  text: string;
+  char_count: number;
+  page?: number | null;
+};
+
+export type UploadResponse = {
+  message: string;
+  document: DocumentMeta;
+  preview_chunks: DocumentChunk[];
+};
+
+export type DocumentListResponse = {
+  count: number;
+  documents: DocumentMeta[];
+};
+
+export type SearchResult = {
+  chunk_id: string;
+  document_id: string;
+  filename: string;
+  page?: number | null;
+  chunk_index: number;
+  text: string;
+  similarity: number;
+};
+
+export type ChatMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+export type ChatRequest = {
+  question: string;
+  top_k?: number;
+  document_id?: string | null;
+  mode?: "explain" | "summarize" | "example" | null;
+  history?: ChatMessage[];
+};
+
+export type ChatResponse = {
+  answer: string;
+  used_llm: boolean;
+  model?: string | null;
+  sources: SearchResult[];
+};
+
 export type HealthResponse = {
   status: string;
   service: string;
