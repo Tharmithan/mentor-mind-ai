@@ -43,20 +43,38 @@ export type {
 
 export type DashboardData = DashboardResponse;
 
-const baseURL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/** Browser uses same-origin `/api` (Next rewrite → backend). Override with NEXT_PUBLIC_API_URL if needed. */
+function resolveBaseURL(): string {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return "";
+  }
+  return (process.env.API_PROXY_URL ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+}
 
 export const api = axios.create({
-  baseURL,
   headers: { "Content-Type": "application/json" },
   timeout: 15000,
+});
+
+api.interceptors.request.use((config) => {
+  if (!config.baseURL) {
+    config.baseURL = resolveBaseURL();
+  }
+  return config;
 });
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (process.env.NODE_ENV === "development") {
-      console.error("[API]", error.message);
+      const hint =
+        error.code === "ERR_NETWORK"
+          ? " — is the backend running? (uvicorn app.main:app --port 8000)"
+          : "";
+      console.error("[API]", error.message + hint);
     }
     return Promise.reject(error);
   }
