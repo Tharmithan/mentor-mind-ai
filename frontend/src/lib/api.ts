@@ -23,6 +23,12 @@ import type {
   UploadResponse,
   UserResponse,
 } from "@/lib/types/api";
+import type {
+  InterviewTypeInfo,
+  StartInterviewResponse,
+  SubmitAnswerResponse,
+  TranscribeResponse,
+} from "@/lib/types/interview";
 
 export type {
   ChatRequest,
@@ -228,6 +234,43 @@ export async function explainSimply(concept: string, documentId?: string | null)
 export async function generateRevision(body: StudyToolRequest) {
   const { data } = await api.post<RevisionResponse>("/api/study/revision", body, {
     timeout: STUDY_TIMEOUT,
+  });
+  return data;
+}
+
+// --- Week 5: AI Interview Coach ---
+
+export async function getInterviewTypes() {
+  const { data } = await api.get<InterviewTypeInfo[]>("/api/interview/types");
+  return data;
+}
+
+export async function startInterview(interviewType: string, numQuestions = 5) {
+  const { data } = await api.post<StartInterviewResponse>("/api/interview/start", {
+    interview_type: interviewType,
+    num_questions: numQuestions,
+  });
+  return data;
+}
+
+export async function submitInterviewAnswer(
+  sessionId: string,
+  answerText: string,
+  transcript?: string
+) {
+  const { data } = await api.post<SubmitAnswerResponse>(
+    `/api/interview/session/${sessionId}/answer`,
+    { answer_text: answerText, transcript: transcript ?? undefined }
+  );
+  return data;
+}
+
+export async function transcribeInterviewAudio(blob: Blob, filename = "recording.webm") {
+  const form = new FormData();
+  form.append("file", blob, filename);
+  const { data } = await api.post<TranscribeResponse>("/api/interview/transcribe", form, {
+    timeout: 120_000,
+    headers: { "Content-Type": "multipart/form-data" },
   });
   return data;
 }

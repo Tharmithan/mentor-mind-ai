@@ -1,0 +1,147 @@
+{
+  "hr": [
+    {
+      "id": "hr_01",
+      "text": "Tell me about yourself.",
+      "category": "introduction",
+      "difficulty": "easy",
+      "tips": "Use a 60–90 second pitch: present role, relevant background, and why you're a fit.",
+      "expected_keywords": ["background", "experience", "skills", "education", "motivated", "role"],
+      "ideal_answer": "A concise 60–90 second pitch: who you are today, 2–3 relevant experiences or skills, and why this role and company fit your goals."
+    },
+    {
+      "id": "hr_02",
+      "text": "What are your greatest strengths and weaknesses?",
+      "category": "self-awareness",
+      "difficulty": "medium",
+      "tips": "Pick one real weakness and explain how you're improving it."
+    },
+    {
+      "id": "hr_03",
+      "text": "Why do you want to work at this company?",
+      "category": "motivation",
+      "difficulty": "medium",
+      "tips": "Research the company mission, product, and culture — be specific."
+    },
+    {
+      "id": "hr_04",
+      "text": "Where do you see yourself in five years?",
+      "category": "career-goals",
+      "difficulty": "easy",
+      "tips": "Show ambition aligned with growth at the company, not unrelated dreams."
+    },
+    {
+      "id": "hr_05",
+      "text": "Why should we hire you?",
+      "category": "value-proposition",
+      "difficulty": "medium",
+      "tips": "Summarize 2–3 skills + one concrete achievement that matches the role."
+    },
+    {
+      "id": "hr_06",
+      "text": "What are your salary expectations?",
+      "category": "compensation",
+      "difficulty": "hard",
+      "tips": "Give a researched range; show flexibility and focus on the role first."
+    }
+  ],
+  "technical": [
+    {
+      "id": "tech_01",
+      "text": "Explain the difference between a stack and a queue. When would you use each?",
+      "category": "dsa",
+      "difficulty": "medium",
+      "tips": "Mention LIFO vs FIFO and give one real use case for each.",
+      "expected_keywords": ["LIFO", "FIFO", "stack", "queue", "example", "use case"],
+      "ideal_answer": "A stack is LIFO (last-in-first-out) — used for undo, recursion, DFS. A queue is FIFO (first-in-first-out) — used for BFS, task scheduling, print queues."
+    },
+    {
+      "id": "tech_02",
+      "text": "What is overfitting in machine learning, and how do you prevent it?",
+      "category": "ai-ml",
+      "difficulty": "medium",
+      "tips": "Cover train/validation split, regularization, and cross-validation."
+    },
+    {
+      "id": "tech_03",
+      "text": "Describe how a REST API works. What makes an API RESTful?",
+      "category": "web-dev",
+      "difficulty": "easy",
+      "tips": "Mention HTTP methods, statelessness, and resource URLs."
+    },
+    {
+      "id": "tech_04",
+      "text": "What is the time complexity of binary search? Walk through how it works.",
+      "category": "dsa",
+      "difficulty": "medium",
+      "tips": "State O(log n) and explain halving the search space each step."
+    },
+    {
+      "id": "tech_05",
+      "text": "Explain what embeddings are and why they are used in modern AI applications.",
+      "category": "ai-ml",
+      "difficulty": "medium",
+      "tips": "Connect text → vectors → semantic similarity; mention RAG as an example."
+    },
+    {
+      "id": "tech_06",
+      "text": "What is the difference between SQL and NoSQL databases? When would you choose each?",
+      "category": "web-dev",
+      "difficulty": "medium",
+      "tips": "Contrast schema, scaling, and consistency; give one use case per type."
+    },
+    {
+      "id": "tech_07",
+      "text": "How does React's virtual DOM improve performance?",
+      "category": "web-dev",
+      "difficulty": "medium",
+      "tips": "Explain diffing, batching updates, and minimizing direct DOM manipulation."
+    }
+  ],
+  "behavioral": [
+    {
+      "id": "beh_01",
+      "text": "Tell me about a time you worked on a team project. What was your role?",
+      "category": "teamwork",
+      "difficulty": "medium",
+      "tips": "Use STAR: Situation, Task, Action, Result — focus on collaboration.",
+      "expected_keywords": ["situation", "task", "action", "result", "team", "role", "project"],
+      "ideal_answer": "Use STAR: describe the Situation, your Task, the Actions you took with the team, and the measurable Result (grades, delivery, feedback)."
+    },
+    {
+      "id": "beh_02",
+      "text": "Describe a situation where you showed leadership, even without a formal title.",
+      "category": "leadership",
+      "difficulty": "medium",
+      "tips": "Highlight initiative, influence, and a measurable outcome."
+    },
+    {
+      "id": "beh_03",
+      "text": "Tell me about a conflict with a teammate. How did you resolve it?",
+      "category": "conflict",
+      "difficulty": "hard",
+      "tips": "Stay professional; emphasize listening, empathy, and a constructive resolution."
+    },
+    {
+      "id": "beh_04",
+      "text": "Describe a time you failed at something. What did you learn?",
+      "category": "growth",
+      "difficulty": "medium",
+      "tips": "Own the failure honestly; end with a clear lesson and what you changed."
+    },
+    {
+      "id": "beh_05",
+      "text": "Tell me about a time you had to meet a tight deadline. How did you prioritize?",
+      "category": "time-management",
+      "difficulty": "medium",
+      "tips": "Explain prioritization, communication with stakeholders, and the outcome."
+    },
+    {
+      "id": "beh_06",
+      "text": "Give an example of when you received critical feedback. How did you respond?",
+      "category": "feedback",
+      "difficulty": "medium",
+      "tips": "Show openness, reflection, and concrete steps you took to improve."
+    }
+  ]
+}

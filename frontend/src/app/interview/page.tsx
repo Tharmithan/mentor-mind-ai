@@ -1,14 +1,14 @@
 import { PageHeader } from "@/components/ui/PageHeader";
-import { InterviewRoom } from "@/components/interview/InterviewRoom";
+import { InterviewCoach } from "@/components/interview/InterviewCoach";
 
 export default function InterviewPage() {
   return (
     <>
       <PageHeader
-        title="AI Mock Interview"
-        subtitle="Practice with live confidence tracking — webcam, mic, and AI feedback"
+        title="AI Interview Coach"
+        subtitle="HR, technical, or behavioral mock interviews — AI asks questions, scores your answers, and gives feedback"
       />
-      <InterviewRoom />
+      <InterviewCoach />
     </>
   );
 }

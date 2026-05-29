@@ -8,6 +8,7 @@ from app.routes import (
     dashboard,
     documents,
     health,
+    interview,
     recommendations,
     study_planner,
     study_tools,
@@ -18,7 +19,7 @@ from app.routes import (
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.4.0",
+    version="0.5.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -48,6 +49,8 @@ app.include_router(documents.router, prefix=API_PREFIX)
 app.include_router(study_tools.router, prefix=API_PREFIX)
 # Week 4 Day 6 — conversation memory (chat sessions)
 app.include_router(conversations.router, prefix=API_PREFIX)
+# Week 5 Day 1 — AI Interview Coach
+app.include_router(interview.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -79,5 +82,7 @@ async def root():
             "documents_chat": f"{API_PREFIX}/documents/chat",
             "study_tools": f"{API_PREFIX}/study/(summarize|quiz|flashcards|explain|revision)",
             "chat_sessions": f"{API_PREFIX}/chat/sessions",
+            "interview": f"{API_PREFIX}/interview/start",
+            "interview_transcribe": f"{API_PREFIX}/interview/transcribe",
         },
     }

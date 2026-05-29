@@ -1,0 +1,5 @@
+# Week 5 — AI Interview Coach (speech + evaluation)
+# Install: pip install -r requirements-interview.txt
+# Requires ffmpeg on PATH for Whisper: brew install ffmpeg
+
+openai-whisper==20250625
