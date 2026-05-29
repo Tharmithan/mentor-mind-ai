@@ -185,23 +185,54 @@ class DocumentService:
         results = [SearchResult(**h) for h in hits]
         return SearchResponse(query=query, count=len(results), results=results)
 
+    # Short follow-ups that rely on the previous turn's topic.
+    _FOLLOWUP_HINTS = (
+        "example", "more", "explain", "why", "how", "what about", "that", "it",
+        "elaborate", "continue", "simpler", "again", "summarize",
+    )
+
+    @staticmethod
+    def _retrieval_query(question: str, recent_topic: str | None) -> str:
+        """Resolve follow-ups (e.g. 'give an example') by folding in the prior topic."""
+        if not recent_topic:
+            return question
+        q = question.lower().strip()
+        is_followup = len(q.split()) <= 5 or any(h in q for h in DocumentService._FOLLOWUP_HINTS)
+        return f"{recent_topic} {question}" if is_followup else question
+
     @staticmethod
     async def chat(req: ChatRequest) -> ChatResponse:
-        """Full RAG loop: semantic search -> retrieve chunks -> LLM -> grounded answer."""
+        """Full RAG loop with conversation memory:
+        recall session -> context-aware search -> LLM (with history) -> store turn.
+        """
         from app.rag.llm import generate_answer
+        from app.rag.memory import get_memory
         from app.rag.vector_store import get_vector_store
 
-        hits = get_vector_store().search(
-            req.question, top_k=req.top_k, document_id=req.document_id
-        )
-        history = [m.model_dump() for m in req.history] if req.history else None
+        memory = get_memory()
+        session = memory.get_or_create(req.session_id)
+
+        # Use prior history from memory; fall back to the request's history if sessionless.
+        history = session.buffer(limit=12)
+        if not history and req.history:
+            history = [m.model_dump() for m in req.history]
+
+        # Context-aware retrieval so "give an example" still finds the prior topic.
+        search_query = DocumentService._retrieval_query(req.question, session.recent_topic())
+        doc_id = req.document_id or session.last_document_id
+        hits = get_vector_store().search(search_query, top_k=req.top_k, document_id=doc_id)
+
+        session.add_user(req.question, document_id=req.document_id)
         result = await generate_answer(req.question, hits, history=history, mode=req.mode)
+        session.add_ai(result["answer"])
+        memory.save(session)
 
         return ChatResponse(
             answer=result["answer"],
             used_llm=result["used_llm"],
             model=result.get("model"),
             sources=[SearchResult(**h) for h in hits],
+            session_id=session.session_id,
         )
 
     @staticmethod

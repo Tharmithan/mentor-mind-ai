@@ -51,6 +51,7 @@ export type ChatRequest = {
   top_k?: number;
   document_id?: string | null;
   mode?: "explain" | "summarize" | "example" | null;
+  session_id?: string | null;
   history?: ChatMessage[];
 };
 
@@ -59,6 +60,15 @@ export type ChatResponse = {
   used_llm: boolean;
   model?: string | null;
   sources: SearchResult[];
+  session_id?: string | null;
+};
+
+export type ConversationResponse = {
+  session_id: string;
+  messages: ChatMessage[];
+  last_document_id?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 };
 
 export type StudyToolRequest = {

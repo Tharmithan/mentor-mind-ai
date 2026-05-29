@@ -75,7 +75,8 @@ class ChatRequest(BaseModel):
     top_k: int = Field(default=4, ge=1, le=10)
     document_id: str | None = None
     mode: str | None = None  # "explain" | "summarize" | "example"
-    history: list[ChatMessage] | None = None
+    session_id: str | None = None  # server-side conversation memory
+    history: list[ChatMessage] | None = None  # fallback if no session
 
 
 class ChatResponse(BaseModel):
@@ -83,3 +84,12 @@ class ChatResponse(BaseModel):
     used_llm: bool
     model: str | None = None
     sources: list[SearchResult] = Field(default_factory=list)
+    session_id: str | None = None
+
+
+class ConversationResponse(BaseModel):
+    session_id: str
+    messages: list[ChatMessage]
+    last_document_id: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None

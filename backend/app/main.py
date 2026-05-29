@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routes import (
     ai_platform,
+    conversations,
     dashboard,
     documents,
     health,
@@ -45,6 +46,8 @@ app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 app.include_router(documents.router, prefix=API_PREFIX)
 # Week 4 Day 5 — smart learning features (summarize, quiz, flashcards, etc.)
 app.include_router(study_tools.router, prefix=API_PREFIX)
+# Week 4 Day 6 — conversation memory (chat sessions)
+app.include_router(conversations.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -75,5 +78,6 @@ async def root():
             "documents_search": f"{API_PREFIX}/documents/search",
             "documents_chat": f"{API_PREFIX}/documents/chat",
             "study_tools": f"{API_PREFIX}/study/(summarize|quiz|flashcards|explain|revision)",
+            "chat_sessions": f"{API_PREFIX}/chat/sessions",
         },
     }

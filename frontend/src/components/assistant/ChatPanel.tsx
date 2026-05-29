@@ -10,9 +10,11 @@ import {
   ListChecks,
   Lightbulb,
   ChevronDown,
+  BrainCircuit,
+  RotateCcw,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { chatWithDocuments } from "@/lib/api";
+import { chatWithDocuments, createChatSession, deleteChatSession } from "@/lib/api";
 import type { ChatMessage, SearchResult } from "@/lib/types/api";
 
 type ChatTurn = ChatMessage & {
@@ -45,11 +47,33 @@ export function ChatPanel({
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const threadRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Start a memory-backed conversation (best-effort; chat still works if offline).
+    createChatSession()
+      .then((s) => setSessionId(s.session_id))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, thinking]);
+
+  async function newChat() {
+    if (sessionId) deleteChatSession(sessionId).catch(() => {});
+    setMessages([WELCOME]);
+    setInput("");
+    setError(null);
+    setSessionId(null);
+    try {
+      const s = await createChatSession();
+      setSessionId(s.session_id);
+    } catch {
+      /* offline — continue without memory */
+    }
+  }
 
   async function send(question: string, mode?: Mode) {
     const q = question.trim();
@@ -69,8 +93,10 @@ export function ChatPanel({
         top_k: 4,
         document_id: activeDoc,
         mode: mode ?? null,
+        session_id: sessionId,
         history,
       });
+      if (res.session_id && res.session_id !== sessionId) setSessionId(res.session_id);
       setMessages((m) => [
         ...m,
         { role: "assistant", content: res.answer, sources: res.sources, usedLlm: res.used_llm },
@@ -92,6 +118,19 @@ export function ChatPanel({
 
   return (
     <GlassCard className="flex h-[calc(100vh-16rem)] min-h-[480px] flex-col" hover={false}>
+      <div className="flex items-center justify-between border-b border-white/5 px-5 py-3">
+        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400">
+          <BrainCircuit className={`h-3.5 w-3.5 ${sessionId ? "text-emerald-400" : "text-slate-600"}`} />
+          {sessionId ? "Memory on — I remember this chat" : "Memory off"}
+        </span>
+        <button
+          onClick={newChat}
+          className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-400 transition hover:bg-white/5 hover:text-slate-200"
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+          New chat
+        </button>
+      </div>
       <div ref={threadRef} className="flex-1 space-y-4 overflow-y-auto p-5">
         {messages.map((m, i) => (
           <MessageBubble key={i} turn={m} />

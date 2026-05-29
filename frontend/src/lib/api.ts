@@ -2,6 +2,7 @@ import axios from "axios";
 import type {
   ChatRequest,
   ChatResponse,
+  ConversationResponse,
   DailyStudyPlannerResponse,
   DailyTip,
   DashboardResponse,
@@ -177,6 +178,16 @@ export async function chatWithDocuments(body: ChatRequest) {
   const { data } = await api.post<ChatResponse>("/api/documents/chat", body, {
     timeout: 60000,
   });
+  return data;
+}
+
+export async function createChatSession() {
+  const { data } = await api.post<ConversationResponse>("/api/chat/sessions", {});
+  return data;
+}
+
+export async function deleteChatSession(sessionId: string) {
+  const { data } = await api.delete(`/api/chat/sessions/${sessionId}`);
   return data;
 }
 
