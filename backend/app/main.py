@@ -69,5 +69,6 @@ async def root():
             "daily_tip": f"{API_PREFIX}/daily-tip",
             "documents_upload": f"{API_PREFIX}/documents/upload",
             "documents": f"{API_PREFIX}/documents",
+            "documents_search": f"{API_PREFIX}/documents/search",
         },
     }

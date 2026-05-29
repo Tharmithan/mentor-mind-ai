@@ -19,6 +19,8 @@ from app.models.document import (
     DocumentChunk,
     DocumentListResponse,
     DocumentMeta,
+    SearchResponse,
+    SearchResult,
     UploadResponse,
 )
 from app.rag.pdf_processor import get_pdf_processor
@@ -74,6 +76,9 @@ class DocumentService:
             for c in processed.chunks
         ]
 
+        # PDF -> Chunks -> Embeddings -> Vector DB
+        indexed, embedding_model = DocumentService._index(document_id, filename, chunks)
+
         meta = DocumentMeta(
             document_id=document_id,
             filename=filename,
@@ -83,15 +88,31 @@ class DocumentService:
             total_chars=processed.total_chars,
             chunk_size=processed.chunk_size,
             chunk_overlap=processed.chunk_overlap,
+            indexed=indexed,
+            embedding_model=embedding_model,
         )
 
         DocumentService._persist(meta, chunks, raw_filename=raw_path.name)
 
+        note = " and indexed for semantic search" if indexed else ""
         return UploadResponse(
-            message=f"Processed '{filename}' into {meta.num_chunks} chunks.",
+            message=f"Processed '{filename}' into {meta.num_chunks} chunks{note}.",
             document=meta,
             preview_chunks=chunks[:PREVIEW_CHUNKS],
         )
+
+    @staticmethod
+    def _index(document_id: str, filename: str, chunks: list[DocumentChunk]) -> tuple[bool, str | None]:
+        """Embed + store chunks in the vector DB. Degrades gracefully on failure."""
+        try:
+            from app.rag.vector_store import get_vector_store
+
+            store = get_vector_store()
+            store.add_chunks(document_id, filename, chunks)
+            return True, store.embedding_model
+        except Exception as exc:  # pragma: no cover - keep upload working if indexing fails
+            print(f"[rag] indexing failed for {document_id}: {exc}")
+            return False, None
 
     @staticmethod
     def _persist(meta: DocumentMeta, chunks: list[DocumentChunk], raw_filename: str) -> None:
@@ -137,6 +158,15 @@ class DocumentService:
         )
 
     @staticmethod
+    def search(query: str, top_k: int = 5, document_id: str | None = None) -> SearchResponse:
+        """Semantic search across indexed document chunks."""
+        from app.rag.vector_store import get_vector_store
+
+        hits = get_vector_store().search(query, top_k=top_k, document_id=document_id)
+        results = [SearchResult(**h) for h in hits]
+        return SearchResponse(query=query, count=len(results), results=results)
+
+    @staticmethod
     def delete(document_id: str) -> bool:
         data = DocumentService._load(document_id)
         if data is None:
@@ -145,4 +175,10 @@ class DocumentService:
         if raw.name:
             raw.unlink(missing_ok=True)
         (PROCESSED_DIR / f"{document_id}.json").unlink(missing_ok=True)
+        try:
+            from app.rag.vector_store import get_vector_store
+
+            get_vector_store().delete_document(document_id)
+        except Exception as exc:  # pragma: no cover
+            print(f"[rag] vector delete failed for {document_id}: {exc}")
         return True

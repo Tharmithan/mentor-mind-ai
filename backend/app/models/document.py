@@ -21,6 +21,8 @@ class DocumentMeta(BaseModel):
     total_chars: int
     chunk_size: int
     chunk_overlap: int
+    indexed: bool = False
+    embedding_model: str | None = None
 
 
 class UploadResponse(BaseModel):
@@ -39,3 +41,25 @@ class ChunksResponse(BaseModel):
     filename: str
     num_chunks: int
     chunks: list[DocumentChunk]
+
+
+class SearchRequest(BaseModel):
+    query: str = Field(min_length=1)
+    top_k: int = Field(default=5, ge=1, le=20)
+    document_id: str | None = None
+
+
+class SearchResult(BaseModel):
+    chunk_id: str
+    document_id: str
+    filename: str
+    page: int | None = None
+    chunk_index: int
+    text: str
+    similarity: float
+
+
+class SearchResponse(BaseModel):
+    query: str
+    count: int
+    results: list[SearchResult]

@@ -6,9 +6,15 @@
     DELETE /api/documents/{id}            remove a document and its chunks
 """
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
-from app.models.document import ChunksResponse, DocumentListResponse, UploadResponse
+from app.models.document import (
+    ChunksResponse,
+    DocumentListResponse,
+    SearchRequest,
+    SearchResponse,
+    UploadResponse,
+)
 from app.rag.document_service import DocumentService
 
 router = APIRouter(prefix="/documents", tags=["documents"])
@@ -34,6 +40,28 @@ async def upload_document(file: UploadFile = File(...)) -> UploadResponse:
 async def list_documents() -> DocumentListResponse:
     """List all processed documents (most recent first)."""
     return DocumentService.list_documents()
+
+
+@router.post("/search", response_model=SearchResponse)
+async def search_documents(body: SearchRequest) -> SearchResponse:
+    """Semantic search over indexed chunks (e.g. 'Explain recursion')."""
+    try:
+        return DocumentService.search(body.query, top_k=body.top_k, document_id=body.document_id)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(status_code=500, detail=f"Search failed: {exc}") from exc
+
+
+@router.get("/search", response_model=SearchResponse)
+async def search_documents_get(
+    q: str = Query(..., min_length=1, description="Search query"),
+    top_k: int = Query(5, ge=1, le=20),
+    document_id: str | None = Query(None),
+) -> SearchResponse:
+    """Convenience GET for semantic search."""
+    try:
+        return DocumentService.search(q, top_k=top_k, document_id=document_id)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(status_code=500, detail=f"Search failed: {exc}") from exc
 
 
 @router.get("/{document_id}/chunks", response_model=ChunksResponse)
