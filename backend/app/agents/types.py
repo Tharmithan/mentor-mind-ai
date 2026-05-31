@@ -15,8 +15,12 @@ class AgentType(str, Enum):
 AGENT_META: dict[str, dict] = {
     AgentType.STUDY.value: {
         "label": "Study Agent",
-        "description": "Summaries, quizzes, flashcards, document Q&A, revision",
-        "examples": ["Summarize my notes", "Generate a quiz on ML", "Explain CNNs simply"],
+        "description": "Personal tutor — exam plans, revision, goals, daily recommendations, document Q&A",
+        "examples": [
+            "I have a Machine Learning exam in 14 days",
+            "What should I study today?",
+            "Analyze my weak subjects",
+        ],
     },
     AgentType.INTERVIEW.value: {
         "label": "Interview Agent",

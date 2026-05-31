@@ -381,3 +381,68 @@ export type AgentChatResponse = {
   actions?: AgentAction[];
   sources?: SearchResult[] | null;
 };
+
+// --- Week 6 Day 2: Study Agent tutor ---
+
+export type StudyPlanDay = {
+  day: number;
+  phase: string;
+  focus: string;
+  tasks: string[];
+  duration_hours: number;
+  resources: string[];
+};
+
+export type ExamStudyPlanRequest = {
+  subject: string;
+  days?: number;
+  hours_per_day?: number;
+  document_id?: string | null;
+};
+
+export type ExamStudyPlanResponse = {
+  subject: string;
+  days: number;
+  hours_per_day: number;
+  summary: string;
+  phases: string[];
+  schedule: StudyPlanDay[];
+  tips: string[];
+  used_llm?: boolean;
+};
+
+export type LearningGoal = {
+  id: string;
+  title: string;
+  subject: string;
+  target_days?: number | null;
+  target_date?: string | null;
+  progress_pct: number;
+  milestones_completed: string[];
+  notes: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type DailyStudyRecommendation = {
+  title: string;
+  description: string;
+  subject: string;
+  priority: string;
+  estimated_minutes: number;
+};
+
+export type DailyStudyRecommendationsResponse = {
+  summary: string;
+  weak_subjects: Array<{
+    subject: string;
+    score: number;
+    priority: string;
+    suggested_topics: string[];
+    resources: string[];
+    daily_minutes: number;
+  }>;
+  recommendations: DailyStudyRecommendation[];
+  focus_areas: string[];
+  study_streak_tip: string;
+};

@@ -25,6 +25,10 @@ import type {
   AgentChatRequest,
   AgentChatResponse,
   AgentInfo,
+  ExamStudyPlanRequest,
+  ExamStudyPlanResponse,
+  DailyStudyRecommendationsResponse,
+  LearningGoal,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -334,5 +338,26 @@ export async function agentChat(body: AgentChatRequest) {
   const { data } = await api.post<AgentChatResponse>("/api/agents/chat", body, {
     timeout: 90_000,
   });
+  return data;
+}
+
+export async function createExamStudyPlan(body: ExamStudyPlanRequest) {
+  const { data } = await api.post<ExamStudyPlanResponse>("/api/agents/study/plan", body, {
+    timeout: 60_000,
+  });
+  return data;
+}
+
+export async function getDailyStudyRecommendations() {
+  const { data } = await api.get<DailyStudyRecommendationsResponse>(
+    "/api/agents/study/daily"
+  );
+  return data;
+}
+
+export async function listLearningGoals(sessionId: string) {
+  const { data } = await api.get<{ session_id: string; goals: LearningGoal[] }>(
+    `/api/agents/study/goals/${sessionId}`
+  );
   return data;
 }

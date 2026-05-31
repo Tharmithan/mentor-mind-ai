@@ -16,12 +16,14 @@ _KEYWORDS: dict[AgentType, list[str]] = {
     AgentType.STUDY: [
         "summarize", "summary", "quiz", "flashcard", "explain", "study",
         "revision", "notes", "learn", "chapter", "homework", "exam prep",
-        "what is", "how does", "teach me",
+        "what is", "how does", "teach me", "exam in", "study plan", "days until",
+        "weak subject", "learning goal", "track progress", "revision plan",
+        "what should i study", "prepare for",
     ],
     AgentType.CAREER: [
         "career", "job", "internship", "roadmap", "skill gap", "performance",
-        "grades", "improve", "focus", "study plan", "recommend", "insight",
-        "dashboard", "predict", "weak subject", "strong subject",
+        "grades", "improve", "focus", "recommend", "insight",
+        "dashboard", "predict", "strong subject",
     ],
     AgentType.RESUME: [
         "resume", "cv", "curriculum vitae", "cover letter", "linkedin",

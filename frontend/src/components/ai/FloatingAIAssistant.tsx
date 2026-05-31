@@ -8,10 +8,10 @@ import type { AgentAction } from "@/lib/types/api";
 import { Markdown } from "@/components/assistant/Markdown";
 
 const QUICK_REPLIES = [
-  "How can I improve my weakest subject?",
-  "Start a behavioral mock interview",
+  "I have a Machine Learning exam in 14 days",
   "What should I study today?",
-  "Help me improve my resume summary",
+  "Analyze my weak subjects",
+  "Start a behavioral mock interview",
 ];
 
 type Turn = {
@@ -50,7 +50,7 @@ export function FloatingAIAssistant() {
     {
       role: "assistant",
       content:
-        "Hi! I'm your **AI Career & Learning Copilot**. Ask about studying, interviews, career planning, or your resume — I'll route you to the right specialist.",
+        "Hi! I'm your **AI Study Tutor**. I can build exam plans, suggest daily study tasks, track learning goals, and analyze weak subjects — ask me anything!",
     },
   ]);
   const [loading, setLoading] = useState(false);

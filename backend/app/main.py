@@ -12,6 +12,7 @@ from app.routes import (
     interview,
     recommendations,
     study_planner,
+    study_agent,
     study_tools,
     tip,
     user,
@@ -54,6 +55,8 @@ app.include_router(conversations.router, prefix=API_PREFIX)
 app.include_router(interview.router, prefix=API_PREFIX)
 # Week 6 Day 1 — AI Agent Router (Study / Interview / Career / Resume)
 app.include_router(agents.router, prefix=API_PREFIX)
+# Week 6 Day 2 — Study Agent tutor API
+app.include_router(study_agent.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -91,5 +94,8 @@ async def root():
             "agents_types": f"{API_PREFIX}/agents/types",
             "agents_chat": f"{API_PREFIX}/agents/chat",
             "agents_session": f"{API_PREFIX}/agents/session/{{session_id}}",
+            "study_agent_plan": f"{API_PREFIX}/agents/study/plan",
+            "study_agent_daily": f"{API_PREFIX}/agents/study/daily",
+            "study_agent_goals": f"{API_PREFIX}/agents/study/goals/{{session_id}}",
         },
     }
