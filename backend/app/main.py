@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -28,12 +30,22 @@ from app.routes import (
     user,
 )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if settings.auto_create_tables:
+        from app.database.init_db import create_tables
+
+        await create_tables()
+    yield
+
+
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
     version="0.8.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 app.add_middleware(

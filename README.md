@@ -163,8 +163,9 @@ Professional foundation shipped. See [docs/week1-summary.md](docs/week1-summary.
 | 5 | Mock interview module, STT, emotion detection | ✅ |
 | 6 | Multi-agent system, career, resume, coach dashboard | ✅ |
 | 7 | Personalization, memory, analytics, MLOps, monitoring, docs | ✅ |
+| 8 | Deployment, testing, security, portfolio | 🚧 |
 
-See [docs/week7-summary.md](docs/week7-summary.md) for Week 7 deliverables.
+See [docs/week8-day1-deployment.md](docs/week8-day1-deployment.md) for production deploy (Vercel + Railway + Supabase).
 
 ---
 

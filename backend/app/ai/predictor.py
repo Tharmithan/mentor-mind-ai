@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -19,7 +20,7 @@ from app.models.prediction import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-ML_MODELS = REPO_ROOT / "ml-models"
+ML_MODELS = Path(os.environ.get("ML_MODELS_DIR", str(REPO_ROOT / "ml-models")))
 BEST_MODEL_JSON = ML_MODELS / "best_model.json"
 
 _SCRIPTS = REPO_ROOT / "datasets" / "scripts"

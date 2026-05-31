@@ -6,13 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from app.config import settings
 
 _connect_args: dict = {}
-if settings.database_url.startswith("sqlite"):
+_db_url = settings.async_database_url
+if _db_url.startswith("sqlite"):
     _connect_args = {"check_same_thread": False}
 
 engine = create_async_engine(
-    settings.database_url,
+    _db_url,
     echo=settings.debug,
-    pool_pre_ping=not settings.database_url.startswith("sqlite"),
+    pool_pre_ping=not _db_url.startswith("sqlite"),
     connect_args=_connect_args,
 )
 

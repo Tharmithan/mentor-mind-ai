@@ -1,0 +1,20 @@
+# Build context: repo root (Dockerfile at root)
+node_modules
+frontend/node_modules
+frontend/.next
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+.venv
+backend/.venv
+backend/mentormind.db
+backend/uploads
+datasets/raw
+datasets/processed
+notebooks/.ipynb_checkpoints
+*.md
+!ml-models/**/*.json
+.env
+.env.*
+!.env.example

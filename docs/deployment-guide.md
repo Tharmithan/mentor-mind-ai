@@ -142,6 +142,8 @@ Production tip: copy `ml-models/` into the image or mount as volume.
 
 ## 5. Cloud Deployment
 
+> **Step-by-step guide:** [week8-day1-deployment.md](./week8-day1-deployment.md) (Vercel + Railway + Supabase)
+
 ### Recommended topology
 
 | Component | Platform | Notes |

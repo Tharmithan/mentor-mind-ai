@@ -94,6 +94,14 @@
 </details>
 
 <details>
+<summary>Week 8 — Deployment & Portfolio</summary>
+
+- [Day 1 — Deployment (Vercel + Railway + Supabase)](./week8-day1-deployment.md)
+- [Week 8 summary](./week8-summary.md)
+
+</details>
+
+<details>
 <summary>Week 7 — Production AI</summary>
 
 - [Day 1 — Personalization](./week7-day1-user-personalization-engine.md)
