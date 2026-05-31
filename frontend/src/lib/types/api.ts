@@ -860,3 +860,56 @@ export type EmailReportResponse = {
   message: string;
   to_email?: string | null;
 };
+
+// --- Week 7 Day 5: MLOps Pipeline ---
+
+export type ModelVersion = {
+  version: string;
+  performance_model: string;
+  pass_fail_model: string;
+  algorithm: string;
+  status: string;
+  metrics: { r2?: number | null; f1?: number | null; accuracy?: number | null };
+  trained_at: string;
+  git_commit?: string | null;
+  experiment_id?: string | null;
+};
+
+export type ExperimentRun = {
+  experiment_id: string;
+  run_name: string;
+  version: string;
+  algorithm: string;
+  status: string;
+  metrics: Record<string, number | null | undefined>;
+  params: Record<string, unknown>;
+  artifacts: string[];
+  started_at: string;
+  ended_at?: string | null;
+  mlflow_run_id?: string | null;
+};
+
+export type ExperimentComparison = {
+  experiments: ExperimentRun[];
+  best_regression: string;
+  best_classification: string;
+  recommendation: string;
+};
+
+export type MLOpsStatus = {
+  production_version: string | null;
+  total_versions: number;
+  total_experiments: number;
+  mlflow_enabled: boolean;
+  mlflow_uri: string | null;
+  docker_ready: boolean;
+  git_tracked: boolean;
+  last_training: string | null;
+  current_metrics: Record<string, unknown>;
+};
+
+export type RunExperimentRequest = {
+  algorithm?: string;
+  version_suffix?: string | null;
+  log_mlflow?: boolean;
+};

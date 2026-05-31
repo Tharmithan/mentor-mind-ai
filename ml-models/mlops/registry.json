@@ -1,0 +1,32 @@
+[
+  {
+    "version": "v2",
+    "performance_model": "performance_model_v2.joblib",
+    "pass_fail_model": "pass_fail_model_v2.joblib",
+    "algorithm": "random_forest",
+    "status": "production",
+    "metrics": {
+      "r2": 0.0091,
+      "f1": 0.6256,
+      "accuracy": 0.622
+    },
+    "trained_at": "2026-05-25T10:40:51.155803+00:00",
+    "git_commit": "23a4a2e",
+    "experiment_id": null
+  },
+  {
+    "version": "v3",
+    "performance_model": "performance_model_v3.joblib",
+    "pass_fail_model": "pass_fail_model_v3.joblib",
+    "algorithm": "xgboost_tuned",
+    "status": "archived",
+    "metrics": {
+      "r2": 0.0091,
+      "f1": 0.6256,
+      "accuracy": 0.622
+    },
+    "trained_at": "2026-05-25T10:45:58.535059+00:00",
+    "git_commit": "23a4a2e",
+    "experiment_id": null
+  }
+]

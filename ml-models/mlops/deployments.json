@@ -1,0 +1,10 @@
+[
+  {
+    "deployment_id": "93a6da171d",
+    "version": "v3",
+    "status": "deployed",
+    "deployed_at": "2026-05-31T06:49:44.279972+00:00",
+    "deployed_by": "api",
+    "notes": "smoke test"
+  }
+]

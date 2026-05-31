@@ -1,0 +1,46 @@
+[
+  {
+    "experiment_id": "v2",
+    "run_name": "seed_v2",
+    "version": "v2",
+    "algorithm": "random_forest",
+    "status": "completed",
+    "metrics": {
+      "r2": 0.9879,
+      "f1": 0.95,
+      "accuracy": 0.94
+    },
+    "params": {
+      "source": "seed_from_manifest"
+    },
+    "artifacts": [
+      "performance_model_v2.joblib",
+      "pass_fail_model_v2.joblib"
+    ],
+    "started_at": "2026-05-31T06:49:31.061363+00:00",
+    "ended_at": "2026-05-31T06:49:31.061363+00:00",
+    "mlflow_run_id": null
+  },
+  {
+    "experiment_id": "v3",
+    "run_name": "seed_v3",
+    "version": "v3",
+    "algorithm": "xgboost_tuned",
+    "status": "completed",
+    "metrics": {
+      "r2": 0.9912,
+      "f1": 0.96,
+      "accuracy": 0.94
+    },
+    "params": {
+      "source": "seed_from_manifest"
+    },
+    "artifacts": [
+      "performance_model_v3.joblib",
+      "pass_fail_model_v3.joblib"
+    ],
+    "started_at": "2026-05-25T10:45:58.535059+00:00",
+    "ended_at": "2026-05-25T10:45:58.535059+00:00",
+    "mlflow_run_id": null
+  }
+]

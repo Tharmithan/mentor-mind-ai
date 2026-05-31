@@ -14,6 +14,7 @@ import { PersonalizationPanel } from "@/components/coach/PersonalizationPanel";
 import { MemoryProgressPanel } from "@/components/coach/MemoryProgressPanel";
 import { LearningAnalyticsPanel } from "@/components/coach/LearningAnalyticsPanel";
 import { ReportGeneratorPanel } from "@/components/coach/ReportGeneratorPanel";
+import { MLOpsPanel } from "@/components/coach/MLOpsPanel";
 
 export function CoachDashboard() {
   const [data, setData] = useState<CoachOverviewResponse | null>(null);
@@ -112,6 +113,10 @@ export function CoachDashboard() {
 
       <AnimatedSection delay={0.145}>
         <ReportGeneratorPanel />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.146}>
+        <MLOpsPanel />
       </AnimatedSection>
 
       <AnimatedSection delay={0.15}>

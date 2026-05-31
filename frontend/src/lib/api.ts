@@ -50,6 +50,11 @@ import type {
   WeeklyReportData,
   MonthlyReportData,
   EmailReportResponse,
+  MLOpsStatus,
+  ModelVersion,
+  ExperimentRun,
+  ExperimentComparison,
+  RunExperimentRequest,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -654,5 +659,43 @@ export async function emailReport(
     null,
     { params: toEmail ? { to_email: toEmail } : undefined, timeout: 120_000 }
   );
+  return data;
+}
+
+// --- Week 7 Day 5: MLOps Pipeline ---
+
+export async function getMLOpsStatus() {
+  const { data } = await api.get<MLOpsStatus>("/api/mlops/status");
+  return data;
+}
+
+export async function getMLOpsModels() {
+  const { data } = await api.get<ModelVersion[]>("/api/mlops/models");
+  return data;
+}
+
+export async function getMLOpsExperiments() {
+  const { data } = await api.get<ExperimentRun[]>("/api/mlops/experiments");
+  return data;
+}
+
+export async function compareMLOpsExperiments(versions?: string[]) {
+  const { data } = await api.get<ExperimentComparison>("/api/mlops/experiments/compare", {
+    params: versions?.length ? { versions: versions.join(",") } : undefined,
+  });
+  return data;
+}
+
+export async function runMLOpsExperiment(body: RunExperimentRequest) {
+  const { data } = await api.post<{ status: string; note?: string }>(
+    "/api/mlops/experiments/run",
+    body,
+    { timeout: 120_000 }
+  );
+  return data;
+}
+
+export async function promoteMLOpsModel(version: string, notes = "") {
+  const { data } = await api.post("/api/mlops/models/promote", { version, notes });
   return data;
 }

@@ -21,6 +21,7 @@ from app.routes import (
     resume,
     learning_planner,
     learning_analytics,
+    mlops,
     reports,
     tip,
     user,
@@ -57,6 +58,7 @@ app.include_router(personalization.router, prefix=API_PREFIX)
 app.include_router(memory.router, prefix=API_PREFIX)
 app.include_router(learning_analytics.router, prefix=API_PREFIX)
 app.include_router(reports.router, prefix=API_PREFIX)
+app.include_router(mlops.router, prefix=API_PREFIX)
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 # Week 4 Day 2 — PDF processing / document upload
 app.include_router(documents.router, prefix=API_PREFIX)
@@ -108,6 +110,11 @@ async def root():
             "learning_analytics": f"{API_PREFIX}/learning-analytics/demo",
             "reports_weekly": f"{API_PREFIX}/reports/demo/weekly",
             "reports_monthly": f"{API_PREFIX}/reports/demo/monthly",
+            "mlops_status": f"{API_PREFIX}/mlops/status",
+            "mlops_models": f"{API_PREFIX}/mlops/models",
+            "mlops_experiments": f"{API_PREFIX}/mlops/experiments",
+            "mlops_compare": f"{API_PREFIX}/mlops/experiments/compare",
+            "mlops_promote": f"{API_PREFIX}/mlops/models/promote",
             "study_planner": f"{API_PREFIX}/study-planner",
             "daily_tip": f"{API_PREFIX}/daily-tip",
             "documents_upload": f"{API_PREFIX}/documents/upload",
