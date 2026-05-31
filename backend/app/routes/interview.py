@@ -1,17 +1,23 @@
-"""AI Interview Coach routes (Week 5 · Days 1–3).
+"""AI Interview Coach routes (Week 5 · Days 1–5).
 
     GET  /api/interview/types                    list HR / Technical / Behavioral
     GET  /api/interview/transcribe/status        Whisper availability
     POST /api/interview/transcribe               upload audio → transcript
+    GET  /api/interview/emotion/status           OpenCV + FER availability
+    POST /api/interview/emotion/analyze          upload frame → FER emotions
     POST /api/interview/start                    start session → first question
     GET  /api/interview/session/{id}             session state + history
-    POST /api/interview/session/{id}/answer      submit answer → AI evaluation
+    GET  /api/interview/session/{id}/coach       post-interview AI coach plan
+    POST /api/interview/session/{id}/answer      submit answer → evaluation + feedback
 """
 
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.interview.service import InterviewService
 from app.models.interview import (
+    CoachReport,
+    EmotionAnalyzeResponse,
+    EmotionStatusResponse,
     InterviewSessionResponse,
     InterviewTypeInfo,
     StartInterviewRequest,
@@ -48,6 +54,26 @@ async def transcribe_audio(file: UploadFile = File(...)) -> TranscribeResponse:
         raise HTTPException(status_code=500, detail=f"Transcription failed: {exc}") from exc
 
 
+@router.get("/emotion/status", response_model=EmotionStatusResponse)
+async def emotion_status() -> EmotionStatusResponse:
+    return InterviewService.emotion_status()
+
+
+@router.post("/emotion/analyze", response_model=EmotionAnalyzeResponse)
+async def analyze_emotion(file: UploadFile = File(...)) -> EmotionAnalyzeResponse:
+    try:
+        content = await file.read()
+        if not content:
+            raise HTTPException(status_code=400, detail="Empty image file")
+        return InterviewService.analyze_emotion_frame(content)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Emotion analysis failed: {exc}") from exc
+
+
 @router.post("/start", response_model=StartInterviewResponse)
 async def start_interview(body: StartInterviewRequest) -> StartInterviewResponse:
     try:
@@ -64,13 +90,24 @@ async def get_session(session_id: str) -> InterviewSessionResponse:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
 
 
+@router.get("/session/{session_id}/coach", response_model=CoachReport)
+async def get_coach_report(session_id: str) -> CoachReport:
+    try:
+        return await InterviewService.get_coach_report(session_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.post("/session/{session_id}/answer", response_model=SubmitAnswerResponse)
 async def submit_answer(
     session_id: str, body: SubmitAnswerRequest
 ) -> SubmitAnswerResponse:
     try:
         text = body.transcript or body.answer_text
-        return await InterviewService.submit_answer(session_id, text)
+        emotion = body.emotion_metrics.model_dump() if body.emotion_metrics else None
+        return await InterviewService.submit_answer(session_id, text, emotion)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except ValueError as exc:

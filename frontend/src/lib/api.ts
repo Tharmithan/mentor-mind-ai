@@ -24,6 +24,9 @@ import type {
   UserResponse,
 } from "@/lib/types/api";
 import type {
+  CoachReport,
+  EmotionAnalyzeResponse,
+  EmotionMetrics,
   InterviewTypeInfo,
   StartInterviewResponse,
   SubmitAnswerResponse,
@@ -274,11 +277,35 @@ export async function startInterview(interviewType: string, numQuestions = 5) {
 export async function submitInterviewAnswer(
   sessionId: string,
   answerText: string,
-  transcript?: string
+  options?: { transcript?: string; emotionMetrics?: EmotionMetrics }
 ) {
   const { data } = await api.post<SubmitAnswerResponse>(
     `/api/interview/session/${sessionId}/answer`,
-    { answer_text: answerText, transcript: transcript ?? undefined }
+    {
+      answer_text: answerText,
+      transcript: options?.transcript,
+      emotion_metrics: options?.emotionMetrics,
+    },
+    { timeout: 90_000 }
+  );
+  return data;
+}
+
+export async function analyzeInterviewEmotion(blob: Blob, filename = "frame.jpg") {
+  const form = new FormData();
+  form.append("file", blob, filename);
+  const { data } = await api.post<EmotionAnalyzeResponse>(
+    "/api/interview/emotion/analyze",
+    form,
+    { timeout: 60_000, headers: { "Content-Type": "multipart/form-data" } }
+  );
+  return data;
+}
+
+export async function getInterviewCoachReport(sessionId: string) {
+  const { data } = await api.get<CoachReport>(
+    `/api/interview/session/${sessionId}/coach`,
+    { timeout: 90_000 }
   );
   return data;
 }

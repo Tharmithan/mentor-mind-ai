@@ -84,5 +84,6 @@ async def root():
             "chat_sessions": f"{API_PREFIX}/chat/sessions",
             "interview": f"{API_PREFIX}/interview/start",
             "interview_transcribe": f"{API_PREFIX}/interview/transcribe",
+            "interview_emotion": f"{API_PREFIX}/interview/emotion/analyze",
         },
     }

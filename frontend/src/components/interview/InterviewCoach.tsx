@@ -9,14 +9,21 @@ import {
   ChevronRight,
   Trophy,
   RotateCcw,
+  Sparkles,
+  BookOpen,
+  Target,
 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { ConfidenceMeter } from "@/components/ui/ConfidenceMeter";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
 import { InterviewSetup } from "@/components/interview/InterviewSetup";
 import { VoiceRecorder } from "@/components/interview/VoiceRecorder";
-import { startInterview, submitInterviewAnswer } from "@/lib/api";
+import { EmotionPanel } from "@/components/interview/EmotionPanel";
+import { useEmotionDetection } from "@/hooks/useEmotionDetection";
+import type { EmotionMetricsPayload } from "@/lib/emotion/types";
+import { captureVideoFrame, mergeEmotionMetrics } from "@/lib/emotion/captureFrame";
+import { startInterview, submitInterviewAnswer, analyzeInterviewEmotion } from "@/lib/api";
 import type {
+  CoachReport,
   InterviewQuestion,
   InterviewSummary,
   TurnFeedback,
@@ -40,6 +47,7 @@ export function InterviewCoach() {
   const [currentQuestion, setCurrentQuestion] = useState<InterviewQuestion | null>(null);
   const [lastFeedback, setLastFeedback] = useState<TurnFeedback | null>(null);
   const [summary, setSummary] = useState<InterviewSummary | null>(null);
+  const [coachReport, setCoachReport] = useState<CoachReport | null>(null);
   const [input, setInput] = useState("");
   const [liveTranscript, setLiveTranscript] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,12 +56,33 @@ export function InterviewCoach() {
   const [micOn, setMicOn] = useState(false);
   const [cameraOn, setCameraOn] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const liveConfidence = lastFeedback?.scores?.confidence
-    ?? (lastFeedback?.confidence_score
-      ? Math.round(lastFeedback.confidence_score * 10)
-      : 72);
+  const emotionActive = cameraOn && phase !== "setup" && phase !== "complete";
+  const { snapshot, ready: emotionReady, error: emotionError, getSessionAverage, resetSamples } =
+    useEmotionDetection({
+      videoRef,
+      active: emotionActive,
+      audioStream,
+    });
+
+  function toEmotionPayload(
+    avg: ReturnType<typeof getSessionAverage>
+  ): EmotionMetricsPayload {
+    const samples = "sampleCount" in avg ? (avg.sampleCount as number) : 1;
+    return {
+      confidence: avg.confidence,
+      stress: avg.stress,
+      nervousness: avg.nervousness,
+      engagement: avg.engagement,
+      eye_contact: avg.eyeContact,
+      smile: avg.smile,
+      attention: avg.attention,
+      dominant_emotion: avg.dominantEmotion,
+      samples: Math.max(1, samples),
+    };
+  }
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -83,8 +112,10 @@ export function InterviewCoach() {
       setQuestionIndex(1);
       setCurrentQuestion(res.current_question);
       setPhase("question");
+      setCameraOn(true);
       setLastFeedback(null);
       setSummary(null);
+      setCoachReport(null);
     } catch {
       setError("Could not start interview — is the backend running?");
     } finally {
@@ -98,11 +129,29 @@ export function InterviewCoach() {
     setInput("");
     setPhase("analyzing");
     setError(null);
+    const emotionPayload =
+      cameraOn || micOn ? toEmotionPayload(getSessionAverage()) : undefined;
     try {
-      const res = await submitInterviewAnswer(sessionId, answer);
+      let merged = emotionPayload;
+      if (cameraOn && videoRef.current && emotionPayload) {
+        const frame = await captureVideoFrame(videoRef.current);
+        if (frame) {
+          try {
+            const fer = await analyzeInterviewEmotion(frame);
+            merged = mergeEmotionMetrics(emotionPayload, fer);
+          } catch {
+            /* server FER optional — client metrics still sent */
+          }
+        }
+      }
+      const res = await submitInterviewAnswer(sessionId, answer, {
+        emotionMetrics: merged,
+      });
+      resetSamples();
       setLastFeedback(res.turn);
       if (res.completed && res.summary) {
         setSummary(res.summary);
+        setCoachReport(res.coach_report ?? res.summary.coach_report ?? null);
         setPhase("complete");
         setCurrentQuestion(null);
         setPendingQuestion(null);
@@ -121,6 +170,7 @@ export function InterviewCoach() {
       setCurrentQuestion(pendingQuestion);
       setPendingQuestion(null);
       setQuestionIndex((i) => i + 1);
+      resetSamples();
       setPhase("question");
     }
   }
@@ -131,9 +181,12 @@ export function InterviewCoach() {
     setCurrentQuestion(null);
     setLastFeedback(null);
     setSummary(null);
+    setCoachReport(null);
     setPendingQuestion(null);
     setInput("");
     setError(null);
+    setAudioStream(null);
+    resetSamples();
   }
 
   if (phase === "setup") {
@@ -151,11 +204,20 @@ export function InterviewCoach() {
         <GlassCard className="overflow-hidden p-0" hover={false}>
           <div className="relative aspect-[4/3] bg-slate-900">
             {cameraOn && !cameraError ? (
-              <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover" />
+              <>
+                <video ref={videoRef} autoPlay playsInline muted className="h-full w-full scale-x-[-1] object-cover" />
+                {emotionReady && snapshot.faceDetected && (
+                  <div className="absolute left-2 top-2 rounded-md bg-black/50 px-2 py-1 text-[10px] text-emerald-400">
+                    {snapshot.dominantEmotion} · {snapshot.confidence}%
+                  </div>
+                )}
+              </>
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 p-4 text-center">
                 <Video className="h-10 w-10 text-violet-400/60" />
-                <p className="text-xs text-slate-500">{cameraError ?? "Optional webcam preview"}</p>
+                <p className="text-xs text-slate-500">
+                  {cameraError ?? "Enable camera for live confidence tracking"}
+                </p>
               </div>
             )}
             <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-3">
@@ -171,6 +233,7 @@ export function InterviewCoach() {
               <VoiceRecorder
                 active={micOn}
                 onActiveChange={setMicOn}
+                onAudioStream={setAudioStream}
                 onLiveTranscript={setLiveTranscript}
                 onTranscript={(text) => {
                   setInput((prev) => (prev ? `${prev} ${text}` : text).trim());
@@ -182,7 +245,10 @@ export function InterviewCoach() {
         </GlassCard>
 
         <GlassCard className="p-5" hover={false}>
-          <ConfidenceMeter value={liveConfidence} label="Confidence" />
+          <EmotionPanel snapshot={snapshot} ready={emotionReady} />
+          {emotionError && (
+            <p className="mt-2 text-[10px] text-amber-400">{emotionError}</p>
+          )}
           {lastFeedback?.scores && (
             <div className="mt-4 grid grid-cols-2 gap-2 text-center">
               <ScorePill label="Communication" value={lastFeedback.scores.communication} pct />
@@ -220,7 +286,11 @@ export function InterviewCoach() {
 
           <div className="flex-1 space-y-4 overflow-y-auto p-5">
             {phase === "complete" && summary && (
-              <CompleteSummary summary={summary} onRestart={reset} />
+              <CompleteSummary
+                summary={summary}
+                coachReport={coachReport}
+                onRestart={reset}
+              />
             )}
 
             {phase !== "complete" && currentQuestion && (
@@ -241,7 +311,7 @@ export function InterviewCoach() {
             {phase === "analyzing" && (
               <div className="flex items-center gap-3 pl-11">
                 <Loader2 className="h-5 w-5 animate-spin text-violet-400" />
-                <p className="text-sm text-slate-400">Analyzing your answer…</p>
+                <p className="text-sm text-slate-400">Generating AI feedback…</p>
               </div>
             )}
 
@@ -337,6 +407,27 @@ function FeedbackCard({
         </div>
       )}
       <p className="mt-2 text-sm text-slate-200">{feedback.feedback_summary}</p>
+      {feedback.human_feedback && feedback.human_feedback.length > 0 && (
+        <div className="mt-3 space-y-2 rounded-lg border border-white/10 bg-white/5 p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+            Coach feedback
+          </p>
+          {feedback.human_feedback.map((line, i) => (
+            <p key={i} className="text-sm italic text-slate-200">
+              &ldquo;{line}&rdquo;
+            </p>
+          ))}
+        </div>
+      )}
+      {feedback.weaknesses && feedback.weaknesses.length > 0 && (
+        <ul className="mt-2 space-y-1">
+          {feedback.weaknesses.map((w, i) => (
+            <li key={i} className="text-xs text-rose-300/90">
+              − {w}
+            </li>
+          ))}
+        </ul>
+      )}
       {ideal && (
         <div className="mt-4 rounded-lg border border-violet-500/20 bg-violet-950/30 p-3">
           <p className="text-[10px] font-semibold uppercase text-violet-400">
@@ -364,15 +455,40 @@ function FeedbackCard({
           ))}
         </ul>
       )}
-      {feedback.improvements.length > 0 && (
+      {(feedback.improvement_suggestions?.length ?? 0) > 0 ? (
         <ul className="mt-2 space-y-1">
-          {feedback.improvements.map((s, i) => (
+          {feedback.improvement_suggestions!.map((s, i) => (
             <li key={i} className="text-xs text-amber-300/80">
               → {s}
             </li>
           ))}
         </ul>
+      ) : (
+        feedback.improvements.length > 0 && (
+          <ul className="mt-2 space-y-1">
+            {feedback.improvements.map((s, i) => (
+              <li key={i} className="text-xs text-amber-300/80">
+                → {s}
+              </li>
+            ))}
+          </ul>
+        )
       )}
+      {feedback.emotion_metrics?.delivery_tips &&
+        feedback.emotion_metrics.delivery_tips.length > 0 && (
+          <div className="mt-3 rounded-lg border border-blue-500/20 bg-blue-950/25 p-3">
+            <p className="text-[10px] font-semibold uppercase text-blue-400">
+              Delivery (webcam + voice)
+            </p>
+            <ul className="mt-1 space-y-1">
+              {feedback.emotion_metrics.delivery_tips.map((t, i) => (
+                <li key={i} className="text-xs text-slate-300">
+                  • {t}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       <button
         onClick={onContinue}
         className="mt-4 inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white hover:bg-violet-500"
@@ -395,23 +511,125 @@ function Metric({ label, value }: { label: string; value: number }) {
 
 function CompleteSummary({
   summary,
+  coachReport,
   onRestart,
 }: {
   summary: InterviewSummary;
+  coachReport: CoachReport | null;
   onRestart: () => void;
 }) {
+  const coach = coachReport ?? summary.coach_report;
+
   return (
-    <div className="rounded-xl border border-violet-500/30 bg-violet-950/30 p-6 text-center">
-      <Trophy className="mx-auto h-10 w-10 text-amber-400" />
-      <h3 className="mt-3 text-lg font-bold text-white">Interview complete</h3>
-      <p className="mt-1 text-3xl font-bold text-violet-300">{summary.overall_score}/10</p>
-      <p className="text-sm text-slate-400">
-        {summary.questions_answered} questions · Communication {summary.communication_score} ·
-        Technical {summary.technical_score}
-      </p>
+    <div className="space-y-4 text-left">
+      <div className="rounded-xl border border-violet-500/30 bg-violet-950/30 p-6 text-center">
+        <Trophy className="mx-auto h-10 w-10 text-amber-400" />
+        <h3 className="mt-3 text-lg font-bold text-white">Interview complete</h3>
+        <p className="mt-1 text-3xl font-bold text-violet-300">{summary.overall_score}/10</p>
+        <p className="text-sm text-slate-400">
+          {summary.questions_answered} questions · Communication {summary.communication_score} ·
+          Technical {summary.technical_score}
+        </p>
+      </div>
+
+      {coach && (
+        <div className="rounded-xl border border-violet-500/20 bg-slate-900/60 p-5">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-violet-400" />
+            <h4 className="font-semibold text-white">AI Interview Coach</h4>
+            {coach.used_llm && (
+              <span className="rounded bg-violet-500/20 px-2 py-0.5 text-[10px] text-violet-300">
+                AI
+              </span>
+            )}
+          </div>
+          <p className="mt-3 text-sm text-slate-300">{coach.overview}</p>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-[10px] font-semibold uppercase text-emerald-400">Strengths</p>
+              <ul className="mt-1 space-y-1">
+                {coach.strengths.map((s, i) => (
+                  <li key={i} className="text-xs text-slate-300">
+                    + {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase text-rose-400">Weaknesses</p>
+              <ul className="mt-1 space-y-1">
+                {coach.weaknesses.map((w, i) => (
+                  <li key={i} className="text-xs text-slate-300">
+                    − {w}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-violet-400">
+              <Target className="h-3.5 w-3.5" />
+              Improvement roadmap
+            </p>
+            <div className="mt-2 space-y-3">
+              {coach.improvement_roadmap.map((step, i) => (
+                <div key={i} className="rounded-lg border border-white/10 bg-white/5 p-3">
+                  <p className="text-xs font-semibold text-white">
+                    {step.phase} · {step.focus}
+                  </p>
+                  <ul className="mt-1 space-y-0.5">
+                    {step.actions.map((a, j) => (
+                      <li key={j} className="text-[11px] text-slate-400">
+                        • {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase text-blue-400">
+              <BookOpen className="h-3.5 w-3.5" />
+              Recommended learning topics
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {coach.learning_topics.map((t, i) => (
+                <span
+                  key={i}
+                  className="rounded-full bg-blue-500/10 px-2.5 py-1 text-[11px] text-blue-200 ring-1 ring-blue-500/20"
+                >
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <p className="text-[10px] font-semibold uppercase text-amber-400">Practice questions</p>
+            <ul className="mt-2 space-y-2">
+              {coach.practice_questions.map((pq, i) => (
+                <li
+                  key={i}
+                  className="rounded-lg border border-amber-500/10 bg-amber-950/20 p-3 text-xs"
+                >
+                  <p className="font-medium text-slate-200">{pq.question}</p>
+                  <p className="mt-1 text-slate-500">
+                    {pq.category} — {pq.reason}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
       <button
         onClick={onRestart}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-blue-600 px-6 py-2.5 text-sm font-semibold text-white"
       >
         <RotateCcw className="h-4 w-4" />
         Practice again

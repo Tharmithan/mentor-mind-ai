@@ -21,6 +21,9 @@ build/
 # Local SQLite dev database
 backend/mentormind.db
 
+# Week 5 — FER ONNX (downloaded on first analyze)
+backend/models/emotion/*.onnx
+
 # Week 4 — uploaded documents & processed chunks (keep dir structure only)
 backend/uploads/**
 !backend/uploads/.gitkeep

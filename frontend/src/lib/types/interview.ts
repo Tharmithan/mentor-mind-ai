@@ -36,6 +36,34 @@ export type IdealComparison = {
   similarity_pct: number;
 };
 
+export type EmotionMetrics = {
+  confidence: number;
+  stress: number;
+  nervousness: number;
+  engagement: number;
+  eye_contact: number;
+  smile: number;
+  attention: number;
+  dominant_emotion: string;
+  samples: number;
+  delivery_tips?: string[];
+};
+
+export type EmotionAnalyzeResponse = {
+  face_detected: boolean;
+  dominant_emotion: string;
+  confidence: number;
+  stress: number;
+  nervousness: number;
+  engagement: number;
+  smile: number;
+  attention: number;
+  eye_contact: number;
+  emotions: Record<string, number>;
+  model: string;
+  note?: string | null;
+};
+
 export type TurnFeedback = {
   question_id: string;
   question_text: string;
@@ -49,6 +77,32 @@ export type TurnFeedback = {
   improvements: string[];
   scores?: EvaluationScores;
   ideal_comparison?: IdealComparison;
+  used_llm?: boolean;
+  human_feedback?: string[];
+  weaknesses?: string[];
+  improvement_suggestions?: string[];
+  emotion_metrics?: EmotionMetrics;
+};
+
+export type RoadmapPhase = {
+  phase: string;
+  focus: string;
+  actions: string[];
+};
+
+export type PracticeQuestion = {
+  question: string;
+  category: string;
+  reason: string;
+};
+
+export type CoachReport = {
+  overview: string;
+  strengths: string[];
+  weaknesses: string[];
+  improvement_roadmap: RoadmapPhase[];
+  learning_topics: string[];
+  practice_questions: PracticeQuestion[];
   used_llm?: boolean;
 };
 
@@ -67,6 +121,7 @@ export type InterviewSummary = {
   questions_answered: number;
   highlights: string[];
   focus_areas: string[];
+  coach_report?: CoachReport;
 };
 
 export type StartInterviewResponse = {
@@ -84,4 +139,5 @@ export type SubmitAnswerResponse = {
   completed: boolean;
   next_question: InterviewQuestion | null;
   summary: InterviewSummary | null;
+  coach_report?: CoachReport | null;
 };

@@ -44,6 +44,7 @@ interface VoiceRecorderProps {
   onActiveChange: (active: boolean) => void;
   onTranscript: (text: string) => void;
   onLiveTranscript?: (text: string) => void;
+  onAudioStream?: (stream: MediaStream | null) => void;
   className?: string;
 }
 
@@ -52,6 +53,7 @@ export function VoiceRecorder({
   onActiveChange,
   onTranscript,
   onLiveTranscript,
+  onAudioStream,
   className = "",
 }: VoiceRecorderProps) {
   const [liveText, setLiveText] = useState("");
@@ -127,7 +129,9 @@ export function VoiceRecorder({
       recorder.onstop = () => stream.getTracks().forEach((t) => t.stop());
       recorder.start(250);
       mediaRecorderRef.current = recorder;
+      onAudioStream?.(stream);
     } catch {
+      onAudioStream?.(null);
       /* mic denied — live speech may still work in some browsers */
     }
 
@@ -180,6 +184,7 @@ export function VoiceRecorder({
       if (mediaRecorderRef.current?.state === "recording") {
         mediaRecorderRef.current.stop();
       }
+      onAudioStream?.(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);

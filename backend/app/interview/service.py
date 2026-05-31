@@ -1,12 +1,17 @@
-"""Interview service layer (Week 5 · Days 1–3)."""
+"""Interview service layer (Week 5 · Days 1–4)."""
 
 from pathlib import Path
 
+from app.interview.fer_detector import analyze_frame_bytes, fer_model_available, opencv_available
+from app.interview.feedback_generator import generate_coach_report
 from app.interview.question_bank import get_question_bank
 from app.interview.transcription import transcribe_bytes, whisper_available
 from app.interview.session import get_session_store
 from app.interview.types import INTERVIEW_TYPE_META, InterviewType
 from app.models.interview import (
+    CoachReport,
+    EmotionAnalyzeResponse,
+    EmotionStatusResponse,
     InterviewQuestionOut,
     InterviewSessionResponse,
     InterviewSummary,
@@ -17,6 +22,22 @@ from app.models.interview import (
     TranscribeStatusResponse,
     TurnFeedback,
 )
+
+
+def _coach_report_from_dict(data: dict | None) -> CoachReport | None:
+    if not data:
+        return None
+    return CoachReport(**data)
+
+
+def _summary_from_dict(data: dict | None) -> InterviewSummary | None:
+    if not data:
+        return None
+    payload = dict(data)
+    coach = payload.pop("coach_report", None)
+    if coach:
+        payload["coach_report"] = CoachReport(**coach)
+    return InterviewSummary(**payload)
 
 
 class InterviewService:
@@ -53,7 +74,11 @@ class InterviewService:
         )
 
     @staticmethod
-    async def submit_answer(session_id: str, answer_text: str) -> SubmitAnswerResponse:
+    async def submit_answer(
+        session_id: str,
+        answer_text: str,
+        emotion_metrics: dict | None = None,
+    ) -> SubmitAnswerResponse:
         store = get_session_store()
         session = store.get(session_id)
         if session is None:
@@ -62,7 +87,7 @@ class InterviewService:
             raise ValueError("Interview already completed")
 
         text = answer_text.strip()
-        result = await session.submit_answer(text)
+        result = await session.submit_answer(text, emotion_metrics=emotion_metrics)
         store.save(session)
 
         turn = TurnFeedback(**result["turn"])
@@ -71,9 +96,8 @@ class InterviewService:
             if result.get("next_question")
             else None
         )
-        summary = (
-            InterviewSummary(**result["summary"]) if result.get("summary") else None
-        )
+        summary = _summary_from_dict(result.get("summary"))
+        coach = _coach_report_from_dict(result.get("coach_report"))
         return SubmitAnswerResponse(
             session_id=session_id,
             status=session.status.value,
@@ -81,6 +105,7 @@ class InterviewService:
             completed=result["completed"],
             next_question=next_q,
             summary=summary,
+            coach_report=coach,
         )
 
     @staticmethod
@@ -90,6 +115,7 @@ class InterviewService:
             raise KeyError("Session not found")
         data = session.to_dict()
         cq = data.get("current_question")
+        summary = _summary_from_dict(data.get("summary"))
         return InterviewSessionResponse(
             session_id=data["session_id"],
             interview_type=data["interview_type"],
@@ -98,10 +124,25 @@ class InterviewService:
             total_questions=data["total_questions"],
             current_question=InterviewQuestionOut(**cq) if cq else None,
             turns=[TurnFeedback(**t) for t in data["turns"]],
-            summary=InterviewSummary(**data["summary"]) if data.get("summary") else None,
+            summary=summary,
+            coach_report=_coach_report_from_dict(data.get("coach_report"))
+            or (summary.coach_report if summary else None),
             created_at=data["created_at"],
             completed_at=data.get("completed_at"),
         )
+
+    @staticmethod
+    async def get_coach_report(session_id: str) -> CoachReport:
+        store = get_session_store()
+        session = store.get(session_id)
+        if session is None:
+            raise KeyError("Session not found")
+        if not session.is_complete:
+            raise ValueError("Interview not completed yet")
+        if not session.coach_report:
+            session.coach_report = await generate_coach_report(session)
+            store.save(session)
+        return CoachReport(**session.coach_report)
 
     @staticmethod
     def transcribe_status() -> TranscribeStatusResponse:
@@ -126,4 +167,39 @@ class InterviewService:
             language=result.get("language"),
             duration_sec=result.get("duration_sec"),
             whisper_available=True,
+        )
+
+    @staticmethod
+    def emotion_status() -> EmotionStatusResponse:
+        ok_cv = opencv_available()
+        ok_fer = fer_model_available()
+        note = (
+            "OpenCV + FER+ ready — POST a frame to /api/interview/emotion/analyze"
+            if ok_fer
+            else "Install opencv-python-headless; FER model downloads on first analyze."
+            if ok_cv
+            else "pip install -r requirements-interview.txt"
+        )
+        return EmotionStatusResponse(
+            opencv_available=ok_cv,
+            fer_model_available=ok_fer,
+            note=note,
+        )
+
+    @staticmethod
+    def analyze_emotion_frame(content: bytes) -> EmotionAnalyzeResponse:
+        result = analyze_frame_bytes(content)
+        return EmotionAnalyzeResponse(
+            face_detected=result.get("face_detected", False),
+            dominant_emotion=result.get("dominant_emotion", "neutral"),
+            confidence=float(result.get("confidence", 50)),
+            stress=float(result.get("stress", 40)),
+            nervousness=float(result.get("nervousness", 40)),
+            engagement=float(result.get("engagement", 40)),
+            smile=float(result.get("smile", 0)),
+            attention=float(result.get("attention", 50)),
+            eye_contact=float(result.get("eye_contact", 50)),
+            emotions=result.get("emotions", {}),
+            model=result.get("model", "ferplus-onnx"),
+            note=result.get("note"),
         )

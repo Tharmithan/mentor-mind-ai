@@ -13,7 +13,9 @@ from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 
+from app.interview.emotion_analyzer import delivery_tips
 from app.interview.evaluator import evaluate_answer
+from app.interview.feedback_generator import generate_coach_report, generate_turn_feedback
 from app.interview.question_bank import InterviewQuestion, get_question_bank
 
 SESSIONS_DIR = Path(__file__).resolve().parents[2] / "uploads" / "interview_sessions"
@@ -39,6 +41,10 @@ class TurnRecord:
     scores: dict | None = None
     ideal_comparison: dict | None = None
     used_llm: bool = False
+    human_feedback: list[str] = field(default_factory=list)
+    weaknesses: list[str] = field(default_factory=list)
+    improvement_suggestions: list[str] = field(default_factory=list)
+    emotion_metrics: dict | None = None
 
     def to_dict(self) -> dict:
         d = {
@@ -53,11 +59,16 @@ class TurnRecord:
             "strengths": self.strengths,
             "improvements": self.improvements,
             "used_llm": self.used_llm,
+            "human_feedback": self.human_feedback,
+            "weaknesses": self.weaknesses,
+            "improvement_suggestions": self.improvement_suggestions,
         }
         if self.scores:
             d["scores"] = self.scores
         if self.ideal_comparison:
             d["ideal_comparison"] = self.ideal_comparison
+        if self.emotion_metrics:
+            d["emotion_metrics"] = self.emotion_metrics
         return d
 
 
@@ -69,6 +80,7 @@ class InterviewSession:
     questions: list[InterviewQuestion] = field(default_factory=list)
     current_index: int = 0
     turns: list[TurnRecord] = field(default_factory=list)
+    coach_report: dict | None = None
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     completed_at: str | None = None
 
@@ -85,13 +97,25 @@ class InterviewSession:
             return None
         return self.questions[self.current_index]
 
-    async def submit_answer(self, answer_text: str) -> dict:
+    async def submit_answer(
+        self, answer_text: str, emotion_metrics: dict | None = None
+    ) -> dict:
         """Evaluate answer (AI + heuristics), record turn, advance index."""
         q = self.current_question()
         if q is None:
             raise ValueError("No active question in this session.")
 
         analysis = await evaluate_answer(q, answer_text)
+        feedback = await generate_turn_feedback(q, answer_text.strip(), analysis)
+
+        emotion_out = None
+        if emotion_metrics:
+            tips = delivery_tips(emotion_metrics)
+            emotion_out = {**emotion_metrics, "delivery_tips": tips}
+            feedback["improvement_suggestions"] = list(
+                dict.fromkeys(feedback.get("improvement_suggestions", []) + tips)
+            )[:5]
+
         turn = TurnRecord(
             question_id=q.id,
             question_text=q.text,
@@ -101,11 +125,15 @@ class InterviewSession:
             technical_score=analysis["technical_score"],
             confidence_score=analysis["confidence_score"],
             feedback_summary=analysis["feedback_summary"],
-            strengths=analysis["strengths"],
+            strengths=feedback.get("strengths", analysis["strengths"]),
             improvements=analysis["improvements"],
             scores=analysis.get("scores"),
             ideal_comparison=analysis.get("ideal_comparison"),
-            used_llm=analysis.get("used_llm", False),
+            used_llm=analysis.get("used_llm", False) or feedback.get("used_llm", False),
+            human_feedback=feedback.get("human_feedback", []),
+            weaknesses=feedback.get("weaknesses", []),
+            improvement_suggestions=feedback.get("improvement_suggestions", []),
+            emotion_metrics=emotion_out,
         )
         self.turns.append(turn)
         self.current_index += 1
@@ -113,6 +141,7 @@ class InterviewSession:
         if self.current_index >= len(self.questions):
             self.status = SessionStatus.COMPLETED
             self.completed_at = datetime.now(timezone.utc).isoformat()
+            self.coach_report = await generate_coach_report(self)
 
         next_q = self.current_question()
         return {
@@ -121,13 +150,14 @@ class InterviewSession:
             "completed": self.is_complete,
             "next_question": next_q.to_dict() if next_q else None,
             "summary": self.summary() if self.is_complete else None,
+            "coach_report": self.coach_report,
         }
 
     def summary(self) -> dict | None:
         if not self.turns:
             return None
         n = len(self.turns)
-        return {
+        base = {
             "overall_score": round(sum(t.overall_score for t in self.turns) / n, 1),
             "communication_score": round(sum(t.communication_score for t in self.turns) / n, 1),
             "technical_score": round(sum(t.technical_score for t in self.turns) / n, 1),
@@ -136,6 +166,9 @@ class InterviewSession:
             "highlights": [t.strengths[0] for t in self.turns if t.strengths][:3],
             "focus_areas": [t.improvements[0] for t in self.turns if t.improvements][:3],
         }
+        if self.coach_report:
+            base["coach_report"] = self.coach_report
+        return base
 
     def to_dict(self) -> dict:
         cq = self.current_question()
@@ -148,6 +181,7 @@ class InterviewSession:
             "current_question": cq.to_dict() if cq else None,
             "turns": [t.to_dict() for t in self.turns],
             "summary": self.summary() if self.is_complete else None,
+            "coach_report": self.coach_report,
             "created_at": self.created_at,
             "completed_at": self.completed_at,
         }
@@ -169,6 +203,7 @@ class InterviewSession:
             created_at=data.get("created_at", ""),
             completed_at=data.get("completed_at"),
         )
+        session.coach_report = data.get("coach_report")
         for t in data.get("turns", []):
             session.turns.append(
                 TurnRecord(
@@ -185,6 +220,10 @@ class InterviewSession:
                     scores=t.get("scores"),
                     ideal_comparison=t.get("ideal_comparison"),
                     used_llm=t.get("used_llm", False),
+                    human_feedback=t.get("human_feedback", []),
+                    weaknesses=t.get("weaknesses", []),
+                    improvement_suggestions=t.get("improvement_suggestions", []),
+                    emotion_metrics=t.get("emotion_metrics"),
                 )
             )
         return session
