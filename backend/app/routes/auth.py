@@ -9,7 +9,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Request
+from typing import Annotated
+
+from fastapi import APIRouter, Body, Depends, Request
 
 from app.auth.dependencies import get_current_user_required
 from app.auth.rate_limit import limiter
@@ -29,42 +31,42 @@ from sqlalchemy.ext.asyncio import AsyncSession
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=TokenResponse)
 @limiter.limit(f"{settings.auth_rate_limit_per_minute}/minute")
+@router.post("/register", response_model=TokenResponse)
 async def register(
     request: Request,
-    body: RegisterRequest,
+    payload: Annotated[RegisterRequest, Body()],
     db: AsyncSession | None = Depends(get_optional_db),
 ) -> TokenResponse:
-    return await AuthService.register(db, body)
+    return await AuthService.register(db, payload)
 
 
-@router.post("/login", response_model=TokenResponse)
 @limiter.limit(f"{settings.auth_rate_limit_per_minute}/minute")
+@router.post("/login", response_model=TokenResponse)
 async def login(
     request: Request,
-    body: LoginRequest,
+    payload: Annotated[LoginRequest, Body()],
     db: AsyncSession | None = Depends(get_optional_db),
 ) -> TokenResponse:
-    return await AuthService.login(db, body)
+    return await AuthService.login(db, payload)
 
 
-@router.post("/refresh", response_model=TokenResponse)
 @limiter.limit(f"{settings.auth_rate_limit_per_minute}/minute")
+@router.post("/refresh", response_model=TokenResponse)
 async def refresh_tokens(
     request: Request,
-    body: RefreshRequest,
+    payload: Annotated[RefreshRequest, Body()],
     db: AsyncSession | None = Depends(get_optional_db),
 ) -> TokenResponse:
-    return await AuthService.refresh(db, body.refresh_token)
+    return await AuthService.refresh(db, payload.refresh_token)
 
 
 @router.post("/logout", response_model=MessageResponse)
 async def logout(
-    body: RefreshRequest,
+    payload: Annotated[RefreshRequest, Body()],
     db: AsyncSession | None = Depends(get_optional_db),
 ) -> MessageResponse:
-    await AuthService.logout(db, body.refresh_token)
+    await AuthService.logout(db, payload.refresh_token)
     return MessageResponse(message="Logged out")
 
 
