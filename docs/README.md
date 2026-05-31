@@ -112,6 +112,7 @@
 - [Day 3 — Testing (unit, integration, e2e)](./week8-day3-testing.md)
 - [Day 4 — Performance optimization](./week8-day4-performance.md)
 - [Day 5 — Professional documentation](./week8-day5-documentation.md)
+- [Day 6 — GitHub optimization](./week8-day6-github-optimization.md)
 - [Week 8 summary](./week8-summary.md)
 
 </details>

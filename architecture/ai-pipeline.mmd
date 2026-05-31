@@ -1,0 +1,51 @@
+flowchart LR
+    subgraph Input["Student Input"]
+        Metrics["Study hours · Attendance · Sleep"]
+        Notes["PDF / TXT notes"]
+        Voice["Interview answers · Audio"]
+    end
+
+    subgraph ML["ML Prediction Pipeline"]
+        Features["Feature engineering<br/>productivity · wellness · consistency"]
+        Models["joblib models<br/>RF / XGBoost"]
+        SHAP["SHAP explainability"]
+        PredictOut["Score · Risk · Burnout %"]
+    end
+
+    subgraph RAG["RAG Pipeline"]
+        Parse["PDF / text extraction"]
+        Chunk["Chunking"]
+        Embed["Sentence Transformers"]
+        Chroma["ChromaDB vector store"]
+        Retrieve["Semantic search top-k"]
+        LLM["OpenAI GPT (optional)"]
+        ChatOut["Grounded answer + sources"]
+    end
+
+    subgraph Interview["Interview Pipeline"]
+        QGen["Question bank<br/>HR · Technical · Behavioral"]
+        Eval["Semantic + LLM evaluation"]
+        STT["Whisper STT"]
+        FER["Emotion / confidence FER"]
+        CoachOut["Scores · Feedback · Coach report"]
+    end
+
+    subgraph Recs["Recommendation Engine"]
+        Weak["Weak subject detection"]
+        Rules["Rule-based + collaborative"]
+        Plan["Daily study planner"]
+        RecOut["Recommendations + revision order"]
+    end
+
+    Metrics --> Features --> Models --> PredictOut
+    Models --> SHAP
+
+    Notes --> Parse --> Chunk --> Embed --> Chroma
+    Chroma --> Retrieve --> LLM --> ChatOut
+
+    Voice --> STT
+    QGen --> Eval --> CoachOut
+    FER --> Eval
+
+    Metrics --> Weak --> Rules --> RecOut
+    Weak --> Plan --> RecOut

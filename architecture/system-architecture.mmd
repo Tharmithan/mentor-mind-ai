@@ -1,0 +1,55 @@
+flowchart TB
+    subgraph Frontend["Frontend (Next.js 16 · TypeScript)"]
+        Pages["Pages: / · /dashboard · /coach · /assistant · /interview · /planner · /resume"]
+        UI["Components: Chat · ML Predict · Coach Panels · Interview Coach"]
+    end
+
+    subgraph Backend["FastAPI Backend (Python 3.12)"]
+        Routes["API Routes · CORS · OpenAPI /docs"]
+        Services["Services Layer: Coach · Dashboard · Prediction · Reports"]
+    end
+
+    subgraph AI["AI Services Layer"]
+        Agents["Multi-Agent Router<br/>Study · Interview · Career · Resume"]
+        Personalization["Personalization · Memory · Analytics"]
+        MLOpsMon["MLOps · Monitoring · Feedback Loop"]
+        InterviewSvc["Interview · STT · Emotion · Evaluation"]
+        RAGSvc["RAG · Study Tools · Document Chat"]
+    end
+
+    subgraph Intelligence["ML Models + Agents + RAG"]
+        ML["ML Models (joblib)<br/>RF · XGBoost · SHAP"]
+        LLM["OpenAI GPT (optional)<br/>Insights · Chat · Interview"]
+        Embeddings["Sentence Transformers<br/>User + Document Embeddings"]
+        AgentLogic["Agent Handlers + Orchestrator"]
+    end
+
+    subgraph Storage["PostgreSQL + Vector DB"]
+        PG["PostgreSQL / SQLite<br/>users · performance_data · interview_results"]
+        Vector["ChromaDB (Persistent)<br/>Document Embeddings"]
+        Files["File Stores (uploads/)<br/>Profiles · Memory · Sessions · Reports"]
+        Artifacts["ml-models/<br/>Versioned joblib + MLflow"]
+    end
+
+    Pages --> Routes
+    UI --> Routes
+    Routes --> Services
+    Services --> Agents
+    Services --> Personalization
+    Services --> MLOpsMon
+    Services --> InterviewSvc
+    Services --> RAGSvc
+    Agents --> AgentLogic
+    Personalization --> Embeddings
+    RAGSvc --> Embeddings
+    MLOpsMon --> ML
+    Services --> ML
+    InterviewSvc --> LLM
+    RAGSvc --> LLM
+    AgentLogic --> LLM
+    ML --> Artifacts
+    Services --> PG
+    Embeddings --> Vector
+    RAGSvc --> Vector
+    Services --> Files
+    MLOpsMon --> Artifacts

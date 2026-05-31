@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f0a1e"/>
+      <stop offset="100%" style="stop-color:#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="48" fill="#0a0612" opacity="0.9"/>
+  <text x="24" y="30" fill="#a78bfa" font-family="system-ui,sans-serif" font-size="14" font-weight="600">MentorMind AI</text>
+  <text x="180" y="30" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">Dashboard</text>
+  <rect x="24" y="72" width="280" height="100" rx="12" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="44" y="108" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">Performance Score</text>
+  <text x="44" y="148" fill="#fff" font-family="system-ui,sans-serif" font-size="36" font-weight="700">82%</text>
+  <rect x="324" y="72" width="280" height="100" rx="12" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="344" y="108" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">Study Hours / Week</text>
+  <text x="344" y="148" fill="#fff" font-family="system-ui,sans-serif" font-size="36" font-weight="700">28.5h</text>
+  <rect x="624" y="72" width="280" height="100" rx="12" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="644" y="108" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">At-Risk Subjects</text>
+  <text x="644" y="148" fill="#f87171" font-family="system-ui,sans-serif" font-size="36" font-weight="700">2</text>
+  <rect x="24" y="196" width="750" height="280" rx="16" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="44" y="232" fill="#fff" font-family="system-ui,sans-serif" font-size="16" font-weight="600">Performance Trend</text>
+  <polyline points="60,420 140,380 220,390 300,360 380,340 460,350 540,320 620,310 700,290 780,280" fill="none" stroke="url(#accent)" stroke-width="3"/>
+  <rect x="800" y="196" width="376" height="280" rx="16" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="820" y="232" fill="#fff" font-family="system-ui,sans-serif" font-size="16" font-weight="600">ML Predict</text>
+  <text x="820" y="280" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">Predicted Score: 74%</text>
+  <text x="820" y="310" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">Risk: Medium · Burnout: 18%</text>
+  <rect x="820" y="340" width="200" height="36" rx="8" fill="#7c3aed"/>
+  <text x="870" y="363" fill="#fff" font-family="system-ui,sans-serif" font-size="13" text-anchor="middle">Run Prediction</text>
+  <rect x="24" y="500" width="1152" height="140" rx="16" fill="#1e1b4b" stroke="#7c3aed33"/>
+  <text x="44" y="536" fill="#fbbf24" font-family="system-ui,sans-serif" font-size="14">=¡ Daily tip:</text>
+  <text x="140" y="536" fill="#cbd5e1" font-family="system-ui,sans-serif" font-size="14">Review one weak topic before learning something new.</text>
+  <text x="1100" y="660" fill="#64748b" font-family="system-ui,sans-serif" font-size="11" text-anchor="end">/dashboard</text>
+</svg>
