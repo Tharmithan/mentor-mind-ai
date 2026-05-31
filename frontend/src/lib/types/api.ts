@@ -341,3 +341,43 @@ export type DashboardResponse = {
   recommendations: RecommendationItem[];
   analytics?: AnalyticsDashboard | null;
 };
+
+// --- Week 6: AI Agent Copilot ---
+
+export type AgentInfo = {
+  id: string;
+  label: string;
+  description: string;
+  examples: string[];
+};
+
+export type AgentAction = {
+  type: string;
+  path?: string | null;
+  tool?: string | null;
+  tab?: string | null;
+  topic?: string | null;
+  session_id?: string | null;
+};
+
+export type AgentChatRequest = {
+  message: string;
+  session_id?: string | null;
+  document_id?: string | null;
+  interview_session_id?: string | null;
+  resume_text?: string | null;
+  context?: Record<string, unknown> | null;
+};
+
+export type AgentChatResponse = {
+  answer: string;
+  session_id: string;
+  agent: string;
+  agent_label: string;
+  confidence: number;
+  route_reason: string;
+  sub_intent?: string | null;
+  used_llm?: boolean;
+  actions?: AgentAction[];
+  sources?: SearchResult[] | null;
+};

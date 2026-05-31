@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.routes import (
+    agents,
     ai_platform,
     conversations,
     dashboard,
@@ -19,7 +20,7 @@ from app.routes import (
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.5.0",
+    version="0.6.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -51,13 +52,15 @@ app.include_router(study_tools.router, prefix=API_PREFIX)
 app.include_router(conversations.router, prefix=API_PREFIX)
 # Week 5 Day 1 — AI Interview Coach
 app.include_router(interview.router, prefix=API_PREFIX)
+# Week 6 Day 1 — AI Agent Router (Study / Interview / Career / Resume)
+app.include_router(agents.router, prefix=API_PREFIX)
 
 
 @app.get("/")
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.4.0",
+        "version": "0.6.0",
         "docs": "/docs",
         "week3_ai_platform": {
             "predict": "POST /predict",
@@ -85,5 +88,8 @@ async def root():
             "interview": f"{API_PREFIX}/interview/start",
             "interview_transcribe": f"{API_PREFIX}/interview/transcribe",
             "interview_emotion": f"{API_PREFIX}/interview/emotion/analyze",
+            "agents_types": f"{API_PREFIX}/agents/types",
+            "agents_chat": f"{API_PREFIX}/agents/chat",
+            "agents_session": f"{API_PREFIX}/agents/session/{{session_id}}",
         },
     }

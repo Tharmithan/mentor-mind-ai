@@ -22,6 +22,9 @@ import type {
   SummaryResponse,
   UploadResponse,
   UserResponse,
+  AgentChatRequest,
+  AgentChatResponse,
+  AgentInfo,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -316,6 +319,20 @@ export async function transcribeInterviewAudio(blob: Blob, filename = "recording
   const { data } = await api.post<TranscribeResponse>("/api/interview/transcribe", form, {
     timeout: 120_000,
     headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
+}
+
+// --- Week 6: AI Agent Copilot ---
+
+export async function getAgentTypes() {
+  const { data } = await api.get<AgentInfo[]>("/api/agents/types");
+  return data;
+}
+
+export async function agentChat(body: AgentChatRequest) {
+  const { data } = await api.post<AgentChatResponse>("/api/agents/chat", body, {
+    timeout: 90_000,
   });
   return data;
 }
