@@ -690,3 +690,62 @@ export type CoachOverviewResponse = {
   target_career: string;
   profile_summary: string;
 };
+
+// --- Week 7 Day 1: User Personalization Engine ---
+
+export type LearningPreferences = {
+  primary_style: string;
+  style_scores: Record<string, number>;
+  preferred_session_minutes: number;
+  preferred_study_time: string;
+  content_formats: string[];
+  updated_at?: string | null;
+};
+
+export type UnifiedUserProfile = {
+  user_id: string;
+  email?: string | null;
+  full_name: string;
+  subject_scores: Record<string, number>;
+  weak_subjects: string[];
+  strong_subjects: string[];
+  learning_preferences: LearningPreferences;
+  career_goal?: string | null;
+  interests: string[];
+  interview_avg_score?: number | null;
+  performance_score: number;
+  study_hours_week: number;
+  profile_summary: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type PersonalizedResource = {
+  title: string;
+  description: string;
+  format: string;
+  style: string;
+  subject: string;
+  priority: string;
+  url_hint?: string | null;
+};
+
+export type PersonalizedRecommendationsResponse = {
+  user_id: string;
+  learning_style: string;
+  style_rationale: string;
+  weak_subjects: string[];
+  strong_subjects: string[];
+  resources: PersonalizedResource[];
+  study_actions: string[];
+  career_note?: string | null;
+  used_embedding: boolean;
+};
+
+export type PreferencesUpdateRequest = {
+  primary_style?: string;
+  style_scores?: Record<string, number>;
+  preferred_session_minutes?: number;
+  preferred_study_time?: string;
+  content_formats?: string[];
+};

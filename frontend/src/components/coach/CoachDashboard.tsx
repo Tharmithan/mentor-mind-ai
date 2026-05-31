@@ -10,6 +10,7 @@ import { CoachScoreCards } from "@/components/coach/CoachScoreCards";
 import { CoachChartsGrid } from "@/components/coach/CoachChartsGrid";
 import { SkillGapPanel } from "@/components/coach/SkillGapPanel";
 import { RecommendationsPanel, WeeklyReportPanel } from "@/components/coach/CoachPanels";
+import { PersonalizationPanel } from "@/components/coach/PersonalizationPanel";
 
 export function CoachDashboard() {
   const [data, setData] = useState<CoachOverviewResponse | null>(null);
@@ -92,6 +93,10 @@ export function CoachDashboard() {
 
       <AnimatedSection delay={0.1}>
         <CoachChartsGrid charts={data.charts} />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.12}>
+        <PersonalizationPanel />
       </AnimatedSection>
 
       <AnimatedSection delay={0.15}>

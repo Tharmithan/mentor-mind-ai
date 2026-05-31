@@ -41,8 +41,8 @@ async def create_revision_plan(body: RevisionPlanRequest) -> RevisionPlanRespons
 
 
 @router.get("/daily", response_model=DailyStudyRecommendationsResponse)
-async def daily_recommendations() -> DailyStudyRecommendationsResponse:
-    return StudyTutorService.daily_recommendations()
+async def daily_recommendations(user_id: str | None = None) -> DailyStudyRecommendationsResponse:
+    return StudyTutorService.daily_recommendations(user_id=user_id)
 
 
 @router.get("/weak-subjects")

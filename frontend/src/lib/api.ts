@@ -41,6 +41,9 @@ import type {
   LearningPlanProgressUpdate,
   CoachOverviewResponse,
   WeeklyProgressReport,
+  UnifiedUserProfile,
+  PersonalizedRecommendationsResponse,
+  PreferencesUpdateRequest,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -518,5 +521,49 @@ export async function getCoachWeeklyReport(params?: {
     params,
     timeout: 60_000,
   });
+  return data;
+}
+
+// --- Week 7 Day 1: User Personalization Engine ---
+
+export async function buildUserProfile(userId?: string) {
+  const { data } = await api.post<{
+    profile: UnifiedUserProfile;
+    recommendations: PersonalizedRecommendationsResponse;
+    embedding_updated: boolean;
+  }>("/api/personalization/profile/build", null, {
+    params: userId ? { user_id: userId } : undefined,
+    timeout: 90_000,
+  });
+  return data;
+}
+
+export async function getUserProfile(userId: string, refresh = false) {
+  const { data } = await api.get<UnifiedUserProfile>(
+    `/api/personalization/profile/${userId}`,
+    { params: { refresh }, timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function getPersonalizedUserRecommendations(userId?: string) {
+  const path = userId
+    ? `/api/personalization/recommendations/${userId}`
+    : "/api/personalization/recommendations";
+  const { data } = await api.get<PersonalizedRecommendationsResponse>(path, {
+    timeout: 60_000,
+  });
+  return data;
+}
+
+export async function updateLearningPreferences(
+  userId: string,
+  body: PreferencesUpdateRequest
+) {
+  const { data } = await api.patch<UnifiedUserProfile>(
+    `/api/personalization/preferences/${userId}`,
+    body,
+    { timeout: 60_000 }
+  );
   return data;
 }

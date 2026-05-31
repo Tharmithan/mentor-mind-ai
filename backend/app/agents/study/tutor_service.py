@@ -44,8 +44,19 @@ class StudyTutorService:
     @staticmethod
     def daily_recommendations(
         subject_scores: dict[str, float] | None = None,
+        user_id: str | None = None,
     ) -> DailyStudyRecommendationsResponse:
         engine = get_recommendation_engine()
+        pers = None
+        if user_id:
+            from app.personalization.store import get_profile_store
+            from app.personalization.recommender import PersonalizedRecommender
+
+            profile = get_profile_store().get(user_id)
+            if profile:
+                subject_scores = profile.subject_scores or subject_scores
+                pers = PersonalizedRecommender.recommend(profile)
+
         scores = subject_scores or engine.default_subject_scores()
         req = PersonalizedRecommendationsRequest(
             subject_scores=[SubjectScoreInput(subject=s, score=sc) for s, sc in scores.items()]
@@ -76,9 +87,23 @@ class StudyTutorService:
                 )
             )
 
+        if pers:
+            for res in pers.resources[:2]:
+                recommendations.append(
+                    DailyStudyRecommendation(
+                        title=res.title,
+                        description=res.description,
+                        subject=res.subject,
+                        priority=res.priority,
+                        estimated_minutes=45,
+                    )
+                )
+
         focus = [f"{fa.subject}: {fa.topic}" for fa in plan.focus_areas[:3]]
         streak_tip = (
-            "Students who study 30+ minutes daily for 14 days see ~12% score improvement "
+            pers.style_rationale
+            if pers
+            else "Students who study 30+ minutes daily for 14 days see ~12% score improvement "
             "in collaborative filter data."
         )
 
