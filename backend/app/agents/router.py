@@ -18,7 +18,8 @@ _KEYWORDS: dict[AgentType, list[str]] = {
         "revision", "notes", "chapter", "homework", "exam prep",
         "what is", "how does", "teach me", "exam in", "study plan", "days until",
         "weak subject", "learning goal", "track progress", "revision plan",
-        "what should i study", "prepare for",
+        "what should i study", "prepare for", "become an", "become a",
+        "learning planner", "learning roadmap", "path to become",
     ],
     AgentType.CAREER: [
         "career", "job", "internship", "roadmap", "skill gap", "performance",
@@ -31,16 +32,29 @@ _KEYWORDS: dict[AgentType, list[str]] = {
     AgentType.RESUME: [
         "resume", "cv", "curriculum vitae", "cover letter", "linkedin",
         "bullet point", "work experience", "projects section", "portfolio",
+        "ats", "resume analyzer", "upload resume", "analyze my resume",
     ],
 }
 
 
 _CAREER_PRIORITY = re.compile(
-    r"\b(career path|skill gap|learning roadmap|how to become|which career|"
-    r"data scientist|ai engineer|mlops engineer|software engineer|industry trend|"
-    r"job market|career recommend|career fit)\b",
+    r"\b(career path|skill gap|industry trend|job market|career recommend|"
+    r"career fit|which career|best career)\b",
     re.I,
 )
+
+_PLANNER_PRIORITY = re.compile(
+    r"\b(learning plan|learning planner|learning roadmap|path to become|"
+    r"plan to become|monthly plan|start tracking)\b|"
+    r"become an?\s+(ai engineer|data scientist|mlops engineer|software engineer)",
+    re.I,
+)
+
+
+def _planner_priority_route(message: str) -> RouteDecision | None:
+    if _PLANNER_PRIORITY.search(message):
+        return RouteDecision(AgentType.STUDY, 0.93, "Personalized learning planner intent")
+    return None
 
 
 def _career_priority_route(message: str) -> RouteDecision | None:
@@ -104,6 +118,19 @@ async def _llm_route(message: str, history: list[dict], last_agent: str | None) 
     )
 
 
+_RESUME_PRIORITY = re.compile(
+    r"\b(analyze my resume|resume analyzer|upload resume|ats score|check my cv|"
+    r"review my resume|resume upload)\b",
+    re.I,
+)
+
+
+def _resume_priority_route(message: str) -> RouteDecision | None:
+    if _RESUME_PRIORITY.search(message):
+        return RouteDecision(AgentType.RESUME, 0.92, "Resume analysis intent detected")
+    return None
+
+
 async def route_message(
     message: str,
     history: list[dict] | None = None,
@@ -118,6 +145,14 @@ async def route_message(
     career_priority = _career_priority_route(text)
     if career_priority:
         return career_priority
+
+    planner_priority = _planner_priority_route(text)
+    if planner_priority:
+        return planner_priority
+
+    resume_priority = _resume_priority_route(text)
+    if resume_priority:
+        return resume_priority
 
     llm_decision = await _llm_route(text, history, last_agent)
     kw_decision = _keyword_route(text, last_agent)

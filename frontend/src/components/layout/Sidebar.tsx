@@ -7,6 +7,7 @@ import {
   Mic,
   BookOpen,
   FileText,
+  FileSearch,
   BarChart3,
   ArrowLeft,
   Sparkles,
@@ -22,7 +23,8 @@ const navItems: {
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/interview", label: "Mock Interview", icon: Mic },
   { href: "/assistant", label: "AI Study Assistant", icon: FileText },
-  { href: "/dashboard#planner", label: "Study Planner", icon: BookOpen, soon: true },
+  { href: "/resume", label: "Resume Analyzer", icon: FileSearch },
+  { href: "/planner", label: "Learning Planner", icon: BookOpen },
   { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3, soon: true },
 ];
 
@@ -46,7 +48,9 @@ export function Sidebar() {
           const Icon = item.icon;
           const active =
             pathname === item.href ||
-            (item.href === "/interview" && pathname.startsWith("/interview"));
+            (item.href === "/interview" && pathname.startsWith("/interview")) ||
+            (item.href === "/resume" && pathname.startsWith("/resume")) ||
+            (item.href === "/planner" && pathname.startsWith("/planner"));
           return (
             <Link
               key={item.href}

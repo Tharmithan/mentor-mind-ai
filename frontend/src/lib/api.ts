@@ -33,6 +33,12 @@ import type {
   CareerRecommendationResponse,
   SkillGapAnalysisResponse,
   LearningRoadmapResponse,
+  ResumeAnalysisResponse,
+  ResumeTextAnalyzeRequest,
+  LearningRoadmapRequest,
+  LearningRoadmapResponse,
+  LearningPlanResponse,
+  LearningPlanProgressUpdate,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -399,5 +405,84 @@ export async function getCareerTrends(targetCareer?: string) {
   const { data } = await api.get("/api/agents/career/trends", {
     params: targetCareer ? { target_career: targetCareer } : undefined,
   });
+  return data;
+}
+
+// --- Week 6 Day 4: Resume Analyzer ---
+
+export async function uploadResume(file: File, targetRole?: string) {
+  const form = new FormData();
+  form.append("file", file);
+  const { data } = await api.post<ResumeAnalysisResponse>("/api/resume/upload", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+    timeout: 120_000,
+    params: targetRole ? { target_role: targetRole } : undefined,
+  });
+  return data;
+}
+
+export async function analyzeResumeText(text: string, targetRole?: string) {
+  const { data } = await api.post<ResumeAnalysisResponse>(
+    "/api/resume/analyze",
+    { text, target_role: targetRole ?? null } satisfies ResumeTextAnalyzeRequest,
+    { timeout: 90_000 }
+  );
+  return data;
+}
+
+export async function getResumeAnalysis(analysisId: string) {
+  const { data } = await api.get<ResumeAnalysisResponse>(
+    `/api/resume/analysis/${analysisId}`
+  );
+  return data;
+}
+
+// --- Week 6 Day 5: Personalized Learning Planner ---
+
+export async function generateLearningRoadmap(body: LearningRoadmapRequest) {
+  const { data } = await api.post<LearningRoadmapResponse>(
+    "/api/learning-planner/roadmap",
+    body,
+    { timeout: 30_000 }
+  );
+  return data;
+}
+
+export async function createLearningPlan(body: {
+  goal: string;
+  hours_per_week?: number;
+}) {
+  const { data } = await api.post<LearningPlanResponse>(
+    "/api/learning-planner/plans",
+    body,
+    { timeout: 30_000 }
+  );
+  return data;
+}
+
+export async function getLearningPlan(planId: string) {
+  const { data } = await api.get<LearningPlanResponse>(
+    `/api/learning-planner/plans/${planId}`
+  );
+  return data;
+}
+
+export async function updateLearningPlanProgress(
+  planId: string,
+  body: LearningPlanProgressUpdate
+) {
+  const { data } = await api.patch<LearningPlanResponse>(
+    `/api/learning-planner/plans/${planId}/progress`,
+    body
+  );
+  return data;
+}
+
+export async function getLearningPlanWeekly(planId: string) {
+  const { data } = await api.get<{
+    plan: LearningPlanResponse;
+    weekly: Record<string, unknown>;
+    weekly_markdown: string;
+  }>(`/api/learning-planner/plans/${planId}/weekly`);
   return data;
 }

@@ -5,10 +5,13 @@ from __future__ import annotations
 import re
 
 from app.agents.study.goal_tracker import get_goal_tracker
+from app.planner.generator import RoadmapGenerator
+from app.planner.progress_store import get_plan_store
 from app.agents.study.plan_generator import StudyPlanGenerator
 from app.agents.study.revision_planner import RevisionPlanner, parse_revision_request
 from app.agents.study.tutor_service import StudyTutorService
 from app.agents.types import AgentType
+from app.models.learning_planner import CreateLearningPlanRequest, LearningPlanProgressUpdate
 from app.models.document import ChatRequest
 from app.models.study_tools import StudyToolRequest
 from app.models.study_tutor import LearningGoalUpdate, RevisionPlanRequest
@@ -24,6 +27,71 @@ async def run_study_agent(
 ) -> dict:
     lower = message.lower()
     sid = session_id or context.get("agent_session_id") or "default"
+
+    # --- Week 6 Day 5: personalized learning planner ---
+
+    planner_req = RoadmapGenerator.parse_goal_from_message(message)
+    if planner_req and re.search(
+        r"\b(become|learning plan|learning planner|learning roadmap|path to|plan to become)\b",
+        lower,
+    ):
+        roadmap = RoadmapGenerator.generate(planner_req)
+        if re.search(r"\b(track|create plan|save|start plan|weekly)\b", lower):
+            plan = get_plan_store().create(
+                CreateLearningPlanRequest(
+                    goal=planner_req.goal,
+                    hours_per_week=planner_req.hours_per_week,
+                )
+            )
+            weekly = get_plan_store().weekly_plan(plan.plan_id)
+            answer = RoadmapGenerator.to_markdown(roadmap)
+            if weekly:
+                answer += "\n\n---\n\n" + weekly["weekly_markdown"]
+            answer += f"\n\n_Plan ID: `{plan.plan_id}` — track progress via weekly updates._"
+            return {
+                "answer": answer,
+                "used_llm": False,
+                "sub_intent": "learning_plan",
+                "data": {"plan_id": plan.plan_id, "roadmap": roadmap.model_dump()},
+                "actions": [{"type": "navigate", "path": "/planner"}],
+            }
+        return {
+            "answer": RoadmapGenerator.to_markdown(roadmap),
+            "used_llm": False,
+            "sub_intent": "learning_roadmap",
+            "data": roadmap.model_dump(),
+            "actions": [{"type": "navigate", "path": "/planner"}],
+        }
+
+    plan_id = context.get("learning_plan_id")
+    if plan_id and re.search(r"\b(weekly plan|this week|complete milestone|progress)\b", lower):
+        store = get_plan_store()
+        if re.search(r"\b(complete|finished|done)\b.*\bmilestone\b", lower):
+            plan = store.get(plan_id)
+            if plan:
+                pending = next((m for m in plan.milestones if not m.completed), None)
+                if pending:
+                    updated = store.update_progress(
+                        plan_id,
+                        LearningPlanProgressUpdate(milestone_id=pending.id),
+                    )
+                    if updated:
+                        return {
+                            "answer": f"**Milestone completed:** {pending.label}\n\nProgress: **{updated.progress_pct:.0f}%** · Now on Month {updated.current_month}",
+                            "used_llm": False,
+                            "sub_intent": "milestone_complete",
+                            "data": updated.model_dump(),
+                            "actions": [{"type": "navigate", "path": "/planner"}],
+                        }
+        weekly_data = store.weekly_plan(plan_id)
+        if weekly_data:
+            return {
+                "answer": weekly_data["weekly_markdown"],
+                "used_llm": False,
+                "sub_intent": "weekly_plan",
+                "data": weekly_data,
+                "actions": [{"type": "navigate", "path": "/planner"}],
+            }
 
     # --- Week 6 Day 2: personal tutor capabilities ---
 

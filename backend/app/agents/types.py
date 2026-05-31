@@ -38,8 +38,12 @@ AGENT_META: dict[str, dict] = {
     },
     AgentType.RESUME.value: {
         "label": "Resume Agent",
-        "description": "Resume tips, bullet rewrites, cover letter guidance",
-        "examples": ["Review my resume bullet points", "Help me write a summary section"],
+        "description": "PDF resume upload, ATS scoring, skill gaps, and AI feedback",
+        "examples": [
+            "Analyze my resume",
+            "Upload my CV for ATS score",
+            "Help me improve my resume bullet points",
+        ],
     },
 }
 

@@ -504,3 +504,124 @@ export type CareerAnalysisRequest = {
   subject_scores?: Record<string, number> | null;
   interview_session_id?: string | null;
 };
+
+// --- Week 6 Day 4: Resume Analyzer ---
+
+export type ATSCheckItem = {
+  category: string;
+  label: string;
+  passed: boolean;
+  score: number;
+  detail: string;
+};
+
+export type MissingSkill = {
+  skill: string;
+  importance: string;
+  suggestion: string;
+};
+
+export type WeakBullet = {
+  text: string;
+  issue: string;
+  suggestion: string;
+};
+
+export type ResumeFeedbackItem = {
+  category: string;
+  priority: string;
+  message: string;
+};
+
+export type ResumeSection = {
+  name: string;
+  content: string;
+  line_count: number;
+};
+
+export type ResumeAnalysisResponse = {
+  analysis_id: string;
+  filename?: string | null;
+  word_count: number;
+  page_estimate: number;
+  sections: ResumeSection[];
+  ats_score: number;
+  ats_grade: string;
+  ats_checks: ATSCheckItem[];
+  missing_skills: MissingSkill[];
+  weak_bullets: WeakBullet[];
+  formatting_issues: string[];
+  feedback: ResumeFeedbackItem[];
+  summary: string;
+  headline: string;
+  used_llm?: boolean;
+};
+
+export type ResumeTextAnalyzeRequest = {
+  text: string;
+  target_role?: string | null;
+};
+
+// --- Week 6 Day 5: Personalized Learning Planner ---
+
+export type MonthlyTopic = {
+  name: string;
+  description: string;
+  resources: string[];
+};
+
+export type MonthlyPhase = {
+  month: number;
+  title: string;
+  topics: MonthlyTopic[];
+  goals: string[];
+  hours_per_week: number;
+  milestone: string;
+};
+
+export type MilestoneStatus = {
+  id: string;
+  label: string;
+  month: number;
+  completed: boolean;
+  completed_at?: string | null;
+};
+
+export type LearningRoadmapRequest = {
+  goal: string;
+  hours_per_week?: number;
+  total_months?: number | null;
+};
+
+export type LearningRoadmapResponse = {
+  goal: string;
+  career_id: string;
+  career_title: string;
+  total_months: number;
+  hours_per_week: number;
+  summary: string;
+  months: MonthlyPhase[];
+  milestones: MilestoneStatus[];
+};
+
+export type LearningPlanResponse = {
+  plan_id: string;
+  goal: string;
+  career_title: string;
+  progress_pct: number;
+  current_month: number;
+  current_week: number;
+  hours_per_week: number;
+  roadmap: LearningRoadmapResponse;
+  milestones: MilestoneStatus[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type LearningPlanProgressUpdate = {
+  milestone_id?: string | null;
+  current_month?: number | null;
+  current_week?: number | null;
+  progress_pct?: number | null;
+  note?: string | null;
+};

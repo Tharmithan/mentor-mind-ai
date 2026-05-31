@@ -15,6 +15,8 @@ from app.routes import (
     study_agent,
     study_tools,
     career_agent,
+    resume,
+    learning_planner,
     tip,
     user,
 )
@@ -22,7 +24,7 @@ from app.routes import (
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.6.0",
+    version="0.8.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -60,13 +62,17 @@ app.include_router(agents.router, prefix=API_PREFIX)
 app.include_router(study_agent.router, prefix=API_PREFIX)
 # Week 6 Day 3 — Career Agent API
 app.include_router(career_agent.router, prefix=API_PREFIX)
+# Week 6 Day 4 — Resume Analyzer
+app.include_router(resume.router, prefix=API_PREFIX)
+# Week 6 Day 5 — Personalized Learning Planner
+app.include_router(learning_planner.router, prefix=API_PREFIX)
 
 
 @app.get("/")
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.6.0",
+        "version": "0.8.0",
         "docs": "/docs",
         "week3_ai_platform": {
             "predict": "POST /predict",
@@ -103,5 +109,10 @@ async def root():
             "career_recommend": f"{API_PREFIX}/agents/career/recommend",
             "career_roadmap": f"{API_PREFIX}/agents/career/roadmap",
             "career_trends": f"{API_PREFIX}/agents/career/trends",
+            "resume_upload": f"{API_PREFIX}/resume/upload",
+            "resume_analyze": f"{API_PREFIX}/resume/analyze",
+            "resume_analysis": f"{API_PREFIX}/resume/analysis/{{analysis_id}}",
+            "learning_planner_roadmap": f"{API_PREFIX}/learning-planner/roadmap",
+            "learning_planner_plans": f"{API_PREFIX}/learning-planner/plans",
         },
     }
