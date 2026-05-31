@@ -12,7 +12,78 @@ const MODEL =
 let landmarkerPromise: Promise<import("@mediapipe/tasks-vision").FaceLandmarker> | null =
   null;
 
+let silencerRefCount = 0;
+let savedConsole: {
+  error: typeof console.error;
+  warn: typeof console.warn;
+  info: typeof console.info;
+} | null = null;
+
+function isMediaPipeNoise(args: unknown[]): boolean {
+  const msg = args.map((a) => String(a)).join(" ");
+  return (
+    /TensorFlow Lite/i.test(msg) ||
+    /XNNPACK/i.test(msg) ||
+    /^INFO:/i.test(msg) ||
+    /Created TensorFlow/i.test(msg) ||
+    /Inference session/i.test(msg)
+  );
+}
+
+/** Keep active while MediaPipe runs — WASM logs async after detect() returns. */
+export function installMediaPipeLogSilencer() {
+  if (typeof window === "undefined") return;
+  if (silencerRefCount === 0) {
+    savedConsole = {
+      error: console.error.bind(console),
+      warn: console.warn.bind(console),
+      info: console.info.bind(console),
+    };
+    console.error = (...args: unknown[]) => {
+      if (!isMediaPipeNoise(args)) savedConsole!.error(...args);
+    };
+    console.warn = (...args: unknown[]) => {
+      if (!isMediaPipeNoise(args)) savedConsole!.warn(...args);
+    };
+    console.info = (...args: unknown[]) => {
+      if (!isMediaPipeNoise(args)) savedConsole!.info(...args);
+    };
+    const g = globalThis as typeof globalThis & {
+      Module?: { print?: () => void; printErr?: () => void };
+    };
+    g.Module = {
+      ...g.Module,
+      print: () => {},
+      printErr: () => {},
+    };
+  }
+  silencerRefCount += 1;
+}
+
+export function uninstallMediaPipeLogSilencer() {
+  if (typeof window === "undefined") return;
+  silencerRefCount = Math.max(0, silencerRefCount - 1);
+  if (silencerRefCount === 0 && savedConsole) {
+    console.error = savedConsole.error;
+    console.warn = savedConsole.warn;
+    console.info = savedConsole.info;
+    savedConsole = null;
+  }
+}
+
+const LANDMARKER_VERSION = 3;
+let loadedVersion = 0;
+
+/** Force reload (e.g. after config change). */
+export function resetFaceLandmarker() {
+  landmarkerPromise = null;
+}
+
 export async function loadFaceLandmarker() {
+  if (loadedVersion !== LANDMARKER_VERSION) {
+    resetFaceLandmarker();
+    loadedVersion = LANDMARKER_VERSION;
+  }
   if (!landmarkerPromise) {
     landmarkerPromise = (async () => {
       const { FaceLandmarker, FilesetResolver } = await import(
@@ -20,15 +91,35 @@ export async function loadFaceLandmarker() {
       );
       const vision = await FilesetResolver.forVisionTasks(WASM);
       return FaceLandmarker.createFromOptions(vision, {
-        baseOptions: { modelAssetPath: MODEL, delegate: "GPU" },
+        baseOptions: { modelAssetPath: MODEL, delegate: "CPU" },
         outputFaceBlendshapes: true,
         outputFacialTransformationMatrixes: true,
-        runningMode: "VIDEO",
+        runningMode: "IMAGE",
         numFaces: 1,
       });
     })();
   }
   return landmarkerPromise;
+}
+
+export type FaceDetectResult = {
+  faceBlendshapes?: { categories: { categoryName: string; score: number }[] }[];
+  faceLandmarks?: { x: number; y: number; z?: number }[][];
+};
+
+/** Detect face from a video frame using IMAGE mode (no timestamps needed). */
+export function detectFaceFromVideo(
+  landmarker: import("@mediapipe/tasks-vision").FaceLandmarker,
+  video: HTMLVideoElement,
+  canvas: HTMLCanvasElement
+): FaceDetectResult | null {
+  if (video.videoWidth === 0 || video.videoHeight === 0) return null;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  return landmarker.detect(canvas);
 }
 
 function bs(map: BlendMap, key: string): number {

@@ -5,13 +5,16 @@ import type { RefObject } from "react";
 import {
   attentionScore,
   blendshapesToMap,
+  detectFaceFromVideo,
   dominantEmotionFromBlendshapes,
   eyeContactScore,
   loadFaceLandmarker,
+  installMediaPipeLogSilencer,
   mergeFaceAndVoice,
   smileScore,
   smoothEmotion,
   stressFromFace,
+  uninstallMediaPipeLogSilencer,
 } from "@/lib/emotion/faceAnalysis";
 import { DEFAULT_EMOTION, type EmotionSnapshot } from "@/lib/emotion/types";
 import { VoiceAnalyzer } from "@/lib/emotion/voiceAnalysis";
@@ -22,15 +25,19 @@ type Options = {
   audioStream?: MediaStream | null;
 };
 
+const DETECT_INTERVAL_MS = 120;
+
 export function useEmotionDetection({ videoRef, active, audioStream }: Options) {
   const [snapshot, setSnapshot] = useState<EmotionSnapshot>(DEFAULT_EMOTION);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const rafRef = useRef<number>(0);
-  const lastVideoTimeRef = useRef(-1);
+  const lastFrameAtRef = useRef(0);
   const smoothRef = useRef<EmotionSnapshot>(DEFAULT_EMOTION);
   const voiceRef = useRef(new VoiceAnalyzer());
   const samplesRef = useRef<EmotionSnapshot[]>([]);
+  const landmarkerRef = useRef<Awaited<ReturnType<typeof loadFaceLandmarker>> | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     if (audioStream) voiceRef.current.connect(audioStream);
@@ -42,7 +49,14 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
     if (!active) {
       cancelAnimationFrame(rafRef.current);
       setReady(false);
+      uninstallMediaPipeLogSilencer();
       return;
+    }
+
+    installMediaPipeLogSilencer();
+
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement("canvas");
     }
 
     let cancelled = false;
@@ -50,6 +64,7 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
     async function loop() {
       try {
         const landmarker = await loadFaceLandmarker();
+        landmarkerRef.current = landmarker;
         if (cancelled) return;
         setReady(true);
         setError(null);
@@ -57,7 +72,9 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
         const tick = () => {
           if (cancelled) return;
           const video = videoRef.current;
+          const canvas = canvasRef.current;
           const voice = voiceRef.current.sample();
+          const now = performance.now();
 
           let facePartial: Partial<EmotionSnapshot> = {
             faceDetected: false,
@@ -68,11 +85,20 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
             attention: 70,
           };
 
-          if (video && video.readyState >= 2 && !video.paused) {
-            if (video.currentTime !== lastVideoTimeRef.current) {
-              lastVideoTimeRef.current = video.currentTime;
-              const result = landmarker.detectForVideo(video, performance.now());
-              if (result.faceBlendshapes?.length) {
+          const canDetect =
+            video &&
+            canvas &&
+            landmarkerRef.current &&
+            video.readyState >= 2 &&
+            !video.paused &&
+            video.videoWidth > 0 &&
+            now - lastFrameAtRef.current >= DETECT_INTERVAL_MS;
+
+          if (canDetect) {
+            lastFrameAtRef.current = now;
+            try {
+              const result = detectFaceFromVideo(landmarkerRef.current, video, canvas);
+              if (result?.faceBlendshapes?.length && result.faceLandmarks?.[0]) {
                 const map = blendshapesToMap(
                   result.faceBlendshapes[0].categories.map((c) => ({
                     categoryName: c.categoryName,
@@ -90,6 +116,8 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
                   attention: attentionScore(map, eye),
                 };
               }
+            } catch {
+              /* skip bad frame */
             }
           }
 
@@ -115,6 +143,7 @@ export function useEmotionDetection({ videoRef, active, audioStream }: Options) 
     return () => {
       cancelled = true;
       cancelAnimationFrame(rafRef.current);
+      uninstallMediaPipeLogSilencer();
     };
   }, [active, videoRef]);
 

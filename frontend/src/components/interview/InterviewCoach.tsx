@@ -21,6 +21,10 @@ import { EmotionPanel } from "@/components/interview/EmotionPanel";
 import { useEmotionDetection } from "@/hooks/useEmotionDetection";
 import type { EmotionMetricsPayload } from "@/lib/emotion/types";
 import { captureVideoFrame, mergeEmotionMetrics } from "@/lib/emotion/captureFrame";
+import {
+  installMediaPipeLogSilencer,
+  uninstallMediaPipeLogSilencer,
+} from "@/lib/emotion/faceAnalysis";
 import { startInterview, submitInterviewAnswer, analyzeInterviewEmotion } from "@/lib/api";
 import type {
   CoachReport,
@@ -85,12 +89,22 @@ export function InterviewCoach() {
   }
 
   useEffect(() => {
+    installMediaPipeLogSilencer();
+    return () => uninstallMediaPipeLogSilencer();
+  }, []);
+
+  useEffect(() => {
     let stream: MediaStream | null = null;
     async function startCamera() {
       if (!cameraOn || phase === "setup") return;
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        if (videoRef.current) videoRef.current.srcObject = stream;
+        const video = videoRef.current;
+        if (video) {
+          video.srcObject = stream;
+          video.playsInline = true;
+          await video.play();
+        }
         setCameraError(null);
       } catch {
         setCameraError("Camera access denied.");
