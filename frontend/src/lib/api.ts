@@ -351,6 +351,13 @@ export async function agentChat(body: AgentChatRequest) {
   return data;
 }
 
+export async function agentCollaborate(body: AgentChatRequest) {
+  const { data } = await api.post<AgentChatResponse>("/api/agents/collaborate", body, {
+    timeout: 120_000,
+  });
+  return data;
+}
+
 export async function createExamStudyPlan(body: ExamStudyPlanRequest) {
   const { data } = await api.post<ExamStudyPlanResponse>("/api/agents/study/plan", body, {
     timeout: 60_000,

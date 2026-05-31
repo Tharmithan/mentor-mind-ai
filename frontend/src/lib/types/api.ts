@@ -360,6 +360,14 @@ export type AgentAction = {
   session_id?: string | null;
 };
 
+export type AgentContribution = {
+  agent: string;
+  agent_label: string;
+  summary: string;
+  sub_intent: string;
+  data?: Record<string, unknown> | null;
+};
+
 export type AgentChatRequest = {
   message: string;
   session_id?: string | null;
@@ -367,6 +375,7 @@ export type AgentChatRequest = {
   interview_session_id?: string | null;
   resume_text?: string | null;
   context?: Record<string, unknown> | null;
+  collaborate?: boolean;
 };
 
 export type AgentChatResponse = {
@@ -380,6 +389,10 @@ export type AgentChatResponse = {
   used_llm?: boolean;
   actions?: AgentAction[];
   sources?: SearchResult[] | null;
+  collaboration?: boolean;
+  contributions?: AgentContribution[] | null;
+  shared_memory?: Record<string, unknown> | null;
+  orchestration_log?: Record<string, unknown>[] | null;
 };
 
 // --- Week 6 Day 2: Study Agent tutor ---

@@ -4,10 +4,16 @@ Flow:
   User message → Agent Router → Specialist Agent → Action + Response
                       ↑
                  Agent Memory
+
+Week 6 · Day 6 — multi-agent collaboration:
+  User message → Orchestrator → Career → Study → Interview → Resume → Unified response
+                      ↑
+              Shared Memory (cross-agent workspace)
 """
 
 from __future__ import annotations
 
+from app.agents.collaboration import AgentOrchestrator, should_collaborate
 from app.agents.memory import get_agent_memory
 from app.agents.registry import ensure_registry, get_handler, list_agents
 from app.agents.router import route_message
@@ -23,6 +29,56 @@ class AgentManager:
 
     @staticmethod
     async def chat(req: AgentChatRequest) -> AgentChatResponse:
+        if req.collaborate or should_collaborate(req.message):
+            return await AgentManager.collaborate(req)
+        return await AgentManager._single_agent_chat(req)
+
+    @staticmethod
+    async def collaborate(req: AgentChatRequest) -> AgentChatResponse:
+        ensure_registry()
+        store = get_agent_memory()
+        session = store.get_or_create(req.session_id)
+
+        if req.document_id:
+            session.context["document_id"] = req.document_id
+        if req.interview_session_id:
+            session.context["interview_session_id"] = req.interview_session_id
+        if req.context:
+            session.context.update(req.context)
+
+        session.add_user(req.message)
+
+        answer, contributions, log, actions = await AgentOrchestrator.run(
+            req.message,
+            session,
+            resume_text=req.resume_text,
+        )
+
+        session.add_assistant(answer, "orchestrator")
+        session.context["last_collaboration"] = {
+            "contributions": [c.model_dump() for c in contributions],
+            "orchestration_log": log,
+        }
+        store.save(session)
+
+        return AgentChatResponse(
+            answer=answer,
+            session_id=session.session_id,
+            agent="orchestrator",
+            agent_label="Multi-Agent Team",
+            confidence=1.0,
+            route_reason="Multi-agent collaboration pipeline (Career → Study → Interview → Resume)",
+            sub_intent="multi_agent_collaboration",
+            used_llm=False,
+            actions=actions,
+            collaboration=True,
+            contributions=contributions,
+            shared_memory=session.context.get("shared"),
+            orchestration_log=log,
+        )
+
+    @staticmethod
+    async def _single_agent_chat(req: AgentChatRequest) -> AgentChatResponse:
         ensure_registry()
         store = get_agent_memory()
         session = store.get_or_create(req.session_id)

@@ -4,13 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { MessageCircle, X, Sparkles, LayoutDashboard, Mic, Send, Loader2 } from "lucide-react";
 import { agentChat } from "@/lib/api";
-import type { AgentAction } from "@/lib/types/api";
+import type { AgentAction, AgentContribution } from "@/lib/types/api";
 import { Markdown } from "@/components/assistant/Markdown";
 
 const QUICK_REPLIES = [
   "I have a Machine Learning exam in 14 days",
   "Which career path fits me best?",
-  "What should I study today?",
+  "Help me become an AI Engineer — full career prep",
   "Start a behavioral mock interview",
 ];
 
@@ -19,7 +19,36 @@ type Turn = {
   content: string;
   agentLabel?: string;
   actions?: AgentAction[];
+  collaboration?: boolean;
+  contributions?: AgentContribution[];
 };
+
+const AGENT_COLORS: Record<string, string> = {
+  career: "border-emerald-500/30 bg-emerald-500/10",
+  study: "border-blue-500/30 bg-blue-500/10",
+  interview: "border-amber-500/30 bg-amber-500/10",
+  resume: "border-rose-500/30 bg-rose-500/10",
+};
+
+function ContributionCards({ contributions }: { contributions: AgentContribution[] }) {
+  return (
+    <div className="mt-2 space-y-1.5">
+      {contributions.map((c) => (
+        <div
+          key={c.agent}
+          className={`rounded-lg border px-2.5 py-1.5 ${AGENT_COLORS[c.agent] ?? "border-violet-500/20 bg-violet-500/5"}`}
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-300">
+            {c.agent_label}
+          </p>
+          <div className="prose-invert text-[11px] [&_*]:text-[11px]">
+            <Markdown text={c.summary} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function ActionLinks({ actions }: { actions: AgentAction[] }) {
   return (
@@ -78,6 +107,8 @@ export function FloatingAIAssistant() {
           content: res.answer,
           agentLabel: res.agent_label,
           actions: res.actions,
+          collaboration: res.collaboration,
+          contributions: res.contributions ?? undefined,
         },
       ]);
     } catch {
@@ -149,6 +180,7 @@ export function FloatingAIAssistant() {
               >
                 {turn.agentLabel && turn.role === "assistant" && (
                   <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-violet-300/70">
+                    {turn.collaboration ? "🤝 " : ""}
                     {turn.agentLabel}
                   </p>
                 )}
@@ -159,6 +191,9 @@ export function FloatingAIAssistant() {
                 ) : (
                   turn.content
                 )}
+                {turn.contributions && turn.contributions.length > 0 && (
+                  <ContributionCards contributions={turn.contributions} />
+                )}
                 {turn.actions && turn.actions.length > 0 && (
                   <ActionLinks actions={turn.actions} />
                 )}
@@ -167,7 +202,7 @@ export function FloatingAIAssistant() {
             {loading && (
               <div className="flex items-center gap-2 px-3 py-2 text-xs text-violet-300/80">
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                Routing to specialist…
+                Agents collaborating…
               </div>
             )}
             {error && (

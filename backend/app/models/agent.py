@@ -17,6 +17,15 @@ class AgentChatRequest(BaseModel):
     interview_session_id: str | None = None
     resume_text: str | None = None
     context: dict | None = None
+    collaborate: bool = False
+
+
+class AgentContribution(BaseModel):
+    agent: str
+    agent_label: str
+    summary: str
+    sub_intent: str
+    data: dict | None = None
 
 
 class AgentAction(BaseModel):
@@ -39,6 +48,10 @@ class AgentChatResponse(BaseModel):
     used_llm: bool = False
     actions: list[dict] = Field(default_factory=list)
     sources: list[dict] | None = None
+    collaboration: bool = False
+    contributions: list[AgentContribution] | None = None
+    shared_memory: dict | None = None
+    orchestration_log: list[dict] | None = None
 
 
 class AgentSessionResponse(BaseModel):
