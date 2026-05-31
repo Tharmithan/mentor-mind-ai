@@ -1,149 +1,126 @@
 # MentorMind AI — System Architecture
 
-## 1. High-Level Overview
+> **Week 7 · Day 7** — Industry-level architecture reference for recruiters, contributors, and production deployment.
 
-MentorMind AI follows a **modular monolith** pattern: a Next.js frontend talks to a FastAPI backend. ML inference, RAG, and interview logic live in backend services. PostgreSQL (Supabase) stores users, progress, and metadata; vector embeddings use **pgvector** on the same database.
+---
 
-```mermaid
-flowchart LR
-    subgraph Client
-        Web[Next.js Web App]
-    end
-    subgraph API[FastAPI Backend]
-        Auth[Auth Service]
-        Learn[Learning Service]
-        Interview[Interview Service]
-        Emotion[Emotion Service]
-        RAG[RAG Service]
-        ML[ML Inference]
-    end
-    subgraph Storage
-        DB[(PostgreSQL)]
-        Models[ml-models/]
-        Files[Object Storage]
-    end
-    Web --> Auth
-    Web --> Learn
-    Web --> Interview
-    Web --> Emotion
-    Web --> RAG
-    Learn --> ML
-    ML --> Models
-    Auth --> DB
-    Learn --> DB
-    RAG --> DB
-    RAG --> Files
+## 1. Layered Architecture
+
+The platform follows a **modular monolith** with clear separation of concerns:
+
+```
+Frontend (Next.js)
+        ↓
+FastAPI Backend
+        ↓
+AI Services Layer
+        ↓
+ML Models + Agents + RAG
+        ↓
+PostgreSQL + Vector DB
 ```
 
----
+### ASCII overview
 
-## 2. Core Services
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  FRONTEND — Next.js 16 · TypeScript · Tailwind CSS                      │
+│  / · /dashboard · /coach · /assistant · /interview · /planner · /resume │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │ REST (JSON) · Axios · CORS
+┌───────────────────────────────▼─────────────────────────────────────────┐
+│  FASTAPI BACKEND — Python 3.12 · Uvicorn · OpenAPI /docs                │
+│  Routes → Services → Domain modules (70+ endpoints)                       │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │
+┌───────────────────────────────▼─────────────────────────────────────────┐
+│  AI SERVICES LAYER                                                      │
+│  Multi-Agent Router · Personalization · Memory · Interview · RAG        │
+│  Learning Analytics · Reports · MLOps · Monitoring & Feedback           │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │
+┌───────────────────────────────▼─────────────────────────────────────────┐
+│  ML MODELS + AGENTS + RAG                                               │
+│  joblib (RF/XGBoost) · SHAP · OpenAI GPT · Sentence Transformers        │
+└───────────────────────────────┬─────────────────────────────────────────┘
+                                │
+┌───────────────────────────────▼─────────────────────────────────────────┐
+│  DATA LAYER                                                             │
+│  PostgreSQL · ChromaDB · uploads/ JSON stores · ml-models/ artifacts    │
+└─────────────────────────────────────────────────────────────────────────┘
+```
 
-### 2.1 Core API (Day 4 — live)
-
-| Method | Path | Status |
-|--------|------|--------|
-| GET | `/api/health` | Live |
-| GET | `/api/user` | Demo data |
-| POST | `/api/predict` | Mock heuristic |
-
-### 2.2 Authentication (`/api/v1/auth`) — Phase 2
-
-- JWT access + refresh tokens
-- Signup, login, logout, password reset (future)
-- User roles: `student`, `admin` (future)
-
-### 2.3 Learning & Performance (`/api/v1/learning`)
-
-- Submit quiz/assignment results
-- Fetch performance predictions
-- Study plan CRUD and weak-topic recommendations
-
-### 2.4 Interview (`/api/v1/interview`)
-
-- Session create/end
-- Question generation (LLM)
-- Answer submission (text + optional audio URL)
-- Scoring: communication, technical, confidence aggregate
-
-### 2.5 Emotion (`/api/v1/emotion`)
-
-- WebSocket or chunked HTTP for frame analysis
-- Returns: dominant emotion, confidence score, stress indicator
-
-### 2.6 RAG (`/api/v1/rag`)
-
-- PDF upload → chunk → embed → store in `document_chunks`
-- Semantic search + LLM answer with citations
-
-### 2.7 ML Inference (`/api/v1/ml`)
-
-- `POST /predict/performance` — student outcome prediction
-- `POST /predict/emotion` — batch image emotion (offline)
-- Models loaded at startup from `ml-models/`
+Full Mermaid diagram: [diagrams/system-architecture.mmd](./diagrams/system-architecture.mmd)
 
 ---
 
-## 3. Database Schema (Summary)
+## 2. Frontend Architecture
 
-| Table | Purpose |
+| Route | Purpose |
 |-------|---------|
-| `users` | Account, profile, role |
-| `user_progress` | XP, streaks, completed modules |
-| `performance_records` | Scores, subjects, timestamps |
-| `study_plans` | Generated plans per user |
-| `study_plan_items` | Topics, priority, due dates |
-| `interview_sessions` | Session metadata, scores |
-| `interview_answers` | Q&A pairs per session |
-| `documents` | Uploaded PDF metadata |
-| `document_chunks` | Text chunks + embedding vector |
-| `emotion_logs` | Optional session emotion snapshots |
+| `/` | Landing page |
+| `/dashboard` | ML prediction, analytics, study planner |
+| `/coach` | AI Coach hub — scores, personalization, memory, MLOps, monitoring |
+| `/assistant` | RAG chat, PDF upload, study tools |
+| `/interview` | Mock interview with STT and emotion analysis |
+| `/planner` | Personalized learning roadmap |
+| `/resume` | ATS resume analyzer |
 
-Full SQL: [database/schema.sql](./database/schema.sql)
+**Stack:** Next.js 16, TypeScript, Tailwind, Axios (`frontend/src/lib/api.ts`)
 
 ---
 
-## 4. ML Pipeline
+## 3. Backend Architecture
 
 ```
-datasets/ → notebooks/ (EDA, training) → ml-models/ (artifacts)
-                                              ↓
-                                    FastAPI loads on startup
+backend/app/
+├── main.py              # FastAPI app, 20+ routers
+├── routes/              # HTTP controllers
+├── services/            # Business orchestration
+├── ai/                  # ML predictor, SHAP, insights
+├── agents/              # Multi-agent router + collaboration
+├── rag/                 # PDF, ChromaDB, study tools
+├── interview/           # Sessions, STT, emotion, evaluation
+├── personalization/     # Profiles, embeddings, recs
+├── memory/              # Long-term memory
+├── analytics/           # Learning analytics
+├── reports/             # PDF/email reports
+├── mlops/               # Model registry, deployment
+├── monitoring/          # Feedback loop
+└── database/            # SQLAlchemy (optional Postgres)
 ```
 
-| Model | Algorithm | Input | Output |
-|-------|-----------|-------|--------|
-| Performance | XGBoost / LightGBM | Study hours, attendance, prior scores | Pass/risk level |
-| Emotion | CNN / transfer learning (FER2013) | Face crop | 7 emotion classes |
-| Recommendations | CF + rules | User history, weak topics | Ranked study items |
+---
 
-Training is **offline** in `notebooks/`; production serves **serialized** models only.
+## 4. AI Services Layer
+
+| Service | Module | Description |
+|---------|--------|-------------|
+| Multi-Agent | `agents/` | Study, Interview, Career, Resume routing |
+| Personalization | `personalization/` | Style-aware recommendations |
+| Memory | `memory/` | Long-term progress and context |
+| Interview | `interview/` | Mock sessions, scoring, coaching |
+| RAG | `rag/` | PDF → embed → search → chat |
+| MLOps | `mlops/` | Versioning, MLflow, promote |
+| Monitoring | `monitoring/` | Ratings, drift, improvement loop |
 
 ---
 
-## 5. Security
+## 5. Data Flow Examples
 
-- HTTPS everywhere in production
-- JWT in `Authorization: Bearer`
-- CORS restricted to frontend origin
-- Row Level Security (RLS) on Supabase for direct client access (if used)
-- Secrets via environment variables only
+**Prediction:** `POST /api/predict` → `MLPredictor` → log to monitoring → response
 
----
+**RAG:** Upload PDF → chunk → ChromaDB → semantic search → LLM answer
 
-## 6. Deployment Topology
-
-| Component | Platform |
-|-----------|----------|
-| Frontend | Vercel |
-| Backend | Railway |
-| Database | Supabase |
-| ML artifacts | Bundled in backend image or object storage |
-
-Docker Compose provided for local full-stack development.
+**Feedback loop:** Thumbs-down on rec → `ImprovementLoop` → filtered next recommendations
 
 ---
 
-## 7. API Versioning
+## 6. Related Documentation
 
-All routes prefixed with `/api/v1`. Breaking changes increment version; v1 maintained during migration.
+| Document | Contents |
+|----------|----------|
+| [API Reference](./api-reference.md) | All endpoints |
+| [AI Models](./ai-models.md) | ML + LLM catalog |
+| [Database Schema](./database-schema.md) | Tables + file stores |
+| [Deployment Guide](./deployment-guide.md) | Local → production |

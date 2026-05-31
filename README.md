@@ -24,6 +24,9 @@ MentorMind AI combines machine learning, computer vision, and large language mod
 | **AI Mock Interview** | AI-generated questions, speech-to-text, voice interaction, scoring |
 | **Emotion & Confidence Detection** | Webcam-based stress and confidence analysis |
 | **Career Recommendation Engine** | Data-driven career path suggestions |
+| **MLOps Pipeline** | Model versioning, MLflow experiments, deployment promotion |
+| **Monitoring & Feedback** | User ratings, prediction drift, continuous improvement loop |
+| **AI Coach Dashboard** | Unified hub — scores, personalization, memory, analytics, reports |
 | **RAG PDF Learning Assistant** | Upload PDFs, semantic search, contextual Q&A |
 
 ---
@@ -32,7 +35,7 @@ MentorMind AI combines machine learning, computer vision, and large language mod
 
 | Layer | Technologies |
 |-------|----------------|
-| **Frontend** | Next.js 15, TypeScript, Tailwind CSS |
+| **Frontend** | Next.js 16, TypeScript, Tailwind CSS |
 | **Backend** | FastAPI, Python 3.12 |
 | **Database** | PostgreSQL (Supabase) |
 | **AI/ML** | PyTorch, Scikit-learn, Hugging Face, OpenCV, MediaPipe |
@@ -43,22 +46,29 @@ MentorMind AI combines machine learning, computer vision, and large language mod
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (Next.js)                        │
-│  Dashboard │ Study Planner │ Interview │ RAG │ Analytics    │
-└──────────────────────────┬──────────────────────────────────┘
-                           │ REST API
-┌──────────────────────────▼──────────────────────────────────┐
-│                    Backend (FastAPI)                         │
-│  Auth │ Users │ ML Inference │ Interview │ RAG │ Analytics    │
-└──────┬──────────────┬──────────────┬─────────────────────────┘
-       │              │              │
-       ▼              ▼              ▼
-  PostgreSQL    ml-models/     Vector Store
-  (Supabase)    (joblib/pth)   (pgvector)
+Frontend (Next.js)
+        ↓
+FastAPI Backend
+        ↓
+AI Services Layer
+        ↓
+ML Models + Agents + RAG
+        ↓
+PostgreSQL + Vector DB
 ```
 
-See [docs/architecture.md](docs/architecture.md) for API design, database schema, and ML pipeline details.
+### Documentation (Week 7 · Day 7)
+
+| Document | Description |
+|----------|-------------|
+| [Architecture](docs/architecture.md) | Layered system design + data flows |
+| [API Reference](docs/api-reference.md) | Complete REST API catalog |
+| [AI Models](docs/ai-models.md) | ML models, LLM, agents, embeddings |
+| [Database Schema](docs/database-schema.md) | PostgreSQL + ChromaDB + file stores |
+| [Deployment Guide](docs/deployment-guide.md) | Local, Docker, Vercel, Railway |
+| [Docs Index](docs/README.md) | Full documentation map |
+
+See also [docs/architecture.md](docs/architecture.md) and [docs/week7-summary.md](docs/week7-summary.md).
 
 ---
 
@@ -144,26 +154,26 @@ Professional foundation shipped. See [docs/week1-summary.md](docs/week1-summary.
 
 ## Development Roadmap
 
-| Week | Focus |
-|------|--------|
-| 1 | Setup, architecture, UI, dashboard MVP, database, GitHub polish — **done** |
-| 2 | Data & ML — Days 1–5 [collection](docs/dataset-research-day1.md) · [cleaning](docs/dataset-cleaning-day2.md) · [EDA](docs/dataset-eda-day3.md) · [features](docs/dataset-feature-engineering-day4.md) · [train](docs/dataset-train-day5.md) · Day 6 [evaluate](docs/dataset-evaluate-day6.md) |
-| 3 | Model training |
-| 4 | Recommendation system |
-| 5 | Mock interview module |
-| 6 | Emotion detection |
-| 7 | RAG integration |
-| 8 | Deployment & documentation |
+| Week | Focus | Status |
+|------|--------|--------|
+| 1 | Setup, architecture, UI, dashboard MVP | ✅ |
+| 2 | Data collection, cleaning, EDA, features, training | ✅ |
+| 3 | ML models, recommendation engine, AI platform | ✅ |
+| 4 | RAG, PDF processing, chat assistant, study tools | ✅ |
+| 5 | Mock interview module, STT, emotion detection | ✅ |
+| 6 | Multi-agent system, career, resume, coach dashboard | ✅ |
+| 7 | Personalization, memory, analytics, MLOps, monitoring, docs | ✅ |
+
+See [docs/week7-summary.md](docs/week7-summary.md) for Week 7 deliverables.
 
 ---
 
 ## Future Improvements
 
-- [ ] AI agents for multi-step tutoring workflows
+- [ ] Full JWT auth + user registration
 - [ ] Multilingual support (English + Tamil)
-- [ ] Real-time webcam analysis in interviews
-- [ ] AI-powered resume analyzer
-- [ ] Mobile-responsive PWA
+- [ ] Mobile PWA
+- [ ] pgvector migration (ChromaDB → Supabase)
 - [ ] Team/classroom admin dashboards
 
 ---
