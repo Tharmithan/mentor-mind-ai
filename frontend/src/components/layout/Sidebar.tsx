@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Sparkles,
   type LucideIcon,
+  Brain,
 } from "lucide-react";
 
 const navItems: {
@@ -20,12 +21,13 @@ const navItems: {
   icon: LucideIcon;
   soon?: boolean;
 }[] = [
+  { href: "/coach", label: "AI Coach", icon: Brain },
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/interview", label: "Mock Interview", icon: Mic },
   { href: "/assistant", label: "AI Study Assistant", icon: FileText },
   { href: "/resume", label: "Resume Analyzer", icon: FileSearch },
   { href: "/planner", label: "Learning Planner", icon: BookOpen },
-  { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3, soon: true },
+  { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export function Sidebar() {
@@ -48,6 +50,7 @@ export function Sidebar() {
           const Icon = item.icon;
           const active =
             pathname === item.href ||
+            (item.href === "/coach" && pathname.startsWith("/coach")) ||
             (item.href === "/interview" && pathname.startsWith("/interview")) ||
             (item.href === "/resume" && pathname.startsWith("/resume")) ||
             (item.href === "/planner" && pathname.startsWith("/planner"));

@@ -39,6 +39,8 @@ import type {
   LearningRoadmapResponse,
   LearningPlanResponse,
   LearningPlanProgressUpdate,
+  CoachOverviewResponse,
+  WeeklyProgressReport,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -491,5 +493,30 @@ export async function getLearningPlanWeekly(planId: string) {
     weekly: Record<string, unknown>;
     weekly_markdown: string;
   }>(`/api/learning-planner/plans/${planId}/weekly`);
+  return data;
+}
+
+// --- Week 6 Day 7: AI Coach Dashboard ---
+
+export async function getCoachOverview(params?: {
+  target_career?: string;
+  session_id?: string;
+  interview_session_id?: string;
+}) {
+  const { data } = await api.get<CoachOverviewResponse>("/api/coach/overview", {
+    params,
+    timeout: 60_000,
+  });
+  return data;
+}
+
+export async function getCoachWeeklyReport(params?: {
+  session_id?: string;
+  target_career?: string;
+}) {
+  const { data } = await api.get<WeeklyProgressReport>("/api/coach/weekly-report", {
+    params,
+    timeout: 60_000,
+  });
   return data;
 }

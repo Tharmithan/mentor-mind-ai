@@ -5,6 +5,7 @@ from app.config import settings
 from app.routes import (
     agents,
     ai_platform,
+    coach,
     conversations,
     dashboard,
     documents,
@@ -47,6 +48,7 @@ app.include_router(ai_platform.router)  # POST /predict, GET /insights at root t
 app.include_router(recommendations.router, prefix=API_PREFIX, tags=["recommendations"])
 app.include_router(study_planner.router, prefix=API_PREFIX, tags=["study-planner"])
 app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
+app.include_router(coach.router, prefix=API_PREFIX)
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 # Week 4 Day 2 — PDF processing / document upload
 app.include_router(documents.router, prefix=API_PREFIX)
@@ -89,6 +91,8 @@ async def root():
             "insights": f"{API_PREFIX}/insights",
             "predict_explain": f"{API_PREFIX}/predict/explain",
             "dashboard": f"{API_PREFIX}/dashboard",
+            "coach_overview": f"{API_PREFIX}/coach/overview",
+            "coach_weekly_report": f"{API_PREFIX}/coach/weekly-report",
             "study_planner": f"{API_PREFIX}/study-planner",
             "daily_tip": f"{API_PREFIX}/daily-tip",
             "documents_upload": f"{API_PREFIX}/documents/upload",

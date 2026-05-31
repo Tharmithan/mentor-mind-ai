@@ -638,3 +638,55 @@ export type LearningPlanProgressUpdate = {
   progress_pct?: number | null;
   note?: string | null;
 };
+
+// --- Week 6 Day 7: AI Coach Dashboard ---
+
+export type CoachScoreCard = {
+  label: string;
+  score: number;
+  delta: number;
+  trend: string;
+  subtitle: string;
+};
+
+export type CoachRecommendation = {
+  id: string;
+  title: string;
+  description: string;
+  agent: string;
+  priority: string;
+  action_path?: string | null;
+};
+
+export type SkillGapOverview = {
+  target_career: string;
+  current_skills: string[];
+  missing_skills: string[];
+  overall_readiness: number;
+  gaps: SkillGapItem[];
+};
+
+export type CoachCharts = {
+  skill_growth: ChartPoint[];
+  learning_progress: ChartPoint[];
+  interview_improvement: ChartPoint[];
+  career_readiness_trend: ChartPoint[];
+};
+
+export type WeeklyProgressReport = {
+  week_label: string;
+  achievements: string[];
+  weaknesses: string[];
+  next_week_plan: string[];
+  generated_at: string;
+};
+
+export type CoachOverviewResponse = {
+  scores: CoachScoreCard[];
+  charts: CoachCharts;
+  skill_gap: SkillGapOverview;
+  recommendations: CoachRecommendation[];
+  weekly_report: WeeklyProgressReport;
+  target_career: string;
+  profile_summary: string;
+};
