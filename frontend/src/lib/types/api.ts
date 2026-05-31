@@ -749,3 +749,33 @@ export type PreferencesUpdateRequest = {
   preferred_study_time?: string;
   content_formats?: string[];
 };
+
+// --- Week 7 Day 2: Long-Term Memory ---
+
+export type ProgressDelta = {
+  subject: string;
+  previous_score: number;
+  current_score: number;
+  delta: number;
+  delta_pct: number;
+  period_label: string;
+  insight: string;
+};
+
+export type MemoryProgressResponse = {
+  user_id: string;
+  deltas: ProgressDelta[];
+  narrative: string;
+  snapshots_count: number;
+  month_comparison: string;
+};
+
+export type MemoryContextResponse = {
+  user_id: string;
+  summary: string;
+  progress_insights: string[];
+  progress_deltas: ProgressDelta[];
+  active_career_goal?: string | null;
+  recent_interview_avg?: number | null;
+  retrieved_at: string;
+};

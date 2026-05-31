@@ -44,6 +44,8 @@ import type {
   UnifiedUserProfile,
   PersonalizedRecommendationsResponse,
   PreferencesUpdateRequest,
+  MemoryProgressResponse,
+  MemoryContextResponse,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -565,5 +567,30 @@ export async function updateLearningPreferences(
     body,
     { timeout: 60_000 }
   );
+  return data;
+}
+
+// --- Week 7 Day 2: Long-Term Memory ---
+
+export async function getMemoryProgress(userId: string) {
+  const { data } = await api.get<MemoryProgressResponse>(
+    `/api/memory/${userId}/progress`,
+    { timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function getMemoryContext(userId: string, query?: string) {
+  const { data } = await api.get<MemoryContextResponse>(
+    `/api/memory/${userId}/context`,
+    { params: query ? { query } : undefined, timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function syncLongTermMemory(userId: string) {
+  const { data } = await api.post(`/api/memory/${userId}/sync`, null, {
+    timeout: 60_000,
+  });
   return data;
 }

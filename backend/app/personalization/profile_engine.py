@@ -143,6 +143,16 @@ class UserProfileEngine:
         profile.profile_summary = _build_summary(profile)
         UserEmbeddingService.embed_profile(profile)
         profile.embedding_id = user_id
+
+        try:
+            from app.memory.service import LongTermMemoryService
+
+            LongTermMemoryService.sync_user(user_id, profile.subject_scores)
+            if profile.career_goal:
+                LongTermMemoryService.record_career_goal(user_id, profile.career_goal)
+        except Exception:
+            pass
+
         return profile
 
 

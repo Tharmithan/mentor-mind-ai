@@ -11,6 +11,7 @@ import { CoachChartsGrid } from "@/components/coach/CoachChartsGrid";
 import { SkillGapPanel } from "@/components/coach/SkillGapPanel";
 import { RecommendationsPanel, WeeklyReportPanel } from "@/components/coach/CoachPanels";
 import { PersonalizationPanel } from "@/components/coach/PersonalizationPanel";
+import { MemoryProgressPanel } from "@/components/coach/MemoryProgressPanel";
 
 export function CoachDashboard() {
   const [data, setData] = useState<CoachOverviewResponse | null>(null);
@@ -97,6 +98,10 @@ export function CoachDashboard() {
 
       <AnimatedSection delay={0.12}>
         <PersonalizationPanel />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.13}>
+        <MemoryProgressPanel />
       </AnimatedSection>
 
       <AnimatedSection delay={0.15}>

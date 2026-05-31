@@ -21,6 +21,44 @@ from app.agents.types import AGENT_META, AgentType
 from app.models.agent import AgentChatRequest, AgentChatResponse, AgentInfo
 
 
+def _resolve_user_id(session, req: AgentChatRequest) -> str:
+    if req.context and req.context.get("user_id"):
+        return str(req.context["user_id"])
+    return str(session.context.get("user_id") or "demo-user-001")
+
+
+def _persist_agent_memory(
+    user_id: str,
+    session_id: str,
+    message: str,
+    answer: str,
+    agent: str,
+) -> None:
+    try:
+        from app.memory.service import LongTermMemoryService
+
+        LongTermMemoryService.record_agent_turn(user_id, session_id, message, answer, agent)
+    except Exception:
+        pass
+
+
+def _enrich_with_progress(user_id: str, answer: str, agent: str) -> str:
+    if agent not in ("study", "career", "orchestrator"):
+        return answer
+    try:
+        from app.memory.service import LongTermMemoryService
+        from app.personalization.store import get_profile_store
+
+        profile = get_profile_store().get(user_id)
+        scores = profile.subject_scores if profile else None
+        prog = LongTermMemoryService.get_progress(user_id, scores)
+        if prog.deltas:
+            return f"> {prog.deltas[0].insight}\n\n{answer}"
+    except Exception:
+        pass
+    return answer
+
+
 class AgentManager:
     @staticmethod
     def list_agents() -> list[AgentInfo]:
@@ -54,12 +92,15 @@ class AgentManager:
             resume_text=req.resume_text,
         )
 
+        user_id = _resolve_user_id(session, req)
+        answer = _enrich_with_progress(user_id, answer, "orchestrator")
         session.add_assistant(answer, "orchestrator")
         session.context["last_collaboration"] = {
             "contributions": [c.model_dump() for c in contributions],
             "orchestration_log": log,
         }
         store.save(session)
+        _persist_agent_memory(user_id, session.session_id, req.message, answer, "orchestrator")
 
         return AgentChatResponse(
             answer=answer,
@@ -113,10 +154,13 @@ class AgentManager:
         )
 
         answer = result.get("answer", "I couldn't process that request.")
+        user_id = _resolve_user_id(session, req)
+        answer = _enrich_with_progress(user_id, answer, decision.agent.value)
         session.add_assistant(answer, decision.agent.value)
         if result.get("data"):
             session.context.update(result["data"])
         store.save(session)
+        _persist_agent_memory(user_id, session.session_id, req.message, answer, decision.agent.value)
         return AgentChatResponse(
             answer=answer,
             session_id=session.session_id,
