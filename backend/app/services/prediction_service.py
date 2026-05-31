@@ -1,4 +1,5 @@
 from decimal import Decimal
+import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,7 +14,7 @@ class PredictionService:
         payload: PredictRequest,
         session: AsyncSession | None = None,
     ) -> PredictResponse:
-        result = get_predictor().predict(payload)
+        result = await asyncio.to_thread(get_predictor().predict, payload)
 
         try:
             from app.monitoring.service import MonitoringService

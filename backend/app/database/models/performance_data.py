@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Uuid, func
+from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Uuid, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
@@ -16,6 +16,7 @@ class PerformanceData(Base):
     """ORM model — maps to `performance_data` table."""
 
     __tablename__ = "performance_data"
+    __table_args__ = (Index("ix_performance_data_user_id", "user_id"),)
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     user_id: Mapped[uuid.UUID] = mapped_column(

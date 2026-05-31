@@ -26,10 +26,11 @@ By end of Week 8:
 | **1** | Deployment (Vercel + Railway + Supabase) | [week8-day1-deployment.md](./week8-day1-deployment.md) |
 | **2** | Security (JWT, refresh tokens, rate limiting) | [week8-day2-security.md](./week8-day2-security.md) |
 | **3** | Testing (unit, integration, e2e) | [week8-day3-testing.md](./week8-day3-testing.md) |
-| 4 | Professional GitHub | _coming soon_ |
-| 5 | Portfolio website | _coming soon_ |
-| 6 | Demo video | _coming soon_ |
-| 7 | Resume-ready summary | _coming soon_ |
+| **4** | Performance optimization | [week8-day4-performance.md](./week8-day4-performance.md) |
+| 5 | Professional GitHub | _coming soon_ |
+| 6 | Portfolio website | _coming soon_ |
+| 7 | Demo video | _coming soon_ |
+| 8 | Resume-ready summary | _coming soon_ |
 
 ---
 

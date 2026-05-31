@@ -10,6 +10,7 @@ documents survive restarts.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from pathlib import Path
 
 from app.rag.embeddings import MODEL_NAME, get_embedder
@@ -18,6 +19,11 @@ from app.rag.embeddings import MODEL_NAME, get_embedder
 BACKEND_DIR = Path(__file__).resolve().parents[2]
 VECTORSTORE_DIR = BACKEND_DIR / "uploads" / "vectorstore"
 COLLECTION_NAME = "documents"
+
+
+@lru_cache(maxsize=256)
+def _cached_query_embedding(normalized_query: str) -> tuple[float, ...]:
+    return tuple(get_embedder().embed_one(normalized_query))
 
 
 class VectorStore:
@@ -64,7 +70,7 @@ class VectorStore:
         """Semantic search: embed the query, return nearest chunks."""
         if self.collection.count() == 0:
             return []
-        q_embedding = get_embedder().embed_one(query)
+        q_embedding = list(_cached_query_embedding(query.strip().lower()))
         where = {"document_id": document_id} if document_id else None
         res = self.collection.query(
             query_embeddings=[q_embedding],

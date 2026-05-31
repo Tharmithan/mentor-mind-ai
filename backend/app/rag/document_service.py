@@ -35,6 +35,21 @@ PROCESSED_DIR = UPLOADS_DIR / "processed"
 ALLOWED_EXTENSIONS = {".pdf", ".txt", ".md"}
 PREVIEW_CHUNKS = 3
 
+_list_cache: DocumentListResponse | None = None
+_list_cache_mtime: float = 0.0
+
+
+def _processed_dir_mtime() -> float:
+    if not PROCESSED_DIR.exists():
+        return 0.0
+    mtimes = [p.stat().st_mtime for p in PROCESSED_DIR.glob("*.json")]
+    return max(mtimes) if mtimes else 0.0
+
+
+def _invalidate_document_list_cache() -> None:
+    global _list_cache
+    _list_cache = None
+
 
 class DocumentService:
     @staticmethod
@@ -95,6 +110,7 @@ class DocumentService:
         )
 
         DocumentService._persist(meta, chunks, raw_filename=raw_path.name)
+        _invalidate_document_list_cache()
 
         note = " and indexed for semantic search" if indexed else ""
         return UploadResponse(
@@ -135,6 +151,11 @@ class DocumentService:
 
     @staticmethod
     def list_documents() -> DocumentListResponse:
+        global _list_cache, _list_cache_mtime
+        mtime = _processed_dir_mtime()
+        if _list_cache is not None and mtime == _list_cache_mtime:
+            return _list_cache
+
         DocumentService._ensure_dirs()
         docs: list[DocumentMeta] = []
         for path in PROCESSED_DIR.glob("*.json"):
@@ -144,7 +165,9 @@ class DocumentService:
             except (json.JSONDecodeError, KeyError, TypeError):
                 continue
         docs.sort(key=lambda d: d.uploaded_at, reverse=True)
-        return DocumentListResponse(count=len(docs), documents=docs)
+        _list_cache = DocumentListResponse(count=len(docs), documents=docs)
+        _list_cache_mtime = mtime
+        return _list_cache
 
     @staticmethod
     def get_text(document_id: str, max_chars: int = 8000) -> tuple[str, str] | None:
@@ -250,4 +273,5 @@ class DocumentService:
             get_vector_store().delete_document(document_id)
         except Exception as exc:  # pragma: no cover
             print(f"[rag] vector delete failed for {document_id}: {exc}")
+        _invalidate_document_list_cache()
         return True

@@ -6,6 +6,8 @@
     DELETE /api/documents/{id}            remove a document and its chunks
 """
 
+import asyncio
+
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 
 from app.models.document import (
@@ -31,7 +33,9 @@ async def upload_document(file: UploadFile = File(...)) -> UploadResponse:
     if len(content) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="File too large (max 25 MB).")
     try:
-        return DocumentService.save_and_process(file.filename or "upload", content)
+        return await asyncio.to_thread(
+            DocumentService.save_and_process, file.filename or "upload", content
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:  # pragma: no cover - surfaces processing errors
@@ -41,14 +45,16 @@ async def upload_document(file: UploadFile = File(...)) -> UploadResponse:
 @router.get("", response_model=DocumentListResponse)
 async def list_documents() -> DocumentListResponse:
     """List all processed documents (most recent first)."""
-    return DocumentService.list_documents()
+    return await asyncio.to_thread(DocumentService.list_documents)
 
 
 @router.post("/search", response_model=SearchResponse)
 async def search_documents(body: SearchRequest) -> SearchResponse:
     """Semantic search over indexed chunks (e.g. 'Explain recursion')."""
     try:
-        return DocumentService.search(body.query, top_k=body.top_k, document_id=body.document_id)
+        return await asyncio.to_thread(
+            DocumentService.search, body.query, body.top_k, body.document_id
+        )
     except Exception as exc:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Search failed: {exc}") from exc
 
@@ -61,7 +67,9 @@ async def search_documents_get(
 ) -> SearchResponse:
     """Convenience GET for semantic search."""
     try:
-        return DocumentService.search(q, top_k=top_k, document_id=document_id)
+        return await asyncio.to_thread(
+            DocumentService.search, q, top_k, document_id
+        )
     except Exception as exc:  # pragma: no cover
         raise HTTPException(status_code=500, detail=f"Search failed: {exc}") from exc
 

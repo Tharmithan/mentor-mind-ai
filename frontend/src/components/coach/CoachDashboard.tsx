@@ -1,21 +1,43 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { getCoachOverview } from "@/lib/api";
 import type { CoachOverviewResponse } from "@/lib/types/api";
+import { cachedFetch } from "@/lib/queryCache";
 import { AILoadingOverlay } from "@/components/ui/AILoadingOverlay";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { ChartSkeleton } from "@/components/charts/ChartSkeleton";
 import { CoachScoreCards } from "@/components/coach/CoachScoreCards";
 import { CoachChartsGrid } from "@/components/coach/CoachChartsGrid";
 import { SkillGapPanel } from "@/components/coach/SkillGapPanel";
 import { RecommendationsPanel, WeeklyReportPanel } from "@/components/coach/CoachPanels";
-import { PersonalizationPanel } from "@/components/coach/PersonalizationPanel";
-import { MemoryProgressPanel } from "@/components/coach/MemoryProgressPanel";
-import { LearningAnalyticsPanel } from "@/components/coach/LearningAnalyticsPanel";
-import { ReportGeneratorPanel } from "@/components/coach/ReportGeneratorPanel";
-import { MLOpsPanel } from "@/components/coach/MLOpsPanel";
-import { MonitoringPanel } from "@/components/coach/MonitoringPanel";
+
+const PersonalizationPanel = dynamic(
+  () => import("@/components/coach/PersonalizationPanel").then((m) => m.PersonalizationPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
+const MemoryProgressPanel = dynamic(
+  () => import("@/components/coach/MemoryProgressPanel").then((m) => m.MemoryProgressPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
+const LearningAnalyticsPanel = dynamic(
+  () => import("@/components/coach/LearningAnalyticsPanel").then((m) => m.LearningAnalyticsPanel),
+  { loading: () => <ChartSkeleton className="h-64" /> }
+);
+const ReportGeneratorPanel = dynamic(
+  () => import("@/components/coach/ReportGeneratorPanel").then((m) => m.ReportGeneratorPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
+const MLOpsPanel = dynamic(
+  () => import("@/components/coach/MLOpsPanel").then((m) => m.MLOpsPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
+const MonitoringPanel = dynamic(
+  () => import("@/components/coach/MonitoringPanel").then((m) => m.MonitoringPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
 
 export function CoachDashboard() {
   const [data, setData] = useState<CoachOverviewResponse | null>(null);
@@ -28,10 +50,12 @@ export function CoachDashboard() {
     try {
       const sessionId =
         typeof window !== "undefined" ? localStorage.getItem("agent_session_id") : null;
-      const res = await getCoachOverview({
-        target_career: "AI Engineer",
-        session_id: sessionId ?? undefined,
-      });
+      const res = await cachedFetch("coach-overview", () =>
+        getCoachOverview({
+          target_career: "AI Engineer",
+          session_id: sessionId ?? undefined,
+        })
+      );
       setData(res);
     } catch {
       setError("Could not load AI Coach dashboard. Is the backend running?");

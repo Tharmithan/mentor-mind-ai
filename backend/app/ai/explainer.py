@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -13,7 +14,7 @@ import pandas as pd
 from app.models.prediction import PredictRequest, sleep_hours_to_wellness
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-ML_MODELS = REPO_ROOT / "ml-models"
+ML_MODELS = Path(os.environ.get("ML_MODELS_DIR", str(REPO_ROOT / "ml-models")))
 BEST_MODEL_JSON = ML_MODELS / "best_model.json"
 CLEANED_CSV = REPO_ROOT / "datasets" / "processed" / "student_performance_cleaned.csv"
 GLOBAL_SHAP_JSON = REPO_ROOT / "results" / "metrics" / "shap_global.json"
@@ -61,6 +62,26 @@ def _load_background(n: int = 200) -> pd.DataFrame:
     )
 
 
+_shap_explainer_cache: dict[int, object] = {}
+
+
+def _get_tree_explainer(model, background: pd.DataFrame):
+    """Reuse TreeExplainer instances — SHAP init is expensive."""
+    key = id(model)
+    cached = _shap_explainer_cache.get(key)
+    if cached is not None:
+        return cached
+    import shap
+
+    explainer = shap.TreeExplainer(model, data=background, feature_perturbation="interventional")
+    _shap_explainer_cache[key] = explainer
+    return explainer
+
+
+def clear_shap_cache() -> None:
+    _shap_explainer_cache.clear()
+
+
 def _shap_contributions(model, X: pd.DataFrame, background: pd.DataFrame, at_risk: bool) -> dict[str, float] | None:
     try:
         import shap
@@ -68,7 +89,7 @@ def _shap_contributions(model, X: pd.DataFrame, background: pd.DataFrame, at_ris
         return None
 
     try:
-        explainer = shap.TreeExplainer(model, data=background, feature_perturbation="interventional")
+        explainer = _get_tree_explainer(model, background)
         exp = explainer(X, check_additivity=False)
         sv = exp.values
         if sv.ndim == 3:

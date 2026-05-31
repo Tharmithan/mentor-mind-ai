@@ -99,6 +99,7 @@
 - [Day 1 — Deployment (Vercel + Railway + Supabase)](./week8-day1-deployment.md)
 - [Day 2 — Security (JWT, refresh tokens, rate limiting)](./week8-day2-security.md)
 - [Day 3 — Testing (unit, integration, e2e)](./week8-day3-testing.md)
+- [Day 4 — Performance optimization](./week8-day4-performance.md)
 - [Week 8 summary](./week8-summary.md)
 
 </details>

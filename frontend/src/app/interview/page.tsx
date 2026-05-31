@@ -1,5 +1,11 @@
+import dynamic from "next/dynamic";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { InterviewCoach } from "@/components/interview/InterviewCoach";
+import { ChartSkeleton } from "@/components/charts/ChartSkeleton";
+
+const InterviewCoach = dynamic(
+  () => import("@/components/interview/InterviewCoach").then((m) => m.InterviewCoach),
+  { ssr: false, loading: () => <ChartSkeleton className="h-96" /> }
+);
 
 export default function InterviewPage() {
   return (

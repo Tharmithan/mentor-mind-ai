@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+import asyncio
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +11,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from app.auth.rate_limit import limiter
 from app.config import settings
 from app.core.exceptions import register_exception_handlers
+from app.middleware.latency import LatencyMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routes import (
     agents,
@@ -37,12 +40,33 @@ from app.routes import (
     user,
 )
 
+logger = logging.getLogger("mentormind")
+
+
+def _warmup_models() -> None:
+    """Pre-load ML/RAG assets so first request is fast."""
+    try:
+        from app.ai import get_explainer, get_predictor
+
+        get_predictor()
+        get_explainer()
+    except Exception as exc:
+        logger.warning("Predictor warmup skipped: %s", exc)
+    try:
+        from app.rag.embeddings import get_embedder
+
+        get_embedder()
+    except Exception as exc:
+        logger.warning("Embedder warmup skipped: %s", exc)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     if settings.auto_create_tables:
         from app.database.init_db import create_tables
 
         await create_tables()
+    await asyncio.to_thread(_warmup_models)
     yield
 
 
@@ -59,6 +83,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 register_exception_handlers(app)
 app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(LatencyMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
 
 app.add_middleware(

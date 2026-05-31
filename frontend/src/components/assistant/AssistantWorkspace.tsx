@@ -1,12 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { MessageSquare, Wand2 } from "lucide-react";
 import { deleteDocument, listDocuments, uploadDocument } from "@/lib/api";
 import type { DocumentMeta } from "@/lib/types/api";
+import { cachedFetch, invalidateCached } from "@/lib/queryCache";
 import { DocumentsPanel } from "@/components/assistant/DocumentsPanel";
-import { ChatPanel } from "@/components/assistant/ChatPanel";
-import { StudyToolsPanel } from "@/components/assistant/StudyToolsPanel";
+import { ChartSkeleton } from "@/components/charts/ChartSkeleton";
+
+const ChatPanel = dynamic(() => import("./ChatPanel").then((m) => m.ChatPanel), {
+  ssr: false,
+  loading: () => <ChartSkeleton className="h-96" />,
+});
+const StudyToolsPanel = dynamic(() => import("./StudyToolsPanel").then((m) => m.StudyToolsPanel), {
+  ssr: false,
+  loading: () => <ChartSkeleton className="h-96" />,
+});
 
 type Tab = "chat" | "tools";
 
@@ -23,7 +33,7 @@ export function AssistantWorkspace() {
 
   async function refresh() {
     try {
-      const data = await listDocuments();
+      const data = await cachedFetch("documents-list", listDocuments, 30_000);
       setDocuments(data.documents);
     } catch {
       /* backend offline — keep UI usable */
@@ -35,6 +45,7 @@ export function AssistantWorkspace() {
     setUploadError(null);
     try {
       const res = await uploadDocument(file);
+      invalidateCached("documents-list");
       await refresh();
       setActiveDoc(res.document.document_id);
     } catch (e) {
@@ -51,6 +62,7 @@ export function AssistantWorkspace() {
   async function handleDelete(id: string) {
     try {
       await deleteDocument(id);
+      invalidateCached("documents-list");
       if (activeDoc === id) setActiveDoc(null);
       await refresh();
     } catch {

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Lightbulb, RefreshCw } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { getDailyTip, type DailyTip } from "@/lib/api";
+import { cachedFetch } from "@/lib/queryCache";
 
 const FALLBACK: DailyTip = {
   tip: "Review one weak topic before learning something new — small daily wins compound into big results.",
@@ -17,7 +18,7 @@ export function DailyAITip({ compact = false }: { compact?: boolean }) {
 
   const load = () => {
     setLoading(true);
-    getDailyTip()
+    cachedFetch("daily-tip", getDailyTip, 24 * 60_000)
       .then(setTip)
       .catch(() => setTip(FALLBACK))
       .finally(() => setLoading(false));

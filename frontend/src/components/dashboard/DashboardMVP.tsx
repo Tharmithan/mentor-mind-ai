@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { StatCard } from "@/components/ui/Card";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -9,13 +10,11 @@ import {
   BarChartCard,
   PieChartCard,
 } from "@/components/dashboard/DashboardCharts";
+import { ChartSkeleton } from "@/components/charts/ChartSkeleton";
 import { AILoadingOverlay } from "@/components/ui/AILoadingOverlay";
 import { DailyAITip } from "@/components/ai/DailyAITip";
-import { MLPredictPanel } from "@/components/dashboard/MLPredictPanel";
-import { StudyPlannerPanel } from "@/components/dashboard/StudyPlannerPanel";
-import { AIInsightsPanel } from "@/components/dashboard/AIInsightsPanel";
-import { AnalyticsDashboard } from "@/components/dashboard/AnalyticsDashboard";
 import { getDashboard, type DashboardData } from "@/lib/api";
+import { cachedFetch } from "@/lib/queryCache";
 import {
   TrendingUp,
   Clock,
@@ -24,6 +23,23 @@ import {
   ArrowRight,
   AlertCircle,
 } from "lucide-react";
+
+const AnalyticsDashboard = dynamic(
+  () => import("@/components/dashboard/AnalyticsDashboard").then((m) => m.AnalyticsDashboard),
+  { loading: () => <ChartSkeleton className="h-72" /> }
+);
+const MLPredictPanel = dynamic(
+  () => import("@/components/dashboard/MLPredictPanel").then((m) => m.MLPredictPanel),
+  { loading: () => <ChartSkeleton className="h-64" /> }
+);
+const StudyPlannerPanel = dynamic(
+  () => import("@/components/dashboard/StudyPlannerPanel").then((m) => m.StudyPlannerPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
+const AIInsightsPanel = dynamic(
+  () => import("@/components/dashboard/AIInsightsPanel").then((m) => m.AIInsightsPanel),
+  { loading: () => <ChartSkeleton className="h-48" /> }
+);
 
 const priorityDot = {
   high: "bg-rose-400",
@@ -114,7 +130,7 @@ export function DashboardMVP() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDashboard()
+    cachedFetch("dashboard", getDashboard, 5 * 60_000)
       .then(setData)
       .catch(() => setData(FALLBACK))
       .finally(() => setLoading(false));

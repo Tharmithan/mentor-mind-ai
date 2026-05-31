@@ -8,11 +8,14 @@ Canonical:
   GET  /insights
 """
 
+import asyncio
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai import InsightsService, get_explainer, get_predictor
 from app.analytics.service import build_analytics
+from app.core.cache import ttl_cache
 from app.database import get_optional_db
 from app.models.ai_platform import (
     AIPlatformStatus,
@@ -48,7 +51,9 @@ async def predict_with_explanation(
     """Predict + SHAP explainability."""
     prediction = await PredictionService.predict_performance(payload, db)
     at_risk = prediction.student_risk.high_risk or prediction.predicted_score < 60
-    raw = get_explainer().explain(payload, prediction.predicted_score, at_risk)
+    raw = await asyncio.to_thread(
+        get_explainer().explain, payload, prediction.predicted_score, at_risk
+    )
     return ExplainResponse(
         prediction=prediction,
         method=raw["method"],
@@ -110,6 +115,7 @@ async def analytics(
 
 
 @router.get("/insights", response_model=InsightsResponse)
+@ttl_cache(ttl_seconds=120, prefix="insights")
 async def insights(
     study_hours: float = Query(3.0, ge=0, le=24),
     attendance_pct: float = Query(80.0, ge=0, le=100),
@@ -133,6 +139,7 @@ async def insights(
 
 
 @router.get("/explain/global")
+@ttl_cache(ttl_seconds=3600, prefix="explain_global")
 async def explain_global():
     """Global SHAP feature rankings."""
     from app.models.explanation import GlobalExplainResponse, FeatureContribution
@@ -159,6 +166,7 @@ async def explain_global():
 
 
 @router.get("/ai/status", response_model=AIPlatformStatus)
+@ttl_cache(ttl_seconds=30, prefix="ai_status")
 async def ai_status():
     """Health of all Week 3 AI modules."""
     predictor = get_predictor()

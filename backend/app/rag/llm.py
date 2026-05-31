@@ -16,6 +16,15 @@ import httpx
 
 from app.config import settings
 
+_http_client: httpx.AsyncClient | None = None
+
+
+def _get_http_client() -> httpx.AsyncClient:
+    global _http_client
+    if _http_client is None:
+        _http_client = httpx.AsyncClient(timeout=45.0, limits=httpx.Limits(max_connections=20))
+    return _http_client
+
 
 def llm_enabled() -> bool:
     return bool(os.getenv("OPENAI_API_KEY") or getattr(settings, "openai_api_key", None))
@@ -44,15 +53,15 @@ async def call_llm(
         payload["response_format"] = {"type": "json_object"}
 
     try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            resp = await client.post(
-                f"{base_url.rstrip('/')}/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}"},
-                json=payload,
-            )
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"].strip()
+        client = _get_http_client()
+        resp = await client.post(
+            f"{base_url.rstrip('/')}/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json=payload,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        return data["choices"][0]["message"]["content"].strip()
     except Exception:  # pragma: no cover - network/LLM failures
         return None
 
