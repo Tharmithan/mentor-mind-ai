@@ -26,6 +26,7 @@ erDiagram
     users ||--o{ performance_data : has
     users ||--o{ interview_results : has
     users ||--o{ recommendations : has
+    users ||--o{ refresh_tokens : has
 
     users {
         uuid id PK
@@ -134,12 +135,23 @@ Stores quiz scores and ML prediction outputs.
 | `priority` | VARCHAR(20) | low / medium / high |
 | `is_completed` | BOOLEAN | Completion flag |
 
-### 3.5 Indexes
+### 3.5 `refresh_tokens` (Week 8 · Auth)
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `user_id` | UUID FK | Owner |
+| `jti` | VARCHAR(64) UNIQUE | JWT ID for revocation |
+| `token_hash` | VARCHAR(64) | Hashed refresh token |
+| `expires_at` | TIMESTAMPTZ | Expiration |
+| `revoked` | BOOLEAN | Logout / rotation flag |
+
+### 3.6 Indexes
 
 ```sql
 CREATE INDEX idx_performance_data_user ON performance_data(user_id);
 CREATE INDEX idx_interview_results_user ON interview_results(user_id);
 CREATE INDEX idx_recommendations_user ON recommendations(user_id);
+CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
 ```
 
 ---

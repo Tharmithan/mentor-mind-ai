@@ -2,15 +2,190 @@
 
 > Base URL: `http://localhost:8000` · OpenAPI: `/docs` · Prefix: `/api` (unless noted)
 
-All endpoints return JSON. Authentication is optional in demo mode (`demo-user-001`).
+All endpoints return JSON. See [Week 8 · Day 2 Security](./week8-day2-security.md) for JWT auth.
 
 ---
 
-## Health & User
+## Core API Examples
+
+### POST /api/predict — Performance prediction
+
+**Request:**
+```json
+{
+  "study_hours": 6,
+  "attendance": 88,
+  "sleep_hours": 7,
+  "prior_score": 72,
+  "quizzes_completed": 10
+}
+```
+
+**Response (abbreviated):**
+```json
+{
+  "predicted_score": 74.2,
+  "prediction": "pass",
+  "risk_level": "medium",
+  "student_risk": {
+    "high_risk": false,
+    "low_performance_chance": 22.5,
+    "burnout_probability": 18.0
+  },
+  "model_version": "v3"
+}
+```
+
+```bash
+curl -X POST http://localhost:8000/api/predict \
+  -H "Content-Type: application/json" \
+  -d '{"study_hours": 6, "attendance": 88, "sleep_hours": 7}'
+```
+
+---
+
+### POST /api/recommend — Study recommendations
+
+**Request:**
+```json
+{
+  "subject_scores": [
+    {"subject": "Mathematics", "score": 58},
+    {"subject": "Programming", "score": 78},
+    {"subject": "Data Structures", "score": 65}
+  ],
+  "include_study_plan": true,
+  "predicted_score": 74,
+  "risk_level": "medium"
+}
+```
+
+**Response (abbreviated):**
+```json
+{
+  "recommendations": [
+    {"title": "Review algebra fundamentals", "priority": "high", "topic": "Mathematics"}
+  ],
+  "weak_subjects": [{"subject": "Mathematics", "score": 58}],
+  "revision_order": ["Mathematics", "Data Structures", "Programming"],
+  "focus_message": "Focus on Mathematics this week.",
+  "study_plan": { "date": "2026-05-29", "tasks": [] }
+}
+```
+
+```bash
+curl -X POST http://localhost:8000/api/recommend \
+  -H "Content-Type: application/json" \
+  -d '{"subject_scores": [{"subject": "Mathematics", "score": 58}], "include_study_plan": true}'
+```
+
+---
+
+### POST /api/interview/start — Start mock interview
+
+**Request:**
+```json
+{
+  "interview_type": "behavioral",
+  "num_questions": 3
+}
+```
+
+**Response (abbreviated):**
+```json
+{
+  "session_id": "abc123",
+  "interview_type": "behavioral",
+  "status": "in_progress",
+  "total_questions": 3,
+  "current_question": {
+    "id": "q1",
+    "text": "Tell me about a time you worked in a team.",
+    "category": "teamwork",
+    "difficulty": "medium"
+  }
+}
+```
+
+**Submit answer:** `POST /api/interview/session/{session_id}/answer`
+
+```json
+{
+  "answer_text": "In my capstone project I led a team of four..."
+}
+```
+
+```bash
+curl -X POST http://localhost:8000/api/interview/start \
+  -H "Content-Type: application/json" \
+  -d '{"interview_type": "behavioral", "num_questions": 2}'
+```
+
+---
+
+### POST /api/documents/chat — RAG chat over notes
+
+**Request:**
+```json
+{
+  "question": "Explain recursion using my notes",
+  "document_id": "doc-uuid-here",
+  "top_k": 4,
+  "mode": "explain"
+}
+```
+
+**Response (abbreviated):**
+```json
+{
+  "answer": "Recursion is when a function calls itself...",
+  "used_llm": true,
+  "model": "gpt-4o-mini",
+  "sources": [
+    {
+      "chunk_id": "chunk-1",
+      "text": "Recursion requires a base case...",
+      "similarity": 0.89
+    }
+  ],
+  "session_id": "chat-session-id"
+}
+```
+
+**Prerequisite:** upload a document via `POST /api/documents/upload` first.
+
+```bash
+curl -X POST http://localhost:8000/api/documents/chat \
+  -H "Content-Type: application/json" \
+  -d '{"question": "What is recursion?", "top_k": 4}'
+```
+
+---
+
+## Authentication (Week 8)
+
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/api/auth/register` | Create account + tokens |
+| POST | `/api/auth/login` | Login + tokens |
+| POST | `/api/auth/refresh` | Rotate refresh token |
+| POST | `/api/auth/logout` | Revoke refresh token |
+| GET | `/api/auth/me` | Current user (Bearer token) |
+
+```bash
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "student@mentormind.ai", "password": "Demo123!"}'
+```
+
+---
+
+## Health & Metrics
 
 | Method | Path | Description |
 |--------|------|-------------|
 | GET | `/api/health` | Service health check |
+| GET | `/api/metrics/latency` | Per-route latency averages (Week 8) |
 | GET | `/api/user` | Demo user profile |
 
 ---
@@ -126,14 +301,6 @@ curl -X POST http://localhost:8000/api/monitoring/feedback \
     "helpful": false,
     "comment": "Recommendation was not useful"
   }'
-```
-
-### Example: Predict
-
-```bash
-curl -X POST http://localhost:8000/api/predict \
-  -H "Content-Type: application/json" \
-  -d '{"study_hours": 5, "attendance": 82, "sleep_hours": 7}'
 ```
 
 ---

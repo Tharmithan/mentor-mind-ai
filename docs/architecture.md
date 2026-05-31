@@ -120,7 +120,11 @@ backend/app/
 
 | Document | Contents |
 |----------|----------|
-| [API Reference](./api-reference.md) | All endpoints |
+| [Project Overview](./PROJECT.md) | Objectives, features, quick start |
+| [API Reference](./api-reference.md) | All endpoints + curl examples |
 | [AI Models](./ai-models.md) | ML + LLM catalog |
+| [AI Pipeline Diagram](./diagrams/ai-pipeline.mmd) | ML, RAG, interview flows |
 | [Database Schema](./database-schema.md) | Tables + file stores |
+| [User Guide](./user-guide.md) | End-user walkthrough |
+| [Developer Guide](./developer-guide.md) | Contributor onboarding |
 | [Deployment Guide](./deployment-guide.md) | Local → production |

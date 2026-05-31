@@ -4,6 +4,17 @@
 
 ---
 
+## Professional Documentation (Week 8 · Day 5)
+
+| Document | Description |
+|----------|-------------|
+| [**Project Overview**](./PROJECT.md) | Objectives, features, tech stack |
+| [**User Guide**](./user-guide.md) | How students use the platform |
+| [**Developer Guide**](./developer-guide.md) | Contributor onboarding |
+| [**AI Pipeline Diagram**](./diagrams/ai-pipeline.mmd) | ML, RAG, interview flows |
+
+---
+
 ## Core Documentation (Week 7 · Day 7)
 
 | Document | Description |
@@ -100,6 +111,7 @@
 - [Day 2 — Security (JWT, refresh tokens, rate limiting)](./week8-day2-security.md)
 - [Day 3 — Testing (unit, integration, e2e)](./week8-day3-testing.md)
 - [Day 4 — Performance optimization](./week8-day4-performance.md)
+- [Day 5 — Professional documentation](./week8-day5-documentation.md)
 - [Week 8 summary](./week8-summary.md)
 
 </details>

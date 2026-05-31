@@ -57,18 +57,18 @@ ML Models + Agents + RAG
 PostgreSQL + Vector DB
 ```
 
-### Documentation (Week 7 · Day 7)
+### Documentation
 
 | Document | Description |
 |----------|-------------|
+| [Project Overview](docs/PROJECT.md) | Objectives, features, documentation map |
 | [Architecture](docs/architecture.md) | Layered system design + data flows |
-| [API Reference](docs/api-reference.md) | Complete REST API catalog |
-| [AI Models](docs/ai-models.md) | ML models, LLM, agents, embeddings |
+| [API Reference](docs/api-reference.md) | Complete REST API + curl examples |
+| [User Guide](docs/user-guide.md) | How to use the platform |
+| [Developer Guide](docs/developer-guide.md) | Contributor onboarding |
 | [Database Schema](docs/database-schema.md) | PostgreSQL + ChromaDB + file stores |
 | [Deployment Guide](docs/deployment-guide.md) | Local, Docker, Vercel, Railway |
 | [Docs Index](docs/README.md) | Full documentation map |
-
-See also [docs/architecture.md](docs/architecture.md) and [docs/week7-summary.md](docs/week7-summary.md).
 
 ---
 
