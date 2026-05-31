@@ -446,3 +446,61 @@ export type DailyStudyRecommendationsResponse = {
   focus_areas: string[];
   study_streak_tip: string;
 };
+
+// --- Week 6 Day 3: Career Agent ---
+
+export type CareerMatch = {
+  career_id: string;
+  title: string;
+  match_score: number;
+  rationale: string;
+  strengths: string[];
+  gaps: string[];
+};
+
+export type CareerRecommendationResponse = {
+  top_career: CareerMatch;
+  alternatives: CareerMatch[];
+  profile_summary: string;
+  analyzed: Record<string, unknown>;
+  used_llm?: boolean;
+};
+
+export type SkillGapItem = {
+  skill: string;
+  current_level: number;
+  required_level: number;
+  gap: number;
+  priority: string;
+  learning_actions: string[];
+};
+
+export type SkillGapAnalysisResponse = {
+  target_career: string;
+  overall_readiness: number;
+  gaps: SkillGapItem[];
+  summary: string;
+};
+
+export type CareerRoadmapPhase = {
+  phase: string;
+  duration_weeks: number;
+  goals: string[];
+  skills: string[];
+  resources: string[];
+};
+
+export type LearningRoadmapResponse = {
+  career: string;
+  total_weeks: number;
+  phases: CareerRoadmapPhase[];
+  summary: string;
+  milestones: string[];
+};
+
+export type CareerAnalysisRequest = {
+  interests?: string[] | null;
+  target_career?: string | null;
+  subject_scores?: Record<string, number> | null;
+  interview_session_id?: string | null;
+};

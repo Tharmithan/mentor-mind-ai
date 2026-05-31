@@ -14,6 +14,7 @@ from app.routes import (
     study_planner,
     study_agent,
     study_tools,
+    career_agent,
     tip,
     user,
 )
@@ -57,6 +58,8 @@ app.include_router(interview.router, prefix=API_PREFIX)
 app.include_router(agents.router, prefix=API_PREFIX)
 # Week 6 Day 2 — Study Agent tutor API
 app.include_router(study_agent.router, prefix=API_PREFIX)
+# Week 6 Day 3 — Career Agent API
+app.include_router(career_agent.router, prefix=API_PREFIX)
 
 
 @app.get("/")
@@ -97,5 +100,8 @@ async def root():
             "study_agent_plan": f"{API_PREFIX}/agents/study/plan",
             "study_agent_daily": f"{API_PREFIX}/agents/study/daily",
             "study_agent_goals": f"{API_PREFIX}/agents/study/goals/{{session_id}}",
+            "career_recommend": f"{API_PREFIX}/agents/career/recommend",
+            "career_roadmap": f"{API_PREFIX}/agents/career/roadmap",
+            "career_trends": f"{API_PREFIX}/agents/career/trends",
         },
     }

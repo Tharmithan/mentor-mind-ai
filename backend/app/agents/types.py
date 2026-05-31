@@ -29,8 +29,12 @@ AGENT_META: dict[str, dict] = {
     },
     AgentType.CAREER.value: {
         "label": "Career Agent",
-        "description": "Performance insights, study plans, skill gaps, recommendations",
-        "examples": ["What should I focus on this week?", "How can I improve my grades?"],
+        "description": "Career path recommendations, skill gaps, learning roadmaps, industry trends",
+        "examples": [
+            "Which career path fits me best?",
+            "Skill gap analysis for Data Scientist",
+            "Learning roadmap to become an AI Engineer",
+        ],
     },
     AgentType.RESUME.value: {
         "label": "Resume Agent",

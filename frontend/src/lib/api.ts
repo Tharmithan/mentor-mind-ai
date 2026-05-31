@@ -29,6 +29,10 @@ import type {
   ExamStudyPlanResponse,
   DailyStudyRecommendationsResponse,
   LearningGoal,
+  CareerAnalysisRequest,
+  CareerRecommendationResponse,
+  SkillGapAnalysisResponse,
+  LearningRoadmapResponse,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -359,5 +363,41 @@ export async function listLearningGoals(sessionId: string) {
   const { data } = await api.get<{ session_id: string; goals: LearningGoal[] }>(
     `/api/agents/study/goals/${sessionId}`
   );
+  return data;
+}
+
+// --- Week 6 Day 3: Career Agent ---
+
+export async function getCareerRecommendation(body?: CareerAnalysisRequest) {
+  const { data } = await api.post<CareerRecommendationResponse>(
+    "/api/agents/career/recommend",
+    body ?? {},
+    { timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function getCareerSkillGaps(body?: CareerAnalysisRequest) {
+  const { data } = await api.post<SkillGapAnalysisResponse>(
+    "/api/agents/career/skill-gaps",
+    body ?? {},
+    { timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function getCareerRoadmap(body?: CareerAnalysisRequest) {
+  const { data } = await api.post<LearningRoadmapResponse>(
+    "/api/agents/career/roadmap",
+    body ?? {},
+    { timeout: 60_000 }
+  );
+  return data;
+}
+
+export async function getCareerTrends(targetCareer?: string) {
+  const { data } = await api.get("/api/agents/career/trends", {
+    params: targetCareer ? { target_career: targetCareer } : undefined,
+  });
   return data;
 }

@@ -15,7 +15,7 @@ _KEYWORDS: dict[AgentType, list[str]] = {
     ],
     AgentType.STUDY: [
         "summarize", "summary", "quiz", "flashcard", "explain", "study",
-        "revision", "notes", "learn", "chapter", "homework", "exam prep",
+        "revision", "notes", "chapter", "homework", "exam prep",
         "what is", "how does", "teach me", "exam in", "study plan", "days until",
         "weak subject", "learning goal", "track progress", "revision plan",
         "what should i study", "prepare for",
@@ -23,13 +23,35 @@ _KEYWORDS: dict[AgentType, list[str]] = {
     AgentType.CAREER: [
         "career", "job", "internship", "roadmap", "skill gap", "performance",
         "grades", "improve", "focus", "recommend", "insight",
-        "dashboard", "predict", "strong subject",
+        "dashboard", "predict", "strong subject", "data scientist", "ai engineer",
+        "mlops", "software engineer", "career path", "industry trend", "learning path",
+        "learning roadmap", "how to become", "which career", "become a", "become an",
+        "career fit", "job market",
     ],
     AgentType.RESUME: [
         "resume", "cv", "curriculum vitae", "cover letter", "linkedin",
         "bullet point", "work experience", "projects section", "portfolio",
     ],
 }
+
+
+_CAREER_PRIORITY = re.compile(
+    r"\b(career path|skill gap|learning roadmap|how to become|which career|"
+    r"data scientist|ai engineer|mlops engineer|software engineer|industry trend|"
+    r"job market|career recommend|career fit)\b",
+    re.I,
+)
+
+
+def _career_priority_route(message: str) -> RouteDecision | None:
+    """Bypass LLM when message clearly targets career guidance."""
+    if _CAREER_PRIORITY.search(message):
+        return RouteDecision(
+            AgentType.CAREER,
+            0.92,
+            "Career-specific intent detected",
+        )
+    return None
 
 
 def _keyword_route(message: str, last_agent: str | None) -> RouteDecision:
@@ -92,6 +114,10 @@ async def route_message(
     text = message.strip()
     if not text:
         return RouteDecision(AgentType.CAREER, 0.5, "Empty message — default career agent")
+
+    career_priority = _career_priority_route(text)
+    if career_priority:
+        return career_priority
 
     llm_decision = await _llm_route(text, history, last_agent)
     kw_decision = _keyword_route(text, last_agent)

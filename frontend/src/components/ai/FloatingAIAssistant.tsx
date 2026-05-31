@@ -9,8 +9,8 @@ import { Markdown } from "@/components/assistant/Markdown";
 
 const QUICK_REPLIES = [
   "I have a Machine Learning exam in 14 days",
+  "Which career path fits me best?",
   "What should I study today?",
-  "Analyze my weak subjects",
   "Start a behavioral mock interview",
 ];
 
