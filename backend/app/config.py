@@ -21,10 +21,13 @@ class Settings(BaseSettings):
     jwt_secret: str = "dev-secret-change-in-production"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
+    refresh_token_expire_days: int = 7
     cors_origins: str = "http://localhost:3000,http://127.0.0.1:3000"
     openai_api_key: str | None = None
     ml_models_dir: str | None = None
     auto_create_tables: bool = False
+    rate_limit_per_minute: int = 120
+    auth_rate_limit_per_minute: int = 10
 
     @property
     def cors_origins_list(self) -> list[str]:

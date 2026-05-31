@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.auth.dependencies import get_current_user_required
 from app.mlops.service import MLOpsService
+from app.models.auth import AuthUserProfile
 from app.models.mlops import PromoteRequest, RunExperimentRequest
 
 router = APIRouter(prefix="/mlops", tags=["mlops"])
@@ -40,12 +42,18 @@ def compare_experiments(versions: str | None = Query(None, description="Comma-se
 
 
 @router.post("/experiments/run")
-def run_experiment(body: RunExperimentRequest):
+def run_experiment(
+    body: RunExperimentRequest,
+    _user: AuthUserProfile = Depends(get_current_user_required),
+):
     return get_mlops_service().run_experiment(body)
 
 
 @router.post("/models/promote")
-def promote_model(body: PromoteRequest):
+def promote_model(
+    body: PromoteRequest,
+    _user: AuthUserProfile = Depends(get_current_user_required),
+):
     try:
         return get_mlops_service().promote(body.version, body.notes)
     except (ValueError, FileNotFoundError) as e:

@@ -12,6 +12,6 @@ async def health_check():
     return HealthResponse(
         status="healthy",
         service="mentormind-api",
-        version="0.8.0",
+        version="0.9.0",
         database="connected" if db_ok else "not_connected",
     )

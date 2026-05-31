@@ -3,6 +3,7 @@ from app.database.models import (  # noqa: F401 — register models with metadat
     InterviewResult,
     PerformanceData,
     Recommendation,
+    RefreshToken,
     User,
 )
 from app.database.session import engine

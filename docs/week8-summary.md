@@ -24,8 +24,8 @@ By end of Week 8:
 | Day | Focus | Doc |
 |-----|-------|-----|
 | **1** | Deployment (Vercel + Railway + Supabase) | [week8-day1-deployment.md](./week8-day1-deployment.md) |
-| 2 | Testing | _coming soon_ |
-| 3 | Security | _coming soon_ |
+| **2** | Security (JWT, refresh tokens, rate limiting) | [week8-day2-security.md](./week8-day2-security.md) |
+| 3 | Testing | _coming soon_ |
 | 4 | Professional GitHub | _coming soon_ |
 | 5 | Portfolio website | _coming soon_ |
 | 6 | Demo video | _coming soon_ |

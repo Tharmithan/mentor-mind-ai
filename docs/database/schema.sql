@@ -74,3 +74,19 @@ CREATE TABLE IF NOT EXISTS recommendations (
 CREATE INDEX IF NOT EXISTS idx_performance_data_user ON performance_data(user_id);
 CREATE INDEX IF NOT EXISTS idx_interview_results_user ON interview_results(user_id);
 CREATE INDEX IF NOT EXISTS idx_recommendations_user ON recommendations(user_id);
+
+-- ---------------------------------------------------------------------------
+-- 5. refresh_tokens — JWT refresh rotation (Week 8 · Day 2)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    jti VARCHAR(64) UNIQUE NOT NULL,
+    token_hash VARCHAR(64) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    revoked BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens(jti);

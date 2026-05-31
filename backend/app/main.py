@@ -2,11 +2,18 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
+from app.auth.rate_limit import limiter
 from app.config import settings
+from app.core.exceptions import register_exception_handlers
+from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.routes import (
     agents,
     ai_platform,
+    auth,
     coach,
     conversations,
     dashboard,
@@ -42,11 +49,17 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.app_name,
     description="AI Personalized Learning & Interview Coach API",
-    version="0.8.0",
+    version="0.9.0",
     docs_url="/docs",
     redoc_url="/redoc",
     lifespan=lifespan,
 )
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+register_exception_handlers(app)
+app.add_middleware(SlowAPIMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,6 +72,7 @@ app.add_middleware(
 API_PREFIX = "/api"
 
 app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
+app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
 # Week 3 Day 7 — unified AI platform (canonical routes)
 app.include_router(ai_platform.router, prefix=API_PREFIX)
@@ -98,7 +112,7 @@ app.include_router(learning_planner.router, prefix=API_PREFIX)
 async def root():
     return {
         "name": settings.app_name,
-        "version": "0.8.0",
+        "version": "0.9.0",
         "docs": "/docs",
         "week3_ai_platform": {
             "predict": "POST /predict",
@@ -109,6 +123,10 @@ async def root():
         },
         "endpoints": {
             "health": f"{API_PREFIX}/health",
+            "auth_register": f"{API_PREFIX}/auth/register",
+            "auth_login": f"{API_PREFIX}/auth/login",
+            "auth_refresh": f"{API_PREFIX}/auth/refresh",
+            "auth_me": f"{API_PREFIX}/auth/me",
             "predict": f"{API_PREFIX}/predict",
             "recommend": f"{API_PREFIX}/recommend",
             "analytics": f"{API_PREFIX}/analytics",

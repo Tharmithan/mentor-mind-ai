@@ -13,6 +13,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sqlalchemy import select
 
+from app.auth.passwords import hash_password
+
 from app.database.init_db import create_tables
 from app.database.models import (
     InterviewResult,
@@ -34,7 +36,7 @@ async def seed() -> None:
 
         user = User(
             email="student@mentormind.ai",
-            password_hash="hashed_demo_password",
+            password_hash=hash_password("Demo123!"),
             full_name="Demo Student",
             role="student",
             xp=1240,
@@ -108,6 +110,7 @@ async def seed() -> None:
 
         await session.commit()
         print(f"Seeded demo user: {user.email} (id={user.id})")
+        print("Demo login: student@mentormind.ai / Demo123!")
 
 
 if __name__ == "__main__":
