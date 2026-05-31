@@ -779,3 +779,84 @@ export type MemoryContextResponse = {
   recent_interview_avg?: number | null;
   retrieved_at: string;
 };
+
+// --- Week 7 Day 3: AI Learning Analytics ---
+
+export type SubjectMastery = {
+  subject: string;
+  score: number;
+  mastery_level: string;
+  trend: string;
+  delta: number;
+};
+
+export type LearningInsight = {
+  category: string;
+  title: string;
+  description: string;
+  severity: string;
+};
+
+export type LearningPatterns = {
+  best_study_time: string;
+  best_study_days: string[];
+  productivity_pattern: string;
+  weak_learning_areas: string[];
+  strong_learning_areas: string[];
+  burnout_risk: number;
+  burnout_level: string;
+};
+
+export type LearningAnalyticsDashboard = {
+  user_id: string;
+  learning_efficiency: number;
+  productivity_score: number;
+  weekly_growth: ChartPoint[];
+  subject_mastery: SubjectMastery[];
+  progress_trends: ChartPoint[];
+  study_hours_by_day: ChartPoint[];
+  patterns: LearningPatterns;
+  insights: LearningInsight[];
+  risk_meter: {
+    burnout_risk: number;
+    exam_failure_risk: number;
+    low_engagement_score: number;
+  };
+  summary: string;
+  generated_at: string;
+};
+
+// --- Week 7 Day 4: Automated Reports ---
+
+export type ReportSection = {
+  title: string;
+  content: string;
+  bullets: string[];
+};
+
+export type WeeklyReportData = {
+  user_id: string;
+  period_label: string;
+  learning_progress: ReportSection;
+  interview_performance: ReportSection;
+  skill_growth: ReportSection;
+  recommendations: ReportSection;
+  markdown: string;
+  generated_at: string;
+};
+
+export type MonthlyReportData = {
+  user_id: string;
+  period_label: string;
+  career_readiness: ReportSection;
+  learning_statistics: ReportSection;
+  improvement_areas: ReportSection;
+  markdown: string;
+  generated_at: string;
+};
+
+export type EmailReportResponse = {
+  sent: boolean;
+  message: string;
+  to_email?: string | null;
+};

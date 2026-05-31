@@ -20,6 +20,8 @@ from app.routes import (
     career_agent,
     resume,
     learning_planner,
+    learning_analytics,
+    reports,
     tip,
     user,
 )
@@ -53,6 +55,8 @@ app.include_router(dashboard.router, prefix=API_PREFIX, tags=["dashboard"])
 app.include_router(coach.router, prefix=API_PREFIX)
 app.include_router(personalization.router, prefix=API_PREFIX)
 app.include_router(memory.router, prefix=API_PREFIX)
+app.include_router(learning_analytics.router, prefix=API_PREFIX)
+app.include_router(reports.router, prefix=API_PREFIX)
 app.include_router(tip.router, prefix=API_PREFIX, tags=["ai"])
 # Week 4 Day 2 — PDF processing / document upload
 app.include_router(documents.router, prefix=API_PREFIX)
@@ -101,6 +105,9 @@ async def root():
             "personalization_recommendations": f"{API_PREFIX}/personalization/recommendations",
             "memory_progress": f"{API_PREFIX}/memory/demo/progress",
             "memory_context": f"{API_PREFIX}/memory/{{user_id}}/context",
+            "learning_analytics": f"{API_PREFIX}/learning-analytics/demo",
+            "reports_weekly": f"{API_PREFIX}/reports/demo/weekly",
+            "reports_monthly": f"{API_PREFIX}/reports/demo/monthly",
             "study_planner": f"{API_PREFIX}/study-planner",
             "daily_tip": f"{API_PREFIX}/daily-tip",
             "documents_upload": f"{API_PREFIX}/documents/upload",

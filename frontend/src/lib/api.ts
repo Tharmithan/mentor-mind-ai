@@ -46,6 +46,10 @@ import type {
   PreferencesUpdateRequest,
   MemoryProgressResponse,
   MemoryContextResponse,
+  LearningAnalyticsDashboard,
+  WeeklyReportData,
+  MonthlyReportData,
+  EmailReportResponse,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -592,5 +596,63 @@ export async function syncLongTermMemory(userId: string) {
   const { data } = await api.post(`/api/memory/${userId}/sync`, null, {
     timeout: 60_000,
   });
+  return data;
+}
+
+// --- Week 7 Day 3: AI Learning Analytics ---
+
+export async function getLearningAnalytics(userId?: string) {
+  const path = userId
+    ? `/api/learning-analytics/${userId}`
+    : "/api/learning-analytics/demo";
+  const { data } = await api.get<LearningAnalyticsDashboard>(path, {
+    timeout: 60_000,
+  });
+  return data;
+}
+
+// --- Week 7 Day 4: Automated Reports ---
+
+export async function getWeeklyReport(userId: string) {
+  const { data } = await api.get<WeeklyReportData>(
+    `/api/reports/weekly/${userId}`,
+    { timeout: 90_000 }
+  );
+  return data;
+}
+
+export async function getMonthlyReport(userId: string) {
+  const { data } = await api.get<MonthlyReportData>(
+    `/api/reports/monthly/${userId}`,
+    { timeout: 90_000 }
+  );
+  return data;
+}
+
+export async function downloadReportPdf(userId: string, type: "weekly" | "monthly") {
+  const response = await api.post(
+    `/api/reports/${type}/${userId}/pdf`,
+    null,
+    { responseType: "blob", timeout: 120_000 }
+  );
+  const blob = new Blob([response.data], { type: "application/pdf" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `mentormind-${type}-report.pdf`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+}
+
+export async function emailReport(
+  userId: string,
+  type: "weekly" | "monthly",
+  toEmail?: string
+) {
+  const { data } = await api.post<EmailReportResponse>(
+    `/api/reports/${type}/${userId}/email`,
+    null,
+    { params: toEmail ? { to_email: toEmail } : undefined, timeout: 120_000 }
+  );
   return data;
 }

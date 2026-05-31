@@ -1,0 +1,4 @@
+# Week 7 Day 4 — Automated Report Generator (PDF)
+# Install: pip install -r requirements-reports.txt
+
+fpdf2==2.8.3
