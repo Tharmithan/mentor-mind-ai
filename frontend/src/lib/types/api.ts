@@ -170,6 +170,7 @@ export type PredictResponse = {
   recommendation: string;
   model_version: string;
   student_risk: StudentRiskDetection;
+  monitoring_log_id?: string | null;
 };
 
 export type FeatureContribution = {
@@ -912,4 +913,71 @@ export type RunExperimentRequest = {
   algorithm?: string;
   version_suffix?: string | null;
   log_mlflow?: boolean;
+};
+
+// --- Week 7 Day 6: Monitoring & Feedback Loop ---
+
+export type FeedbackSubmitRequest = {
+  user_id?: string;
+  category: string;
+  target_id?: string;
+  rating: number;
+  helpful?: boolean | null;
+  comment?: string;
+  metadata?: Record<string, unknown>;
+};
+
+export type FeedbackEntry = {
+  feedback_id: string;
+  user_id: string;
+  category: string;
+  target_id: string;
+  rating: number;
+  helpful: boolean;
+  comment: string;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
+export type SatisfactionSummary = {
+  user_id: string;
+  total_feedback: number;
+  avg_rating: number;
+  helpful_pct: number;
+  by_category: Record<string, { count: number; helpful: number; avg_rating: number; helpful_pct: number }>;
+  trend: string;
+  satisfaction_score: number;
+};
+
+export type ModelMonitoringMetrics = {
+  total_predictions: number;
+  predictions_with_actuals: number;
+  mean_absolute_error: number | null;
+  avg_confidence: number | null;
+  model_version: string | null;
+  drift_status: string;
+  recent_accuracy_pct: number | null;
+  last_prediction_at: string | null;
+};
+
+export type ImprovementInsight = {
+  area: string;
+  issue: string;
+  action: string;
+  priority: string;
+};
+
+export type ImprovementLoopResponse = {
+  user_id: string;
+  insights: ImprovementInsight[];
+  downranked_targets: string[];
+  improved_recommendation_note: string;
+  applied_adjustments: string[];
+};
+
+export type MonitoringDashboard = {
+  satisfaction: SatisfactionSummary;
+  model_metrics: ModelMonitoringMetrics;
+  recent_feedback: FeedbackEntry[];
+  improvement: ImprovementLoopResponse;
 };

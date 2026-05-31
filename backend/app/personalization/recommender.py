@@ -84,6 +84,16 @@ class PersonalizedRecommender:
         if profile.career_goal:
             career_note = f"Align {style} study with your goal: **{profile.career_goal}**."
 
+        try:
+            from app.monitoring.improvement import ImprovementLoop
+
+            resources = ImprovementLoop.filter_recommendations(profile.user_id, resources)
+            loop = ImprovementLoop.analyze(profile.user_id)
+            if loop.improved_recommendation_note:
+                career_note = (career_note or "") + " " + loop.improved_recommendation_note
+        except Exception:
+            pass
+
         return PersonalizedRecommendationsResponse(
             user_id=profile.user_id,
             learning_style=style,

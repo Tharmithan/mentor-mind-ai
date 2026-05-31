@@ -55,6 +55,12 @@ import type {
   ExperimentRun,
   ExperimentComparison,
   RunExperimentRequest,
+  FeedbackSubmitRequest,
+  FeedbackEntry,
+  MonitoringDashboard,
+  SatisfactionSummary,
+  ModelMonitoringMetrics,
+  ImprovementLoopResponse,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -697,5 +703,43 @@ export async function runMLOpsExperiment(body: RunExperimentRequest) {
 
 export async function promoteMLOpsModel(version: string, notes = "") {
   const { data } = await api.post("/api/mlops/models/promote", { version, notes });
+  return data;
+}
+
+// --- Week 7 Day 6: Monitoring & Feedback Loop ---
+
+const DEMO_USER = "demo-user-001";
+
+export async function submitFeedback(body: FeedbackSubmitRequest) {
+  const { data } = await api.post<FeedbackEntry>("/api/monitoring/feedback", {
+    user_id: DEMO_USER,
+    ...body,
+  });
+  return data;
+}
+
+export async function getMonitoringDashboard(userId = DEMO_USER) {
+  const { data } = await api.get<MonitoringDashboard>(
+    `/api/monitoring/dashboard/${userId}`
+  );
+  return data;
+}
+
+export async function getSatisfaction(userId = DEMO_USER) {
+  const { data } = await api.get<SatisfactionSummary>(
+    `/api/monitoring/satisfaction/${userId}`
+  );
+  return data;
+}
+
+export async function getModelMonitoringMetrics() {
+  const { data } = await api.get<ModelMonitoringMetrics>("/api/monitoring/model-metrics");
+  return data;
+}
+
+export async function getImprovementLoop(userId = DEMO_USER) {
+  const { data } = await api.get<ImprovementLoopResponse>(
+    `/api/monitoring/improvements/${userId}`
+  );
   return data;
 }

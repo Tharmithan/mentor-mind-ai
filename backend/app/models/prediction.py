@@ -52,6 +52,9 @@ class PredictResponse(BaseModel):
     recommendation: str
     model_version: str = "heuristic-v0.1"
     student_risk: StudentRiskDetection
+    monitoring_log_id: str | None = Field(
+        default=None, description="ID for submitting prediction accuracy feedback"
+    )
 
 
 def sleep_hours_to_wellness(sleep_hours: float) -> float:

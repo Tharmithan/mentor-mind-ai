@@ -15,6 +15,24 @@ class PredictionService:
     ) -> PredictResponse:
         result = get_predictor().predict(payload)
 
+        try:
+            from app.monitoring.service import MonitoringService
+
+            log_id = MonitoringService.log_prediction(
+                user_id="demo-user-001",
+                predicted_score=result.predicted_score,
+                prediction_label=result.prediction,
+                model_version=result.model_version,
+                inputs={
+                    "study_hours": payload.study_hours,
+                    "attendance": payload.attendance_value,
+                    "sleep_hours": payload.sleep_hours,
+                },
+            )
+            result = result.model_copy(update={"monitoring_log_id": log_id})
+        except Exception:
+            pass
+
         if session is not None:
             from sqlalchemy import select
 

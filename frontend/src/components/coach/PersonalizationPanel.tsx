@@ -4,11 +4,12 @@ import { useEffect, useState } from "react";
 import {
   buildUserProfile,
   getPersonalizedUserRecommendations,
+  submitFeedback,
   updateLearningPreferences,
 } from "@/lib/api";
 import type { PersonalizedRecommendationsResponse } from "@/lib/types/api";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { BookOpen, Film, Gamepad2, Hammer, Loader2, Sparkles } from "lucide-react";
+import { BookOpen, Film, Gamepad2, Hammer, Loader2, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
 
 const STYLES = [
   { id: "video", label: "Video", icon: Film, desc: "YouTube, lectures" },
@@ -52,6 +53,20 @@ export function PersonalizationPanel() {
       setRecs(data);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const rateResource = async (title: string, helpful: boolean) => {
+    await submitFeedback({
+      category: "recommendation",
+      target_id: title,
+      rating: helpful ? 5 : 1,
+      helpful,
+      comment: helpful ? "Useful recommendation" : "Recommendation wasn't useful",
+    });
+    if (!helpful) {
+      const data = await getPersonalizedUserRecommendations(DEMO_USER);
+      setRecs(data);
     }
   };
 
@@ -114,11 +129,33 @@ export function PersonalizationPanel() {
             key={`${r.title}-${i}`}
             className="rounded-lg border border-white/5 bg-slate-900/40 px-4 py-3"
           >
-            <p className="text-sm font-medium text-white">{r.title}</p>
-            <p className="mt-0.5 text-xs text-slate-400">{r.description}</p>
-            <span className="mt-1 inline-block text-[10px] uppercase text-violet-400">
-              {r.format} · {r.subject}
-            </span>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-sm font-medium text-white">{r.title}</p>
+                <p className="mt-0.5 text-xs text-slate-400">{r.description}</p>
+                <span className="mt-1 inline-block text-[10px] uppercase text-violet-400">
+                  {r.format} · {r.subject}
+                </span>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <button
+                  type="button"
+                  aria-label="Useful"
+                  onClick={() => rateResource(r.title, true)}
+                  className="rounded p-1 text-slate-500 hover:bg-emerald-500/10 hover:text-emerald-400"
+                >
+                  <ThumbsUp className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Not useful"
+                  onClick={() => rateResource(r.title, false)}
+                  className="rounded p-1 text-slate-500 hover:bg-rose-500/10 hover:text-rose-400"
+                >
+                  <ThumbsDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>

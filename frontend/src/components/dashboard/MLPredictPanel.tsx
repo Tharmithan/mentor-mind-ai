@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { explainPrediction, type ExplainResponse, type PredictRequest, type PredictResponse } from "@/lib/api";
+import { explainPrediction, submitFeedback, type ExplainResponse, type PredictRequest, type PredictResponse } from "@/lib/api";
 import { AIExplanationPanel } from "@/components/dashboard/AIExplanationPanel";
-import { Brain, Loader2, Sparkles } from "lucide-react";
+import { Brain, Loader2, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
 
 export function MLPredictPanel() {
   const [studyHours, setStudyHours] = useState(5);
@@ -14,11 +14,14 @@ export function MLPredictPanel() {
   const [explanation, setExplanation] = useState<ExplainResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [actualScore, setActualScore] = useState<number | "">("");
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
 
   const handlePredict = async () => {
     setLoading(true);
     setError(null);
     setExplanation(null);
+    setFeedbackMsg(null);
     try {
       const payload: PredictRequest = {
         study_hours: studyHours,
@@ -32,6 +35,31 @@ export function MLPredictPanel() {
       setError("Could not reach ML API. Start backend on port 8000.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const submitPredictionFeedback = async (helpful: boolean) => {
+    if (!result) return;
+    try {
+      await submitFeedback({
+        category: "prediction",
+        target_id: result.model_version,
+        rating: helpful ? 5 : 1,
+        helpful,
+        comment: helpful ? "Prediction was helpful" : "Prediction was not accurate",
+        metadata: {
+          log_id: result.monitoring_log_id,
+          actual_score: actualScore !== "" ? actualScore : undefined,
+          predicted_score: result.predicted_score,
+        },
+      });
+      setFeedbackMsg(
+        helpful
+          ? "Thanks — logged for model monitoring."
+          : "Feedback stored. Future predictions will be adjusted."
+      );
+    } catch {
+      setFeedbackMsg("Could not submit feedback.");
     }
   };
 
@@ -111,6 +139,40 @@ export function MLPredictPanel() {
           </p>
           <p className="mt-2 text-sm text-slate-500">{result.recommendation}</p>
           <p className="mt-2 text-xs text-violet-400/80">Model: {result.model_version}</p>
+
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <p className="text-xs font-medium text-slate-400">Was this prediction useful?</p>
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => submitPredictionFeedback(true)}
+                className="inline-flex items-center gap-1 rounded-lg border border-emerald-500/25 px-2 py-1 text-xs text-emerald-300"
+              >
+                <ThumbsUp className="h-3 w-3" /> Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => submitPredictionFeedback(false)}
+                className="inline-flex items-center gap-1 rounded-lg border border-rose-500/25 px-2 py-1 text-xs text-rose-300"
+              >
+                <ThumbsDown className="h-3 w-3" /> No
+              </button>
+              <label className="ml-2 flex items-center gap-1 text-xs text-slate-500">
+                Actual score
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={actualScore}
+                  onChange={(e) =>
+                    setActualScore(e.target.value === "" ? "" : Number(e.target.value))
+                  }
+                  className="w-16 rounded border border-white/10 bg-slate-900/60 px-2 py-0.5 text-white"
+                />
+              </label>
+            </div>
+            {feedbackMsg && <p className="mt-2 text-xs text-slate-500">{feedbackMsg}</p>}
+          </div>
         </div>
       )}
 
