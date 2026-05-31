@@ -13,7 +13,9 @@ import {
   Sparkles,
   type LucideIcon,
   Brain,
+  Shield,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 const navItems: {
   href: string;
@@ -28,13 +30,14 @@ const navItems: {
   { href: "/resume", label: "Resume Analyzer", icon: FileSearch },
   { href: "/planner", label: "Learning Planner", icon: BookOpen },
   { href: "/dashboard#analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin", label: "Admin", icon: Shield },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-violet-500/10 bg-[#030712]/95 backdrop-blur-xl md:flex">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-violet-500/10 bg-background/95 backdrop-blur-xl md:flex">
       <div className="border-b border-violet-500/10 p-6">
         <Link href="/" className="flex items-center gap-2.5 transition hover:opacity-90">
           <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg shadow-violet-500/25">
@@ -53,7 +56,8 @@ export function Sidebar() {
             (item.href === "/coach" && pathname.startsWith("/coach")) ||
             (item.href === "/interview" && pathname.startsWith("/interview")) ||
             (item.href === "/resume" && pathname.startsWith("/resume")) ||
-            (item.href === "/planner" && pathname.startsWith("/planner"));
+            (item.href === "/planner" && pathname.startsWith("/planner")) ||
+            (item.href === "/admin" && pathname.startsWith("/admin"));
           return (
             <Link
               key={item.href}
@@ -89,6 +93,9 @@ export function Sidebar() {
           <ArrowLeft className="h-4 w-4" />
           Back to home
         </Link>
+        <div className="mt-3">
+          <ThemeToggle />
+        </div>
       </div>
     </aside>
   );

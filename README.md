@@ -188,6 +188,8 @@ mentor-mind-ai/
 | [Database Schema](docs/database-schema.md) | Tables, ERD, ChromaDB |
 | [Deployment Guide](docs/deployment-guide.md) | Local → cloud |
 | [Docs Index](docs/README.md) | Complete documentation map |
+| [Portfolio Case Study](docs/portfolio-case-study.md) | Recruiter-ready project summary |
+| [Final Deliverables](docs/week8-final-deliverables.md) | Week 8 completion checklist |
 
 ---
 
@@ -197,11 +199,13 @@ mentor-mind-ai/
 - [x] Production deployment (Vercel + Railway + Supabase)
 - [x] Automated test suite + CI
 - [x] Performance optimization (caching, lazy loading)
+- [x] Dark / light mode toggle
+- [x] Mobile-responsive navigation
+- [x] Admin dashboard
+- [ ] Full demo video on YouTube
 - [ ] Multilingual support (English + Tamil)
 - [ ] Mobile PWA
 - [ ] pgvector migration (ChromaDB → Supabase)
-- [ ] Team / classroom admin dashboards
-- [ ] Full demo video on YouTube
 
 ---
 

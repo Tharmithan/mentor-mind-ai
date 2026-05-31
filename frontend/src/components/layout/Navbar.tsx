@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { Menu, Sparkles, X } from "lucide-react";
 
 const links = [
@@ -15,7 +16,7 @@ export function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-violet-500/10 bg-[#030712]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-violet-500/10 bg-background/80 backdrop-blur-xl">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 transition hover:opacity-90">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg shadow-violet-500/30">
@@ -38,6 +39,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          <ThemeToggle compact />
           <button
             type="button"
             onClick={() => setOpen(!open)}

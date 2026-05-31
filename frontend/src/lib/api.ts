@@ -61,6 +61,7 @@ import type {
   SatisfactionSummary,
   ModelMonitoringMetrics,
   ImprovementLoopResponse,
+  AdminOverviewResponse,
 } from "@/lib/types/api";
 import type {
   CoachReport,
@@ -741,5 +742,10 @@ export async function getImprovementLoop(userId = DEMO_USER) {
   const { data } = await api.get<ImprovementLoopResponse>(
     `/api/monitoring/improvements/${userId}`
   );
+  return data;
+}
+
+export async function getAdminOverviewDemo() {
+  const { data } = await api.get<AdminOverviewResponse>("/api/admin/overview/demo");
   return data;
 }

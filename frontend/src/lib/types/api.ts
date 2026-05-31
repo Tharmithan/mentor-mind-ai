@@ -981,3 +981,24 @@ export type MonitoringDashboard = {
   recent_feedback: FeedbackEntry[];
   improvement: ImprovementLoopResponse;
 };
+
+export type AdminUserSummary = {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  created_at?: string | null;
+};
+
+export type AdminOverviewResponse = {
+  total_users: number;
+  total_predictions: number;
+  total_feedback: number;
+  models_loaded: boolean;
+  production_model_version: string | null;
+  vector_documents: number;
+  active_interview_sessions: number;
+  avg_satisfaction: number | null;
+  recent_users: AdminUserSummary[];
+  system_status: Record<string, string>;
+};

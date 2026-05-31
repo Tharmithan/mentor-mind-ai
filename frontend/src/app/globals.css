@@ -1,6 +1,20 @@
 @import "tailwindcss";
 
 :root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --primary: #7c3aed;
+  --primary-dark: #6d28d9;
+  --accent: #2563eb;
+  --card: #ffffff;
+  --card-border: rgba(124, 58, 237, 0.15);
+  --glow-purple: rgba(124, 58, 237, 0.12);
+  --glow-blue: rgba(37, 99, 235, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --mesh-base: #f1f5f9;
+}
+
+.dark {
   --background: #030712;
   --foreground: #f8fafc;
   --primary: #8b5cf6;
@@ -10,6 +24,8 @@
   --card-border: rgba(139, 92, 246, 0.15);
   --glow-purple: rgba(139, 92, 246, 0.4);
   --glow-blue: rgba(59, 130, 246, 0.35);
+  --glass-bg: rgba(15, 10, 30, 0.55);
+  --mesh-base: #030712;
 }
 
 @theme inline {
@@ -25,21 +41,28 @@ body {
 }
 
 .bg-mesh {
-  background-color: #030712;
+  background-color: var(--mesh-base);
   background-image:
     radial-gradient(at 0% 0%, var(--glow-purple) 0px, transparent 50%),
     radial-gradient(at 100% 0%, var(--glow-blue) 0px, transparent 50%),
-    radial-gradient(at 50% 100%, rgba(109, 40, 217, 0.2) 0px, transparent 50%);
+    radial-gradient(at 50% 100%, rgba(109, 40, 217, 0.15) 0px, transparent 50%);
 }
 
 .glass {
-  background: rgba(15, 10, 30, 0.55);
+  background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border);
 }
 
 .gradient-text {
+  background: linear-gradient(135deg, #7c3aed 0%, #2563eb 50%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .gradient-text {
   background: linear-gradient(135deg, #a78bfa 0%, #60a5fa 50%, #34d399 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -95,7 +118,6 @@ body {
   animation: shimmer 2.5s infinite;
 }
 
-/* Stagger children animations */
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
 .stagger-children > *:nth-child(2) { animation-delay: 80ms; }
 .stagger-children > *:nth-child(3) { animation-delay: 160ms; }

@@ -113,6 +113,8 @@
 - [Day 4 — Performance optimization](./week8-day4-performance.md)
 - [Day 5 — Professional documentation](./week8-day5-documentation.md)
 - [Day 6 — GitHub optimization](./week8-day6-github-optimization.md)
+- [Final deliverables & bonus features](./week8-final-deliverables.md)
+- [Portfolio case study](./portfolio-case-study.md)
 - [Week 8 summary](./week8-summary.md)
 
 </details>

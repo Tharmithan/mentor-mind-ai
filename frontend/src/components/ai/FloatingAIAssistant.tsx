@@ -250,7 +250,7 @@ export function FloatingAIAssistant() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-600/40 transition hover:scale-105 hover:shadow-violet-500/50 sm:right-6 animate-pulse-glow"
+        className="fixed bottom-20 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-600/40 transition hover:scale-105 hover:shadow-violet-500/50 sm:right-6 md:bottom-6 animate-pulse-glow"
         aria-label={open ? "Close AI assistant" : "Open AI assistant"}
         aria-expanded={open}
       >

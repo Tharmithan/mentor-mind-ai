@@ -38,6 +38,7 @@ from app.routes import (
     reports,
     tip,
     user,
+    admin,
 )
 
 logger = logging.getLogger("mentormind")
@@ -99,6 +100,7 @@ API_PREFIX = "/api"
 app.include_router(health.router, prefix=API_PREFIX, tags=["health"])
 app.include_router(auth.router, prefix=API_PREFIX)
 app.include_router(user.router, prefix=API_PREFIX, tags=["user"])
+app.include_router(admin.router, prefix=API_PREFIX)
 # Week 3 Day 7 — unified AI platform (canonical routes)
 app.include_router(ai_platform.router, prefix=API_PREFIX)
 app.include_router(ai_platform.router)  # POST /predict, GET /insights at root too
